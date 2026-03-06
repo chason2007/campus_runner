@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,27 +6,59 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased overflow-x-hidden;
+    @apply bg-apple-50 text-apple-600 font-sans antialiased selection:bg-apple-blue selection:text-white;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Apply display font to headings */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-tight;
   }
 }
 
-@layer utilities {
-  .glass {
-    @apply bg-white/70 backdrop-blur-lg border border-white/40 shadow-xl;
+@layer components {
+
+  /* Apple style card */
+  .macos-card {
+    @apply bg-white rounded-3xl shadow-apple border border-apple-100/50 transition-all duration-300 ease-apple hover:shadow-apple-hover;
   }
 
-  .glass-dark {
-    @apply bg-slate-900/70 backdrop-blur-lg border border-slate-700/50 shadow-2xl;
+  /* Apple style input */
+  .macos-input {
+    @apply w-full bg-apple-100 border-none text-apple-600 rounded-xl px-4 py-3.5 focus:bg-white focus:ring-4 focus:ring-apple-blue/15 outline-none transition-all duration-200 ease-apple font-medium placeholder-apple-400;
   }
 
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-500 to-accent-500;
+  /* Apple style primary button */
+  .macos-btn-primary {
+    @apply bg-apple-blue text-white font-medium rounded-full py-3.5 px-6 hover:bg-apple-blueHover transition-colors duration-200 ease-apple active:scale-[0.98] shadow-sm;
+  }
+
+  /* Apple style secondary button */
+  .macos-btn-secondary {
+    @apply bg-apple-100 text-apple-600 font-medium rounded-full py-3.5 px-6 hover:bg-apple-200 transition-colors duration-200 ease-apple active:scale-[0.98];
+  }
+
+  /* Frosted Glass (macOS / iOS style) */
+  .macos-glass {
+    @apply bg-white/70 backdrop-blur-xl border-b border-white/20;
+
+    @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+    }
   }
 }
 
-/* Custom Scrollbar */
+/* Minimalist scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -34,10 +66,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: rgba(0, 0, 0, 0.2);
 }
