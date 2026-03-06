@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Package, Bike } from 'lucide-react';
+import { LogOut, Bike } from 'lucide-react';
 import BuyerDashboard from './BuyerDashboard';
 import RunnerDashboard from './RunnerDashboard';
 
@@ -21,7 +21,7 @@ const Dashboard = () => {
                     <div className="flex justify-between h-16">
                         <div className="flex items-center space-x-8">
                             <span className="text-xl font-bold tracking-tight text-slate-900 flex items-center">
-                                <Package className="h-6 w-6 text-brand-600 mr-2" />
+                                <img src="/logo.png" alt="CampusRunner Logo" className="h-8 w-8 mr-2.5 object-contain" />
                                 CampusRunner
                             </span>
 
@@ -30,8 +30,8 @@ const Dashboard = () => {
                                 <button
                                     onClick={() => setView('buyer')}
                                     className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${view === 'buyer'
-                                            ? 'bg-white text-brand-600 shadow-sm ring-1 ring-slate-900/5'
-                                            : 'text-slate-600 hover:text-slate-900'
+                                        ? 'bg-white text-brand-600 shadow-sm ring-1 ring-slate-900/5'
+                                        : 'text-slate-600 hover:text-slate-900'
                                         }`}
                                 >
                                     Order (Buyer)
@@ -39,8 +39,8 @@ const Dashboard = () => {
                                 <button
                                     onClick={() => setView('runner')}
                                     className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center ${view === 'runner'
-                                            ? 'bg-white text-brand-600 shadow-sm ring-1 ring-slate-900/5'
-                                            : 'text-slate-600 hover:text-slate-900'
+                                        ? 'bg-white text-brand-600 shadow-sm ring-1 ring-slate-900/5'
+                                        : 'text-slate-600 hover:text-slate-900'
                                         }`}
                                 >
                                     <Bike className="w-4 h-4 mr-1.5" />
@@ -70,8 +70,8 @@ const Dashboard = () => {
                         <button
                             onClick={() => setView('buyer')}
                             className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${view === 'buyer'
-                                    ? 'bg-white text-brand-600 shadow-sm ring-1 ring-slate-900/5'
-                                    : 'text-slate-600 hover:text-slate-900'
+                                ? 'bg-white text-brand-600 shadow-sm ring-1 ring-slate-900/5'
+                                : 'text-slate-600 hover:text-slate-900'
                                 }`}
                         >
                             Order
@@ -79,8 +79,8 @@ const Dashboard = () => {
                         <button
                             onClick={() => setView('runner')}
                             className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all flex justify-center items-center ${view === 'runner'
-                                    ? 'bg-white text-brand-600 shadow-sm ring-1 ring-slate-900/5'
-                                    : 'text-slate-600 hover:text-slate-900'
+                                ? 'bg-white text-brand-600 shadow-sm ring-1 ring-slate-900/5'
+                                : 'text-slate-600 hover:text-slate-900'
                                 }`}
                         >
                             <Bike className="w-4 h-4 mr-1.5" />

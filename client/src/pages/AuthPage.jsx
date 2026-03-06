@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Package } from 'lucide-react';
+
 
 const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -40,10 +40,8 @@ const AuthPage = () => {
     return (
         <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md text-center animate-fade-in">
-                <div className="flex justify-center mb-4">
-                    <div className="bg-brand-600 p-2 rounded-lg text-white shadow-sm">
-                        <Package className="h-8 w-8" />
-                    </div>
+                <div className="flex justify-center mb-6">
+                    <img src="/logo.png" alt="CampusRunner Logo" className="h-20 w-20 object-contain drop-shadow-sm" />
                 </div>
                 <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
                     CampusRunner
