@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes Placeholder
-// app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
 // app.use('/api/orders', require('./routes/orderRoutes'));
 
 app.get('/', (req, res) => {
