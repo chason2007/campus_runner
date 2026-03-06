@@ -284,13 +284,31 @@ const BuyerDashboard = () => {
                                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 ml-1">What's the mission?</label>
                                     <input
                                         type="text"
-                                        placeholder="Order Details..."
+                                        placeholder={formData.category === 'Printout' ? "Document Name / Instructions" : "Order Details..."}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder-slate-600 focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/5 transition-all outline-none"
                                         value={formData.item}
                                         onChange={(e) => setFormData({ ...formData, item: e.target.value })}
                                         required
                                     />
                                 </div>
+
+                                {formData.category === 'Printout' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        className="p-6 bg-brand-accent/5 border border-brand-accent/20 rounded-2xl border-dashed"
+                                    >
+                                        <label className="block text-[10px] font-black text-brand-accent uppercase tracking-widest mb-3">Target PDF / Document</label>
+                                        <input
+                                            type="file"
+                                            accept=".pdf,.doc,.docx"
+                                            onChange={(e) => setFile(e.target.files[0])}
+                                            className="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-brand-accent file:text-brand-dark hover:file:bg-brand-accent/80 cursor-pointer"
+                                            required={!formData.item}
+                                        />
+                                        {file && <p className="mt-2 text-[10px] font-bold text-brand-accent">Locked: {file.name}</p>}
+                                    </motion.div>
+                                )}
                                 <div className="grid grid-cols-2 gap-4">
                                     <input
                                         type="text"
