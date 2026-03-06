@@ -31,14 +31,11 @@ export const AuthProvider = ({ children }) => {
         setLoading(false); // Token is now initialized
     }, [token]);
 
-    // Optionally, you might want a /me route on the backend to fetch current user on reload.
-    // We'll simulate restoring user from token if available, though for MVP we might just 
-    // clear it if user state is empty since we didn't build a /me route. 
-    // For now, if no user but we have token, we'll let components fetch user data or require re-login.
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
     const login = async (email, password) => {
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+            const res = await axios.post(`${API_URL}/api/auth/login`, { email, password });
             setToken(res.data.token);
             setUser(res.data.data.user);
             localStorage.setItem('user', JSON.stringify(res.data.data.user));
@@ -50,7 +47,7 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (name, email, password) => {
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/signup', { name, email, password });
+            const res = await axios.post(`${API_URL}/api/auth/signup`, { name, email, password });
             setToken(res.data.token);
             setUser(res.data.data.user);
             localStorage.setItem('user', JSON.stringify(res.data.data.user));
@@ -63,7 +60,7 @@ export const AuthProvider = ({ children }) => {
     const refreshUser = async () => {
         if (!token) return;
         try {
-            const res = await axios.get('http://localhost:5000/api/auth/me');
+            const res = await axios.get(`${API_URL}/api/auth/me`);
             setUser(res.data.data.user);
             localStorage.setItem('user', JSON.stringify(res.data.data.user));
         } catch (error) {

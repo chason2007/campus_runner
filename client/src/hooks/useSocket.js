@@ -9,7 +9,8 @@ export const useSocket = () => {
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
-        socket = io('http://localhost:5000');
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        socket = io(API_URL);
 
         socket.on('connect', () => {
             setIsConnected(true);

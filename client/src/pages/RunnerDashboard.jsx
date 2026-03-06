@@ -38,9 +38,11 @@ const RunnerDashboard = () => {
         fetchAvailableOrders();
     });
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
     const fetchAvailableOrders = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/orders/available');
+            const res = await axios.get(`${API_URL}/api/orders/available`);
             setAvailableOrders(res.data.data.orders);
         } catch (err) {
             console.error(err);
@@ -49,7 +51,7 @@ const RunnerDashboard = () => {
 
     const fetchMyDeliveries = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/orders/my-deliveries');
+            const res = await axios.get(`${API_URL}/api/orders/my-deliveries`);
             setMyDeliveries(res.data.data.orders);
         } catch (err) {
             console.error(err);
@@ -58,7 +60,7 @@ const RunnerDashboard = () => {
 
     const acceptOrder = async (orderId) => {
         try {
-            await axios.patch(`http://localhost:5000/api/orders/${orderId}/accept`);
+            await axios.patch(`${API_URL}/api/orders/${orderId}/accept`);
             fetchAvailableOrders();
             fetchMyDeliveries();
             refreshUser();
@@ -70,7 +72,7 @@ const RunnerDashboard = () => {
 
     const completeOrder = async (orderId) => {
         try {
-            await axios.patch(`http://localhost:5000/api/orders/${orderId}/complete`);
+            await axios.patch(`${API_URL}/api/orders/${orderId}/complete`);
             fetchMyDeliveries();
             refreshUser();
             toast.success('Credits Transferred. Mission Complete.');

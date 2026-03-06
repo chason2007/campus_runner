@@ -47,9 +47,11 @@ const BuyerDashboard = () => {
         refreshUser();
     });
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
     const fetchMyOrders = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/orders/my-requests');
+            const res = await axios.get(`${API_URL}/api/orders/my-requests`);
             setOrders(res.data.data.orders);
         } catch (err) {
             console.error(err);
@@ -71,7 +73,7 @@ const BuyerDashboard = () => {
             submitData.append('deliveryFee', formData.deliveryFee);
             if (file) submitData.append('file', file);
 
-            await axios.post('http://localhost:5000/api/orders', submitData);
+            await axios.post(`${API_URL}/api/orders`, submitData);
             toast.success('Logistics request beamed to network!');
             setShowModal(false);
             setFormData({ item: '', qty: 1, category: 'Food', pickupLocation: '', deliveryLocation: '', deliveryFee: '' });
