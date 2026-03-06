@@ -2,16 +2,12 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthPage from './pages/AuthPage';
-import BuyerDashboard from './pages/BuyerDashboard';
-import RunnerDashboard from './pages/RunnerDashboard';
+import Dashboard from './pages/Dashboard';
 
-const ProtectedRoute = ({ children, allowedRole }) => {
+const ProtectedRoute = ({ children }) => {
   const { user, token } = useAuth();
 
   if (!token) return <Navigate to="/" />;
-  // If we have token but react state is lost on refresh, usually we'd fetch user. 
-  // For MVP if user is missing but token exists, we'll let it pass or redirect to login.
-  if (user && allowedRole && user.role !== allowedRole) return <Navigate to="/" />;
 
   return children;
 };
@@ -21,20 +17,12 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<AuthPage />} />
+      <Route path="/" element={user ? <Navigate to="/app" /> : <AuthPage />} />
       <Route
-        path="/buyer"
+        path="/app"
         element={
-          <ProtectedRoute allowedRole="Buyer">
-            <BuyerDashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/runner"
-        element={
-          <ProtectedRoute allowedRole="Runner">
-            <RunnerDashboard />
+          <ProtectedRoute>
+            <Dashboard />
           </ProtectedRoute>
         }
       />

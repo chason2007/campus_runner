@@ -6,70 +6,50 @@
 
 @layer base {
   body {
-    @apply bg-apple-50 text-apple-600 font-sans antialiased selection:bg-apple-blue selection:text-white;
+    @apply font-sans antialiased text-slate-900 bg-slate-50;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-
-  /* Apply display font to headings */
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-display tracking-tight;
   }
 }
 
 @layer components {
 
-  /* Apple style card */
-  .macos-card {
-    @apply bg-white rounded-3xl shadow-apple border border-apple-100/50 transition-all duration-300 ease-apple hover:shadow-apple-hover;
+  /* Clean, professional container */
+  .layout-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
-  /* Apple style input */
-  .macos-input {
-    @apply w-full bg-apple-100 border-none text-apple-600 rounded-xl px-4 py-3.5 focus:bg-white focus:ring-4 focus:ring-apple-blue/15 outline-none transition-all duration-200 ease-apple font-medium placeholder-apple-400;
+  /* Professional SaaS Card */
+  .saas-card {
+    @apply bg-white rounded-xl shadow-sm border border-slate-200 transition-shadow duration-200;
   }
 
-  /* Apple style primary button */
-  .macos-btn-primary {
-    @apply bg-apple-blue text-white font-medium rounded-full py-3.5 px-6 hover:bg-apple-blueHover transition-colors duration-200 ease-apple active:scale-[0.98] shadow-sm;
+  .saas-card:hover {
+    @apply shadow-md;
   }
 
-  /* Apple style secondary button */
-  .macos-btn-secondary {
-    @apply bg-apple-100 text-apple-600 font-medium rounded-full py-3.5 px-6 hover:bg-apple-200 transition-colors duration-200 ease-apple active:scale-[0.98];
+  /* Solid, accessible inputs */
+  .saas-input {
+    @apply w-full bg-white border border-slate-300 text-slate-900 text-sm rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-colors placeholder-slate-400 shadow-sm;
   }
 
-  /* Frosted Glass (macOS / iOS style) */
-  .macos-glass {
-    @apply bg-white/70 backdrop-blur-xl border-b border-white/20;
-
-    @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      backdrop-filter: saturate(180%) blur(20px);
-    }
+  /* Primary action button */
+  .saas-button {
+    @apply inline-flex justify-center items-center bg-brand-600 text-white text-sm font-medium rounded-lg px-4 py-2.5 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-colors shadow-sm active:bg-brand-800 disabled:opacity-50;
   }
-}
 
-/* Minimalist scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+  /* Secondary action button */
+  .saas-button-secondary {
+    @apply inline-flex justify-center items-center bg-white text-slate-700 text-sm font-medium rounded-lg px-4 py-2.5 border border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors shadow-sm;
+  }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+  /* Clean table/list item */
+  .saas-list-item {
+    @apply p-5 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
+  /* Status badges */
+  .saas-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
 }

@@ -124,13 +124,27 @@ exports.completeOrder = async (req, res) => {
     }
 };
 
-// Get current orders for logged in user (Either buyer or runner)
-exports.getMyOrders = async (req, res) => {
+// Get orders requested by the user
+exports.getMyRequests = async (req, res) => {
     try {
-        const query = req.user.role === 'Buyer' ? { buyerId: req.user._id } : { runnerId: req.user._id };
-        const orders = await Order.find(query)
-            .populate('buyerId', 'name')
+        const orders = await Order.find({ buyerId: req.user._id })
             .populate('runnerId', 'name');
+
+        res.status(200).json({
+            status: 'success',
+            results: orders.length,
+            data: { orders }
+        });
+    } catch (err) {
+        res.status(400).json({ status: 'fail', message: err.message });
+    }
+};
+
+// Get orders being delivered by the user
+exports.getMyDeliveries = async (req, res) => {
+    try {
+        const orders = await Order.find({ runnerId: req.user._id })
+            .populate('buyerId', 'name');
 
         res.status(200).json({
             status: 'success',

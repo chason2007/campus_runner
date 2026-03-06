@@ -6,7 +6,10 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        const savedUser = localStorage.getItem('user');
+        return savedUser ? JSON.parse(savedUser) : null;
+    });
     const [token, setToken] = useState(localStorage.getItem('token') || null);
     const [loading, setLoading] = useState(true);
 
@@ -31,17 +34,19 @@ export const AuthProvider = ({ children }) => {
             const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
             setToken(res.data.token);
             setUser(res.data.data.user);
+            localStorage.setItem('user', JSON.stringify(res.data.data.user));
             return { success: true };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || 'Login failed' };
         }
     };
 
-    const signup = async (name, email, password, role) => {
+    const signup = async (name, email, password) => {
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/signup', { name, email, password, role });
+            const res = await axios.post('http://localhost:5000/api/auth/signup', { name, email, password });
             setToken(res.data.token);
             setUser(res.data.data.user);
+            localStorage.setItem('user', JSON.stringify(res.data.data.user));
             return { success: true };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || 'Signup failed' };
@@ -51,6 +56,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         setUser(null);
         setToken(null);
+        localStorage.removeItem('user');
     };
 
     return (

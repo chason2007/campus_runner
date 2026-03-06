@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../hooks/useSocket';
-import { PackageOpen, MapPin, DollarSign, CheckCircle, Navigation, LogOut, Wallet, Compass, Zap, Target } from 'lucide-react';
+import { RefreshCw, Send, Check } from 'lucide-react';
 
 const RunnerDashboard = () => {
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
     const { onEvent } = useSocket();
     const [availableOrders, setAvailableOrders] = useState([]);
     const [myDeliveries, setMyDeliveries] = useState([]);
@@ -30,7 +30,7 @@ const RunnerDashboard = () => {
 
     const fetchMyDeliveries = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/orders/my-orders');
+            const res = await axios.get('http://localhost:5000/api/orders/my-deliveries');
             setMyDeliveries(res.data.data.orders);
         } catch (err) {
             console.error(err);
@@ -58,184 +58,156 @@ const RunnerDashboard = () => {
         }
     };
 
-    const handleLogout = () => {
-        logout();
-        window.location.href = '/';
-    }
-
     return (
-        <div className="min-h-screen bg-apple-50 pb-12 font-sans selection:bg-apple-blue selection:text-white">
+        <div className="animate-fade-in w-full">
 
-            {/* Apple-style sticky nav */}
-            <nav className="macos-glass sticky top-0 z-50 w-full px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center mb-8">
-                <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 rounded-[8px] bg-apple-600 flex items-center justify-center shadow-sm">
-                        <Zap className="h-4 w-4 text-white" />
+            <div className="layout-container py-8">
+
+                {/* Metrics Header */}
+                <div className="mb-8 border-b border-slate-200 pb-5 sm:flex sm:items-center sm:justify-between">
+                    <h3 className="text-2xl font-semibold leading-6 text-slate-900">Queue Overview</h3>
+                    <div className="mt-3 sm:ml-4 sm:mt-0">
+                        <button onClick={fetchAvailableOrders} className="saas-button-secondary">
+                            <RefreshCw className="mr-2 h-4 w-4 text-slate-400" />
+                            Refresh Queue
+                        </button>
                     </div>
-                    <span className="font-display font-semibold text-lg text-apple-600 tracking-tight">CampusRunner<span className="text-apple-blue font-bold">.Pro</span></span>
-                </div>
-                <div className="flex items-center space-x-6">
-                    <div className="flex items-center bg-apple-100 px-3 py-1.5 rounded-full">
-                        <Wallet className="h-4 w-4 text-apple-500 mr-2" />
-                        <span className="font-semibold text-apple-600">${user?.balance?.toFixed(2) || '0.00'}</span>
-                    </div>
-                    <button onClick={handleLogout} className="text-apple-400 hover:text-apple-600 transition-colors">
-                        <LogOut className="h-5 w-5" />
-                    </button>
-                </div>
-            </nav>
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-                <div className="mb-10 text-center sm:text-left animate-slide-up">
-                    <h1 className="text-4xl md:text-5xl font-display font-semibold text-apple-600 tracking-tight mb-2">Fleet</h1>
-                    <p className="text-xl text-apple-400 font-medium">Accept campus deliveries and earn on your schedule.</p>
                 </div>
 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
 
                     {/* Available Orders Section */}
-                    <div className="flex flex-col h-full animate-slide-up" style={{ animationDelay: '0.1s' }}>
-                        <div className="flex items-center justify-between mb-4 px-2">
-                            <h2 className="text-2xl font-display font-semibold text-apple-600 tracking-tight">
-                                Available Requests
-                            </h2>
-                            <span className="bg-apple-blue/10 text-apple-blue px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-                                {availableOrders.length} New
-                            </span>
-                        </div>
+                    <div className="flex flex-col h-full">
+                        <div className="saas-card overflow-hidden h-full flex flex-col">
+                            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center flex-shrink-0">
+                                <h3 className="text-sm font-semibold text-slate-800">Available Requests</h3>
+                                <span className="saas-badge bg-blue-100 text-blue-800 border border-blue-200">
+                                    {availableOrders.length} Pending
+                                </span>
+                            </div>
 
-                        <div className="space-y-4">
-                            {availableOrders.length === 0 ? (
-                                <div className="macos-card p-12 text-center flex flex-col items-center justify-center min-h-[300px]">
-                                    <Compass className="h-12 w-12 text-apple-200 mb-4" />
-                                    <h3 className="text-xl font-display font-medium text-apple-500 tracking-tight mb-2">No active requests</h3>
-                                    <p className="text-apple-400 max-w-sm text-sm">We'll notify you when someone nearby places an order.</p>
-                                </div>
-                            ) : (
-                                availableOrders.map((order) => (
-                                    <div key={order._id} className="macos-card p-6 flex flex-col sm:flex-row sm:items-center justify-between">
-
-                                        <div className="flex-1 pr-4">
-                                            <div className="flex items-center space-x-3 mb-3">
-                                                <span className="bg-apple-100 text-apple-500 px-2 py-1 rounded text-[11px] font-bold uppercase tracking-wide">
-                                                    {order.category}
-                                                </span>
-                                                <span className="text-[13px] font-medium text-apple-400">
-                                                    From <span className="font-semibold text-apple-500">{order.buyerId.name}</span>
-                                                </span>
-                                            </div>
-
-                                            <h3 className="text-xl font-display font-semibold text-apple-600 mb-4 tracking-tight">
-                                                {order.items.map(i => `${i.qty}x ${i.name}`).join(', ')}
-                                            </h3>
-
-                                            <div className="space-y-2">
-                                                <div className="flex items-center text-[14px] font-medium text-apple-500">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-apple-blue mr-3" />
-                                                    {order.pickupLocation}
-                                                </div>
-                                                <div className="flex items-center text-[14px] font-medium text-apple-500">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-apple-orange mr-3" />
-                                                    {order.deliveryLocation}
-                                                </div>
-                                            </div>
+                            <ul role="list" className="divide-y divide-slate-100 bg-white flex-1 overflow-y-auto">
+                                {availableOrders.length === 0 ? (
+                                    <li className="p-12 text-center flex flex-col items-center justify-center">
+                                        <div className="h-12 w-12 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center mb-4">
+                                            <Send className="h-6 w-6 text-slate-400" />
                                         </div>
+                                        <h3 className="text-sm font-medium text-slate-900">Queue is empty</h3>
+                                        <p className="mt-1 text-sm text-slate-500">Waiting for new requests from the network.</p>
+                                    </li>
+                                ) : (
+                                    availableOrders.map((order) => (
+                                        <li key={order._id} className="saas-list-item flex flex-col sm:flex-row sm:items-center justify-between">
 
-                                        <div className="mt-6 sm:mt-0 flex sm:flex-col items-center justify-between sm:border-l border-apple-100 pt-4 sm:pt-0 sm:pl-6 sm:w-36 flex-shrink-0">
-                                            <div className="text-left sm:text-center w-full mb-0 sm:mb-4">
-                                                <p className="text-[12px] font-medium text-apple-400 mb-1">Earn</p>
-                                                <p className="text-3xl font-display font-semibold text-apple-600 tracking-tight">
+                                            <div className="flex-1">
+                                                <div className="flex items-center mb-1 outline-none">
+                                                    <p className="text-sm font-semibold text-slate-900">
+                                                        {order.items.map(i => `${i.qty}x ${i.name}`).join(', ')}
+                                                    </p>
+                                                    <span className="ml-3 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                                        {order.category}
+                                                    </span>
+                                                </div>
+                                                <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
+                                                    <div className="mt-2 flex items-center text-sm text-slate-500 sm:mt-0">
+                                                        <span className="font-medium text-slate-400 mr-1.5">Origin:</span>
+                                                        {order.pickupLocation}
+                                                    </div>
+                                                    <div className="mt-2 flex items-center text-sm text-slate-500 sm:mt-0">
+                                                        <span className="font-medium text-slate-400 mr-1.5">Target:</span>
+                                                        {order.deliveryLocation}
+                                                    </div>
+                                                </div>
+                                                <div className="mt-2 text-xs text-slate-400">
+                                                    Requester: {order.buyerId.name}
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-4 sm:mt-0 sm:ml-6 flex items-center sm:flex-col sm:items-end flex-shrink-0">
+                                                <div className="text-lg font-semibold text-slate-900 sm:mb-2 mr-4 sm:mr-0">
                                                     ${order.deliveryFee.toFixed(2)}
-                                                </p>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleAccept(order._id)}
+                                                    className="saas-button"
+                                                >
+                                                    Accept Task
+                                                </button>
                                             </div>
-                                            <button
-                                                onClick={() => handleAccept(order._id)}
-                                                className="macos-btn-primary w-auto sm:w-full text-sm font-semibold py-2.5 px-4"
-                                            >
-                                                Accept
-                                            </button>
-                                        </div>
 
-                                    </div>
-                                ))
-                            )}
+                                        </li>
+                                    ))
+                                )}
+                            </ul>
                         </div>
                     </div>
 
                     {/* Active Deliveries Section */}
-                    <div className="flex flex-col h-full animate-slide-up" style={{ animationDelay: '0.2s' }}>
-                        <div className="flex items-center justify-between mb-4 px-2 mt-8 xl:mt-0">
-                            <h2 className="text-2xl font-display font-semibold text-apple-600 tracking-tight">
-                                Active Deliveries
-                            </h2>
-                        </div>
+                    <div className="flex flex-col h-full">
+                        <div className="saas-card overflow-hidden h-full flex flex-col">
+                            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center flex-shrink-0">
+                                <h3 className="text-sm font-semibold text-slate-800">Active Workload</h3>
+                            </div>
 
-                        <div className="macos-card p-6 lg:p-8 min-h-[400px] flex flex-col">
-
-                            <div className="space-y-4 flex-1">
+                            <ul role="list" className="divide-y divide-slate-100 bg-white flex-1 overflow-y-auto">
                                 {myDeliveries.filter(o => o.status !== 'Delivered').length === 0 ? (
-                                    <div className="h-full flex flex-col items-center justify-center py-10">
-                                        <CheckCircle className="h-12 w-12 text-apple-200 mb-4" />
-                                        <h3 className="text-xl font-display font-medium text-apple-500 tracking-tight">All caught up</h3>
-                                    </div>
+                                    <li className="p-12 text-center text-slate-500 text-sm flex items-center justify-center flex-col">
+                                        <Check className="h-8 w-8 text-slate-300 mb-3" />
+                                        All tasks completed.
+                                    </li>
                                 ) : (
                                     myDeliveries.filter(o => o.status !== 'Delivered').map((order) => (
-                                        <div key={order._id} className="bg-apple-50 border border-apple-100 rounded-2xl p-6 relative">
+                                        <li key={order._id} className="p-5 flex flex-col justify-between border-l-4 border-l-brand-500 hover:bg-slate-50 transition-colors">
 
-                                            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                                                <div className="flex-1">
-                                                    <div className="flex items-center space-x-2 mb-2">
-                                                        <span className="relative flex h-2 w-2">
-                                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-apple-blue opacity-75"></span>
-                                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-apple-blue"></span>
-                                                        </span>
-                                                        <span className="text-[11px] font-bold tracking-wide text-apple-blue uppercase">In Progress</span>
-                                                    </div>
-
-                                                    <h3 className="text-lg font-display font-semibold text-apple-600 mb-1 tracking-tight">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="text-sm font-semibold text-slate-900 mb-1">
                                                         {order.items.map(i => `${i.qty}x ${i.name}`).join(', ')}
-                                                    </h3>
-                                                    <p className="text-apple-500 text-sm font-medium">
-                                                        Drop off at: <span className="font-semibold text-apple-600">{order.deliveryLocation}</span>
+                                                    </p>
+                                                    <p className="text-sm text-slate-600 flex items-center mb-1">
+                                                        <span className="font-medium text-slate-400 mr-2">Deliver to:</span>
+                                                        {order.deliveryLocation}
+                                                    </p>
+                                                    <p className="text-xs text-slate-400">
+                                                        Pickup from: {order.pickupLocation}
                                                     </p>
                                                 </div>
+                                                <div className="text-sm font-semibold text-brand-600">
+                                                    In Progress
+                                                </div>
+                                            </div>
 
+                                            <div className="mt-5">
                                                 <button
                                                     onClick={() => handleComplete(order._id)}
-                                                    className="w-full sm:w-auto bg-apple-green hover:bg-[#2fae4e] text-white px-5 py-2.5 rounded-full text-sm font-medium transition-colors duration-200 flex items-center justify-center active:scale-[0.98] shadow-sm"
+                                                    className="w-full saas-button bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500"
                                                 >
-                                                    <CheckCircle className="h-4 w-4 mr-1.5" />
-                                                    Delivered
+                                                    Mark as Delivered
                                                 </button>
                                             </div>
-                                        </div>
+                                        </li>
                                     ))
                                 )}
-                            </div>
 
-                            <div className="mt-8 pt-6 border-t border-apple-200/60">
-                                <h3 className="text-[12px] font-bold uppercase tracking-wide text-apple-400 mb-4">Completed Today</h3>
-                                <div className="space-y-2">
-                                    {myDeliveries.filter(o => o.status === 'Delivered').length === 0 ? (
-                                        <p className="text-sm text-apple-400 font-medium">No deliveries logged today.</p>
-                                    ) : (
-                                        myDeliveries.filter(o => o.status === 'Delivered').slice(0, 4).map(order => (
-                                            <div key={order._id} className="flex justify-between items-center text-sm py-2 px-3 rounded-lg hover:bg-apple-50 transition-colors">
-                                                <div className="flex items-center text-apple-500 font-medium truncate pr-4 text-[13px]">
-                                                    <span className="truncate">{order.items[0]?.name}</span>
-                                                    {order.items.length > 1 && <span className="text-apple-400 ml-1">+{order.items.length - 1}</span>}
+                                {/* Completed Logistics */}
+                                {myDeliveries.filter(o => o.status === 'Delivered').length > 0 && (
+                                    <li className="px-6 py-4 bg-slate-50 border-t border-slate-200">
+                                        <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Recently Delivered Logs</h4>
+                                        <div className="space-y-2">
+                                            {myDeliveries.filter(o => o.status === 'Delivered').slice(0, 4).map(order => (
+                                                <div key={order._id} className="flex justify-between items-center text-sm">
+                                                    <span className="text-slate-600 truncate mr-4">
+                                                        {order.items[0]?.name} {order.items.length > 1 && `+${order.items.length - 1}`}
+                                                    </span>
+                                                    <span className="font-medium text-slate-900">+${order.deliveryFee.toFixed(2)}</span>
                                                 </div>
-                                                <span className="font-semibold text-apple-600 flex-shrink-0 text-[13px]">+${order.deliveryFee.toFixed(2)}</span>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-                            </div>
-
+                                            ))}
+                                        </div>
+                                    </li>
+                                )}
+                            </ul>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

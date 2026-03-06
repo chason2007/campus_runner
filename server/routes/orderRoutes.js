@@ -7,12 +7,13 @@ const router = express.Router();
 // Protect all routes below
 router.use(authMiddleware.protect);
 
-router.post('/', authMiddleware.restrictTo('Buyer'), orderController.createOrder);
-router.get('/available', authMiddleware.restrictTo('Runner'), orderController.getAvailableOrders);
+router.post('/', orderController.createOrder);
+router.get('/available', orderController.getAvailableOrders);
 
-router.patch('/:id/accept', authMiddleware.restrictTo('Runner'), orderController.acceptOrder);
-router.patch('/:id/complete', authMiddleware.restrictTo('Runner'), orderController.completeOrder);
+router.patch('/:id/accept', orderController.acceptOrder);
+router.patch('/:id/complete', orderController.completeOrder);
 
-router.get('/my-orders', orderController.getMyOrders);
+router.get('/my-requests', orderController.getMyRequests);
+router.get('/my-deliveries', orderController.getMyDeliveries);
 
 module.exports = router;

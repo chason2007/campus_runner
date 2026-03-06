@@ -22,7 +22,7 @@ const createSendToken = (user, statusCode, res) => {
 
 exports.signup = async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password } = req.body;
 
         if (!email.endsWith('.edu')) {
             return res.status(400).json({ status: 'fail', message: 'Email must end in .edu' });
@@ -31,12 +31,12 @@ exports.signup = async (req, res) => {
         const newUser = await User.create({
             name,
             email,
-            password,
-            role
+            password
         });
 
         createSendToken(newUser, 201, res);
     } catch (err) {
+        console.error("SIGNUP ERROR:", err);
         res.status(400).json({ status: 'fail', message: err.message });
     }
 };
@@ -57,6 +57,7 @@ exports.login = async (req, res) => {
 
         createSendToken(user, 200, res);
     } catch (err) {
+        console.error("LOGIN ERROR:", err);
         res.status(400).json({ status: 'fail', message: err.message });
     }
 };
