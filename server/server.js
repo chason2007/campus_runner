@@ -16,7 +16,7 @@ app.use(express.json());
 
 // Routes Placeholder
 app.use('/api/auth', require('./routes/authRoutes'));
-// app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
 
 app.get('/', (req, res) => {
     res.send('CampusRunner API is running...');
