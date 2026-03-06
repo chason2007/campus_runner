@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,50 +6,74 @@
 
 @layer base {
   body {
-    @apply font-sans antialiased text-slate-900 bg-slate-50;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    @apply font-sans antialiased text-white bg-brand-dark;
+    background-image:
+      radial-gradient(at 0% 0%, rgba(46, 49, 146, 0.15) 0, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(209, 255, 26, 0.05) 0, transparent 50%);
+    min-height: 100vh;
   }
 }
 
 @layer components {
 
-  /* Clean, professional container */
-  .layout-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  /* Bento Grid Containers */
+  .bento-grid {
+    @apply grid grid-cols-1 md:grid-cols-4 lg:grid-cols-12 gap-6;
   }
 
-  /* Professional SaaS Card */
-  .saas-card {
-    @apply bg-white rounded-xl shadow-sm border border-slate-200 transition-shadow duration-200;
+  /* Glassmorphism Bento Card */
+  .bento-card {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-squircle p-6 transition-all duration-300 hover:border-brand-primary/50 hover:shadow-glass-glow;
   }
 
-  .saas-card:hover {
-    @apply shadow-md;
+  /* Squircle Buttons */
+  .btn-squircle {
+    @apply relative inline-flex items-center justify-center px-8 py-4 font-bold text-brand-dark bg-brand-accent rounded-squircle transition-all duration-200 active:scale-95 shadow-lime-glow hover:brightness-110;
   }
 
-  /* Solid, accessible inputs */
-  .saas-input {
-    @apply w-full bg-white border border-slate-300 text-slate-900 text-sm rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-colors placeholder-slate-400 shadow-sm;
+  .btn-squircle-indigo {
+    @apply bg-brand-primary text-white shadow-glass-glow hover:brightness-125;
   }
 
-  /* Primary action button */
-  .saas-button {
-    @apply inline-flex justify-center items-center bg-brand-600 text-white text-sm font-medium rounded-lg px-4 py-2.5 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-colors shadow-sm active:bg-brand-800 disabled:opacity-50;
+  /* Quick Action Tags */
+  .tag-pill {
+    @apply px-5 py-2.5 rounded-full bg-brand-muted border border-white/5 text-sm font-semibold transition-all hover:bg-white/10 hover:border-brand-accent/50 whitespace-nowrap;
   }
 
-  /* Secondary action button */
-  .saas-button-secondary {
-    @apply inline-flex justify-center items-center bg-white text-slate-700 text-sm font-medium rounded-lg px-4 py-2.5 border border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors shadow-sm;
+  /* Floating Bottom Nav */
+  .bottom-nav {
+    @apply fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md h-16 bg-brand-surface/80 backdrop-blur-xl border border-white/10 rounded-full z-50 flex items-center justify-between px-8 shadow-2xl md:hidden;
   }
 
-  /* Clean table/list item */
-  .saas-list-item {
-    @apply p-5 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors;
+  .nav-item {
+    @apply flex flex-col items-center justify-center text-slate-400 transition-colors;
   }
 
-  /* Status badges */
-  .saas-badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  .nav-item.active {
+    @apply text-brand-accent;
   }
+
+  /* Glowing Progress Bar */
+  .progress-bar-container {
+    @apply w-full h-1.5 bg-white/10 rounded-full overflow-hidden;
+  }
+
+  .progress-bar-fill {
+    @apply h-full bg-brand-accent shadow-lime-glow transition-all duration-500;
+  }
+
+  /* Status Pulses */
+  .pulse-dot {
+    @apply w-2.5 h-2.5 rounded-full bg-brand-accent animate-pulse-glow shadow-lime-glow;
+  }
+}
+
+/* Custom Scrollbar for Tags Scroll */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

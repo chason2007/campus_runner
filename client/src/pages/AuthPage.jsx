@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-
+import { motion, AnimatePresence } from 'framer-motion';
+import { Shield, Mail, Lock, User as UserIcon, ArrowRight, Zap } from 'lucide-react';
 
 const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -17,7 +18,7 @@ const AuthPage = () => {
         setLoading(true);
 
         if (!isLogin && !formData.email.endsWith('.edu')) {
-            setError('A valid .edu campus email is required.');
+            setError('A valid campus .edu email is required.');
             setLoading(false);
             return;
         }
@@ -38,122 +39,128 @@ const AuthPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-            <div className="sm:mx-auto sm:w-full sm:max-w-md text-center animate-fade-in">
-                <div className="flex justify-center mb-6">
-                    <img src="/logo.png" alt="CampusRunner Logo" className="h-20 w-20 object-contain drop-shadow-sm" />
-                </div>
-                <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
-                    CampusRunner
-                </h2>
-                <p className="mt-2 text-sm text-slate-600">
-                    {isLogin ? 'Sign in to access your platform.' : 'Create your workspace account.'}
-                </p>
+        <div className="min-h-screen bg-brand-dark text-white flex items-center justify-center p-6 relative overflow-hidden font-sans">
+            {/* Background Atmosphere */}
+            <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20">
+                <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-brand-primary rounded-full blur-[150px] animate-pulse-glow" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-accent rounded-full blur-[120px] opacity-30" />
             </div>
 
-            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                <div className="saas-card py-8 px-4 sm:px-10">
+            <div className="max-w-md w-full relative z-10">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center mb-12"
+                >
+                    <div className="inline-flex items-center justify-center p-4 bg-brand-surface border border-white/10 rounded-squircle mb-6 shadow-squircle">
+                        <img src="/logo.png" alt="Logo" className="h-12 w-12 object-contain" />
+                    </div>
+                    <h1 className="text-5xl font-black tracking-tighter uppercase mb-3">
+                        Campus<span className="text-brand-accent italic">Runner</span>
+                    </h1>
+                    <p className="text-slate-400 font-bold tracking-widest text-[10px] uppercase">
+                        {isLogin ? 'Mission Authorization Required' : 'Join the Logistics Network'}
+                    </p>
+                </motion.div>
 
-                    {error && (
-                        <div className="rounded-md bg-red-50 p-4 mb-6 border border-red-100">
-                            <div className="flex">
-                                <div className="flex-shrink-0">
-                                    <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
-                                    </svg>
-                                </div>
-                                <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-red-800">Authentication Error</h3>
-                                    <div className="mt-2 text-sm text-red-700">
-                                        <p>{error}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bento-card p-10 bg-brand-surface/40 backdrop-blur-2xl border border-white/10"
+                >
+                    <AnimatePresence mode="wait">
+                        {error && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4 mb-8 overflow-hidden"
+                            >
+                                <p className="text-rose-400 text-xs font-black uppercase text-center">{error}</p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         {!isLogin && (
-                            <div className="space-y-6">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Identity</label>
+                                <div className="relative group">
+                                    <UserIcon className="absolute left-4 top-4 h-5 w-5 text-slate-600 group-focus-within:text-brand-accent transition-colors" />
                                     <input
                                         type="text"
                                         required
-                                        className="saas-input"
+                                        placeholder="Agent Name"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-12 py-4 text-white placeholder-slate-600 outline-none focus:border-brand-accent transition-all"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     />
                                 </div>
-
                             </div>
                         )}
 
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Campus Email address</label>
-                            <input
-                                type="email"
-                                required
-                                className="saas-input"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
-                            <input
-                                type="password"
-                                required
-                                className="saas-input"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600" />
-                                <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-900">Remember me</label>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Campus Terminal</label>
+                            <div className="relative group">
+                                <Mail className="absolute left-4 top-4 h-5 w-5 text-slate-600 group-focus-within:text-brand-accent transition-colors" />
+                                <input
+                                    type="email"
+                                    required
+                                    placeholder="agent@university.edu"
+                                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-12 py-4 text-white placeholder-slate-600 outline-none focus:border-brand-accent transition-all"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                />
                             </div>
-                            {isLogin && (
-                                <div className="text-sm">
-                                    <a href="#" className="font-medium text-brand-600 hover:text-brand-500">Forgot your password?</a>
-                                </div>
-                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Encryption Key</label>
+                            <div className="relative group">
+                                <Lock className="absolute left-4 top-4 h-5 w-5 text-slate-600 group-focus-within:text-brand-accent transition-colors" />
+                                <input
+                                    type="password"
+                                    required
+                                    placeholder="••••••••"
+                                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-12 py-4 text-white placeholder-slate-600 outline-none focus:border-brand-accent transition-all"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                />
+                            </div>
                         </div>
 
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full saas-button"
+                            className="w-full btn-squircle group mt-4 overflow-hidden"
                         >
-                            {loading ? 'Processing...' : (isLogin ? 'Sign in' : 'Create account')}
+                            <span className="relative z-10 flex items-center justify-center uppercase tracking-widest">
+                                {loading ? 'Authorizing...' : (isLogin ? 'Initiate Link' : 'Register Profile')}
+                                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </span>
+                            <motion.div
+                                className="absolute inset-0 bg-white/20"
+                                initial={{ x: '-100%' }}
+                                whileHover={{ x: '100%' }}
+                                transition={{ duration: 0.5 }}
+                            />
                         </button>
                     </form>
 
-                    <div className="mt-6">
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-slate-300" />
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="bg-white px-2 text-slate-500">
-                                    {isLogin ? "Don't have an account?" : "Already have an account?"}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="mt-6">
-                            <button
-                                onClick={() => { setIsLogin(!isLogin); setError(''); }}
-                                className="w-full saas-button-secondary"
-                            >
-                                {isLogin ? 'Create a new account' : 'Sign in to existing account'}
-                            </button>
-                        </div>
+                    <div className="mt-8 pt-8 border-t border-white/5">
+                        <button
+                            onClick={() => { setIsLogin(!isLogin); setError(''); }}
+                            className="w-full py-4 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-brand-accent transition-colors flex items-center justify-center"
+                        >
+                            <Zap className="w-4 h-4 mr-2" />
+                            {isLogin ? 'Switch to Network Registration' : 'Return to Secure Login'}
+                        </button>
                     </div>
-                </div>
+                </motion.div>
+
+                <footer className="mt-12 text-center">
+                    <p className="text-[10px] font-black uppercase text-slate-600 tracking-[0.4em]">CampusRunner Logistics OS v2.0</p>
+                </footer>
             </div>
         </div>
     );

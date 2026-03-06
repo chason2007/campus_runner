@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
+import { Toaster } from 'react-hot-toast';
 
 const ProtectedRoute = ({ children }) => {
   const { user, token } = useAuth();
@@ -36,7 +37,8 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
+        <Toaster position="top-right" reverseOrder={false} />
+        <div className="min-h-screen">
           <AppRoutes />
         </div>
       </Router>

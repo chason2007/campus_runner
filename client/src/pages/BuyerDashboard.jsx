@@ -2,17 +2,41 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../hooks/useSocket';
-import { FileText, ShoppingBag, Send } from 'lucide-react';
+import {
+    Package,
+    ShoppingCart,
+    Plus,
+    Search,
+    MapPin,
+    Bell,
+    ArrowRight,
+    CheckCircle2,
+    Circle,
+    Timer,
+    X
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const BuyerDashboard = () => {
     const { user, refreshUser } = useAuth();
     const { onEvent } = useSocket();
     const [orders, setOrders] = useState([]);
+    const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
         item: '', qty: 1, category: 'Food', pickupLocation: '', deliveryLocation: '', deliveryFee: ''
     });
     const [file, setFile] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const quickTags = [
+        { icon: '☕', label: 'Coffee' },
+        { icon: '📝', label: 'Printouts', category: 'Printout' },
+        { icon: '🍟', label: 'Snacks' },
+        { icon: '📚', label: 'Stationery' },
+        { icon: '🍔', label: 'Burger' },
+        { icon: '💊', label: 'Pharmacy', category: 'Pharmacy' }
+    ];
 
     useEffect(() => {
         fetchMyOrders();
@@ -32,209 +56,281 @@ const BuyerDashboard = () => {
         }
     };
 
-    const handleSubmit = async (e) => {
+    const handleCreateOrder = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            if (formData.category === 'Printout' && !file) {
-                alert('Please attach a file for printouts.');
-                setIsSubmitting(false);
-                return;
-            }
-
             const submitData = new FormData();
             submitData.append('items', JSON.stringify([{
-                name: formData.category === 'Printout' ? `Printout: ${file.name}` : formData.item,
+                name: formData.category === 'Printout' ? `Printout: ${file?.name || 'Doc'}` : formData.item,
                 qty: formData.qty
             }]));
             submitData.append('category', formData.category);
             submitData.append('pickupLocation', formData.pickupLocation);
             submitData.append('deliveryLocation', formData.deliveryLocation);
             submitData.append('deliveryFee', formData.deliveryFee);
+            if (file) submitData.append('file', file);
 
-            if (file) {
-                submitData.append('file', file);
-            }
-
-            await axios.post('http://localhost:5000/api/orders', submitData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+            await axios.post('http://localhost:5000/api/orders', submitData);
+            toast.success('Logistics request beamed to network!');
+            setShowModal(false);
             setFormData({ item: '', qty: 1, category: 'Food', pickupLocation: '', deliveryLocation: '', deliveryFee: '' });
             setFile(null);
             fetchMyOrders();
             refreshUser();
         } catch (err) {
-            console.error(err);
-            alert('Error creating order');
+            toast.error('Transmission failed. Try again.');
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const getStatusBadge = (status) => {
-        switch (status) {
-            case 'Pending': return 'bg-amber-100 text-amber-800 border-amber-200';
-            case 'Accepted': return 'bg-blue-100 text-blue-800 border-blue-200';
-            case 'Delivered': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-            default: return 'bg-slate-100 text-slate-800 border-slate-200';
-        }
+    const getProgress = (status) => {
+        if (status === 'Pending') return 33;
+        if (status === 'Accepted') return 66;
+        if (status === 'Delivered') return 100;
+        return 0;
     };
 
     return (
-        <div className="animate-fade-in w-full">
-
-            <div className="layout-container py-8">
-                <div className="flex flex-col md:flex-row gap-8">
-
-                    {/* Left Column: Create Order Panel */}
-                    <div className="w-full md:w-1/3">
-                        <div className="saas-card">
-                            <div className="px-6 py-5 border-b border-slate-200">
-                                <h3 className="text-base font-semibold text-slate-900 flex items-center">
-                                    <ShoppingBag className="h-5 w-5 text-brand-600 mr-2" />
-                                    New Internal Request
-                                </h3>
-                            </div>
-
-                            <div className="p-6">
-                                <form onSubmit={handleSubmit} className="space-y-5">
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Item Category</label>
-                                        <select
-                                            className="saas-input"
-                                            value={formData.category}
-                                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                        >
-                                            <option value="Food">Food / Beverage</option>
-                                            <option value="Stationery">Office & Stationery</option>
-                                            <option value="Printout">Document Printout</option>
-                                        </select>
-                                    </div>
-
-                                    {formData.category === 'Printout' ? (
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Document Upload</label>
-                                            <div className="mt-1 flex justify-center rounded-lg border border-dashed border-slate-300 px-6 py-8 hover:bg-slate-50 transition-colors">
-                                                <div className="text-center">
-                                                    <FileText className="mx-auto h-8 w-8 text-slate-300" />
-                                                    <div className="mt-4 flex text-sm leading-6 text-slate-600 justify-center">
-                                                        <label htmlFor="file-upload" className="relative cursor-pointer rounded-md bg-white font-semibold text-brand-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-brand-600 focus-within:ring-offset-2 hover:text-brand-500">
-                                                            <span>Upload a file</span>
-                                                            <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={(e) => setFile(e.target.files[0])} />
-                                                        </label>
-                                                    </div>
-                                                    <p className="text-xs text-slate-500 mt-2">{file ? file.name : 'PDF, DOCX up to 10MB'}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="grid grid-cols-3 gap-4">
-                                            <div className="col-span-2">
-                                                <label className="block text-sm font-medium text-slate-700 mb-1">Item Name</label>
-                                                <input type="text" required className="saas-input" placeholder="Macchiato" value={formData.item} onChange={(e) => setFormData({ ...formData, item: e.target.value })} />
-                                            </div>
-                                            <div className="col-span-1">
-                                                <label className="block text-sm font-medium text-slate-700 mb-1">Qty</label>
-                                                <input type="number" min="1" required className="saas-input" value={formData.qty} onChange={(e) => setFormData({ ...formData, qty: e.target.value })} />
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Pickup Location</label>
-                                        <input type="text" required className="saas-input" placeholder="Building Alpha" value={formData.pickupLocation} onChange={(e) => setFormData({ ...formData, pickupLocation: e.target.value })} />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Delivery Destination</label>
-                                        <input type="text" required className="saas-input" placeholder="Room 402" value={formData.deliveryLocation} onChange={(e) => setFormData({ ...formData, deliveryLocation: e.target.value })} />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Runner Compensation (USD)</label>
-                                        <div className="relative mt-1 rounded-md shadow-sm">
-                                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                                <span className="text-slate-500 sm:text-sm">$</span>
-                                            </div>
-                                            <input type="number" step="0.5" min="1" required className="saas-input pl-7" placeholder="0.00" value={formData.deliveryFee} onChange={(e) => setFormData({ ...formData, deliveryFee: e.target.value })} />
-                                        </div>
-                                    </div>
-
-                                    <div className="pt-2">
-                                        <button type="submit" disabled={isSubmitting} className="w-full saas-button">
-                                            {isSubmitting ? 'Processing...' : 'Submit Request'}
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+        <div className="max-w-7xl mx-auto px-6 py-10 relative">
+            {/* 1. Header Area - Bento Style */}
+            <div className="mb-10 bento-grid">
+                <div className="lg:col-span-8 bento-card flex flex-col justify-center">
+                    <motion.h1
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="text-4xl md:text-5xl font-black tracking-tighter"
+                    >
+                        Hey <span className="text-brand-accent">{user?.name.split(' ')[0]}</span>,<br />
+                        what do you need?
+                    </motion.h1>
+                </div>
+                <div className="lg:col-span-4 bento-card bg-brand-primary/20 border-brand-primary/30 flex items-center justify-between group cursor-pointer overflow-hidden relative">
+                    <div className="relative z-10">
+                        <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-accent mb-2">Network Status</p>
+                        <h3 className="text-2xl font-bold">12 Runners <span className="text-brand-accent">Live</span></h3>
                     </div>
+                    <div className="pulse-dot absolute top-6 right-6" />
+                </div>
+            </div>
 
-                    {/* Right Column: Order Ledger */}
-                    <div className="w-full md:w-2/3">
-                        <div className="saas-card overflow-hidden">
-                            <div className="px-6 py-5 border-b border-slate-200 bg-white sm:flex sm:items-center sm:justify-between">
-                                <h3 className="text-base font-semibold leading-6 text-slate-900">Request Ledger</h3>
-                                <div className="mt-3 sm:ml-4 sm:mt-0">
-                                    <span className="inline-flex items-center rounded-md bg-slate-50 px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">
-                                        {orders.length} Records
-                                    </span>
+            {/* 2. Quick Action Tags - Horizontal Scroll */}
+            <div className="mb-12">
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-6 flex items-center">
+                    <Timer className="w-3.5 h-3.5 mr-2" />
+                    Speed Logistics Tags
+                </h3>
+                <div className="flex space-x-4 overflow-x-auto pb-4 hide-scrollbar">
+                    {quickTags.map((tag, idx) => (
+                        <motion.button
+                            key={tag.label}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => {
+                                setFormData({ ...formData, item: tag.label, category: tag.category || 'Food' });
+                                setShowModal(true);
+                            }}
+                            className="tag-pill"
+                        >
+                            <span className="mr-2">{tag.icon}</span>
+                            {tag.label}
+                        </motion.button>
+                    ))}
+                </div>
+            </div>
+
+            {/* 3. Active Orders Section - Bento Grid Layout */}
+            <div className="bento-grid">
+                <div className="lg:col-span-7 space-y-6">
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 flex items-center mb-2">
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        My Active Pings
+                    </h3>
+
+                    <AnimatePresence mode="popLayout">
+                        {orders.length === 0 ? (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="bento-card border-dashed py-20 flex flex-col items-center justify-center text-slate-500"
+                            >
+                                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                                    <Circle className="w-8 h-8 opacity-20" />
                                 </div>
-                            </div>
-
-                            <ul role="list" className="divide-y divide-slate-100 bg-white">
-                                {orders.length === 0 ? (
-                                    <li className="p-10 text-center text-slate-500 text-sm">
-                                        No active requests found in the ledger.
-                                    </li>
-                                ) : (
-                                    orders.map((order) => (
-                                        <li key={order._id} className="saas-list-item flex items-center justify-between">
-
-                                            <div className="min-w-0 flex-1">
-                                                <div className="flex items-center mb-1">
-                                                    <p className="text-sm font-semibold text-slate-900 truncate">
-                                                        {order.items.map(i => `${i.qty}x ${i.name}`).join(', ')}
-                                                    </p>
-                                                    <span className={`ml-3 saas-badge border ${getStatusBadge(order.status)}`}>
-                                                        {order.status}
-                                                    </span>
-                                                    <span className="ml-2 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200 uppercase">
-                                                        {order.category}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center text-sm text-slate-500 gap-4 mt-1">
-                                                    <p className="flex items-center">
-                                                        <span className="text-slate-400 mr-1.5 font-medium">From:</span> {order.pickupLocation}
-                                                    </p>
-                                                    <p className="flex items-center">
-                                                        <span className="text-slate-400 mr-1.5 font-medium">To:</span> {order.deliveryLocation}
-                                                    </p>
-                                                </div>
+                                <p className="font-bold italic">Everything is quiet on campus</p>
+                            </motion.div>
+                        ) : (
+                            orders.map((order) => (
+                                <motion.div
+                                    key={order._id}
+                                    layout
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    className="bento-card group"
+                                >
+                                    <div className="flex justify-between items-start mb-6">
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20">
+                                                    {order.category}
+                                                </span>
                                                 {order.runnerId && (
-                                                    <div className="mt-2 text-xs text-slate-500">
-                                                        Assigned Runner: <span className="font-medium text-slate-700">{order.runnerId.name}</span>
-                                                    </div>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 bg-white/5 text-white/60 rounded flex items-center">
+                                                        <CheckCircle2 className="w-2.5 h-2.5 mr-1.5 text-brand-accent" />
+                                                        {order.runnerId.name}
+                                                    </span>
                                                 )}
                                             </div>
+                                            <h4 className="text-xl font-bold truncate">
+                                                {order.items.map(i => `${i.qty}x ${i.name}`).join(', ')}
+                                            </h4>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-2xl font-black">${order.deliveryFee.toFixed(2)}</p>
+                                            <p className="text-[9px] font-black text-slate-500 uppercase">Tip</p>
+                                        </div>
+                                    </div>
 
-                                            <div className="flex flex-col items-end flex-shrink-0 ml-6">
-                                                <p className="text-sm text-slate-500 mb-1">Fee</p>
-                                                <p className="text-lg font-semibold text-slate-900">
-                                                    ${order.deliveryFee.toFixed(2)}
-                                                </p>
-                                            </div>
+                                    {/* Progress Tracker */}
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between text-[10px] font-black uppercase tracking-tighter text-slate-400">
+                                            <span className={order.status === 'Pending' ? 'text-brand-accent' : ''}>Created</span>
+                                            <span className={order.status === 'Accepted' ? 'text-brand-accent' : ''}>Transit</span>
+                                            <span className={order.status === 'Delivered' ? 'text-brand-accent' : ''}>Ghosted</span>
+                                        </div>
+                                        <div className="progress-bar-container">
+                                            <motion.div
+                                                className="progress-bar-fill"
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${getProgress(order.status)}%` }}
+                                            />
+                                        </div>
+                                    </div>
 
-                                        </li>
-                                    ))
-                                )}
-                            </ul>
+                                    <div className="mt-6 flex items-center justify-between text-xs text-slate-400 font-bold italic">
+                                        <div className="flex items-center">
+                                            <MapPin className="w-3.5 h-3.5 mr-1 text-brand-accent" />
+                                            {order.deliveryLocation}
+                                        </div>
+                                        <span>Live Tracking →</span>
+                                    </div>
+                                </motion.div>
+                            ))
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Right Column Bento: Network Feed Stats or Promotions */}
+                <div className="lg:col-span-5 space-y-6">
+                    <div className="bento-card bg-brand-accent/5 border-brand-accent/10 group cursor-pointer overflow-hidden">
+                        <div className="aspect-video mb-6 bg-brand-dark/40 rounded-2xl flex items-center justify-center p-8 relative">
+                            <motion.div
+                                animate={{ rotate: [0, 10, -10, 0] }}
+                                transition={{ repeat: Infinity, duration: 4 }}
+                            >
+                                <ShoppingCart className="w-16 h-16 text-brand-accent opacity-50" />
+                            </motion.div>
                         </div>
+                        <h3 className="text-xl font-bold mb-2">Campus Analytics</h3>
+                        <p className="text-sm text-slate-400 mb-6">Your logistics speed is 15% faster than average today.</p>
+                        <button className="text-brand-accent text-xs font-black uppercase tracking-widest flex items-center">
+                            View Report <ArrowRight className="ml-2 w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                        </button>
                     </div>
                 </div>
             </div>
+
+            {/* 4. FAB - Create New Request */}
+            <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setShowModal(true)}
+                className="fixed bottom-32 md:bottom-12 right-8 w-16 h-16 bg-brand-accent rounded-full flex items-center justify-center shadow-lime-glow z-40"
+            >
+                <Plus className="w-8 h-8 text-brand-dark stroke-[3px]" />
+            </motion.button>
+
+            {/* Request Modal */}
+            <AnimatePresence>
+                {showModal && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center p-6">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowModal(false)}
+                            className="absolute inset-0 bg-brand-dark/80 backdrop-blur-md"
+                        />
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="bg-brand-surface w-full max-w-lg rounded-squircle p-10 border border-white/10 relative z-10"
+                        >
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/5 text-slate-500"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+
+                            <h2 className="text-3xl font-black mb-8 tracking-tighter uppercase">New Request</h2>
+
+                            <form onSubmit={handleCreateOrder} className="space-y-6">
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 ml-1">What's the mission?</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Order Details..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder-slate-600 focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/5 transition-all outline-none"
+                                        value={formData.item}
+                                        onChange={(e) => setFormData({ ...formData, item: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <input
+                                        type="text"
+                                        placeholder="Pickup Hub"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-brand-accent"
+                                        value={formData.pickupLocation}
+                                        onChange={(e) => setFormData({ ...formData, pickupLocation: e.target.value })}
+                                        required
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Drop Target"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-brand-accent"
+                                        value={formData.deliveryLocation}
+                                        onChange={(e) => setFormData({ ...formData, deliveryLocation: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 ml-1">Bounty Tip ($)</label>
+                                    <input
+                                        type="number"
+                                        placeholder="5.00"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-brand-accent"
+                                        value={formData.deliveryFee}
+                                        onChange={(e) => setFormData({ ...formData, deliveryFee: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="w-full btn-squircle"
+                                >
+                                    {isSubmitting ? 'Beaming...' : 'Deploy Request'}
+                                </button>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
