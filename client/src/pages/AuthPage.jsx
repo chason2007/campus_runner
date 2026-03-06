@@ -59,7 +59,7 @@ const AuthPage = () => {
                         Campus<span className="text-brand-accent italic">Runner</span>
                     </h1>
                     <p className="text-slate-400 font-bold tracking-widest text-[10px] uppercase">
-                        {isLogin ? 'Mission Authorization Required' : 'Join the Logistics Network'}
+                        {isLogin ? 'Mission Authorization Required' : ''}
                     </p>
                 </motion.div>
 
@@ -159,7 +159,6 @@ const AuthPage = () => {
                 </motion.div>
 
                 <footer className="mt-12 text-center">
-                    <p className="text-[10px] font-black uppercase text-slate-600 tracking-[0.4em]">CampusRunner Logistics OS v2.0</p>
                 </footer>
             </div>
         </div>
