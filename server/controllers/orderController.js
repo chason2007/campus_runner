@@ -9,6 +9,11 @@ exports.createOrder = async (req, res) => {
             buyerId: req.user._id // from protect middleware
         });
 
+        const io = req.app.get('io');
+        if (io) {
+            io.emit('new_order', newOrder); // Alert all runners
+        }
+
         res.status(201).json({
             status: 'success',
             data: { order: newOrder }
@@ -50,6 +55,14 @@ exports.acceptOrder = async (req, res) => {
         order.status = 'Accepted';
         order.runnerId = req.user._id;
         await order.save();
+
+        const io = req.app.get('io');
+        if (io) {
+            io.to(order.buyerId.toString()).emit('order_update', {
+                message: 'Your order was accepted by a runner!',
+                order
+            });
+        }
 
         res.status(200).json({
             status: 'success',
@@ -93,6 +106,14 @@ exports.completeOrder = async (req, res) => {
 
         await buyer.save({ validateBeforeSave: false });
         await runner.save({ validateBeforeSave: false });
+
+        const io = req.app.get('io');
+        if (io) {
+            io.to(order.buyerId.toString()).emit('order_update', {
+                message: 'Your order has been delivered!',
+                order
+            });
+        }
 
         res.status(200).json({
             status: 'success',

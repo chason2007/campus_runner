@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useSocket } from '../hooks/useSocket';
 import { PackageOpen, MapPin, DollarSign, CheckCircle, Navigation, LogOut } from 'lucide-react';
 
 const RunnerDashboard = () => {
     const { user, logout } = useAuth();
+    const { onEvent } = useSocket();
     const [availableOrders, setAvailableOrders] = useState([]);
     const [myDeliveries, setMyDeliveries] = useState([]);
 
@@ -12,6 +14,12 @@ const RunnerDashboard = () => {
         fetchAvailableOrders();
         fetchMyDeliveries();
     }, []);
+
+    // Listen for socket events
+    onEvent('new_order', (newOrder) => {
+        alert(`New Order Available: ${newOrder.category} for $${newOrder.deliveryFee}`);
+        fetchAvailableOrders();
+    });
 
     const fetchAvailableOrders = async () => {
         try {

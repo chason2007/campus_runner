@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useSocket } from '../hooks/useSocket';
 import { PlusCircle, Package, MapPin, DollarSign, UploadCloud, LogOut } from 'lucide-react';
 
 const BuyerDashboard = () => {
     const { user, logout } = useAuth();
+    const { onEvent } = useSocket();
     const [orders, setOrders] = useState([]);
     const [formData, setFormData] = useState({
         item: '', qty: 1, category: 'Food', pickupLocation: '', deliveryLocation: '', deliveryFee: ''
@@ -14,6 +16,12 @@ const BuyerDashboard = () => {
     useEffect(() => {
         fetchMyOrders();
     }, []);
+
+    // Listen for socket events
+    onEvent('order_update', (data) => {
+        alert(`Real-Time Update: ${data.message}`);
+        fetchMyOrders(); // Refresh orders to show new status
+    });
 
     const fetchMyOrders = async () => {
         try {
