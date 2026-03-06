@@ -5,7 +5,7 @@ import { useSocket } from '../hooks/useSocket';
 import { FileText, ShoppingBag, Send } from 'lucide-react';
 
 const BuyerDashboard = () => {
-    const { user } = useAuth();
+    const { user, refreshUser } = useAuth();
     const { onEvent } = useSocket();
     const [orders, setOrders] = useState([]);
     const [formData, setFormData] = useState({
@@ -20,6 +20,7 @@ const BuyerDashboard = () => {
 
     onEvent('order_update', () => {
         fetchMyOrders();
+        refreshUser();
     });
 
     const fetchMyOrders = async () => {
@@ -41,16 +42,29 @@ const BuyerDashboard = () => {
                 return;
             }
 
-            await axios.post('http://localhost:5000/api/orders', {
-                items: [{ name: formData.item, qty: formData.qty }],
-                category: formData.category,
-                pickupLocation: formData.pickupLocation,
-                deliveryLocation: formData.deliveryLocation,
-                deliveryFee: Number(formData.deliveryFee)
+            const submitData = new FormData();
+            submitData.append('items', JSON.stringify([{
+                name: formData.category === 'Printout' ? `Printout: ${file.name}` : formData.item,
+                qty: formData.qty
+            }]));
+            submitData.append('category', formData.category);
+            submitData.append('pickupLocation', formData.pickupLocation);
+            submitData.append('deliveryLocation', formData.deliveryLocation);
+            submitData.append('deliveryFee', formData.deliveryFee);
+
+            if (file) {
+                submitData.append('file', file);
+            }
+
+            await axios.post('http://localhost:5000/api/orders', submitData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
             setFormData({ item: '', qty: 1, category: 'Food', pickupLocation: '', deliveryLocation: '', deliveryFee: '' });
             setFile(null);
             fetchMyOrders();
+            refreshUser();
         } catch (err) {
             console.error(err);
             alert('Error creating order');

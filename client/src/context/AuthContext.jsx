@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Set initial axios default header if token exists in localStorage
+const initialToken = localStorage.getItem('token');
+if (initialToken) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${initialToken}`;
+}
+
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
@@ -22,6 +28,7 @@ export const AuthProvider = ({ children }) => {
             delete axios.defaults.headers.common['Authorization'];
             localStorage.removeItem('token');
         }
+        setLoading(false); // Token is now initialized
     }, [token]);
 
     // Optionally, you might want a /me route on the backend to fetch current user on reload.
@@ -53,6 +60,17 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const refreshUser = async () => {
+        if (!token) return;
+        try {
+            const res = await axios.get('http://localhost:5000/api/auth/me');
+            setUser(res.data.data.user);
+            localStorage.setItem('user', JSON.stringify(res.data.data.user));
+        } catch (error) {
+            console.error('Error refreshing user:', error);
+        }
+    };
+
     const logout = () => {
         setUser(null);
         setToken(null);
@@ -60,7 +78,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, login, signup, logout, loading }}>
+        <AuthContext.Provider value={{ user, token, login, signup, logout, refreshUser, loading }}>
             {children}
         </AuthContext.Provider>
     );

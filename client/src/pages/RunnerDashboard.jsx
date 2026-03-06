@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../hooks/useSocket';
-import { RefreshCw, Send, Check } from 'lucide-react';
+import { RefreshCw, Send, Check, FileText, Package } from 'lucide-react';
 
 const RunnerDashboard = () => {
-    const { user } = useAuth();
+    const { user, refreshUser } = useAuth();
     const { onEvent } = useSocket();
     const [availableOrders, setAvailableOrders] = useState([]);
     const [myDeliveries, setMyDeliveries] = useState([]);
@@ -52,6 +52,7 @@ const RunnerDashboard = () => {
         try {
             await axios.patch(`http://localhost:5000/api/orders/${orderId}/complete`);
             fetchMyDeliveries();
+            refreshUser();
         } catch (err) {
             console.error(err);
             alert('Error completing order.');
@@ -107,6 +108,17 @@ const RunnerDashboard = () => {
                                                     <span className="ml-3 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
                                                         {order.category}
                                                     </span>
+                                                    {order.fileUrl && (
+                                                        <a
+                                                            href={`http://localhost:5000${order.fileUrl}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="ml-2 text-xs text-brand-600 hover:text-brand-500 underline flex items-center"
+                                                        >
+                                                            <Package className="h-3 w-3 mr-1" />
+                                                            View PDF
+                                                        </a>
+                                                    )}
                                                 </div>
                                                 <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
                                                     <div className="mt-2 flex items-center text-sm text-slate-500 sm:mt-0">
@@ -168,8 +180,19 @@ const RunnerDashboard = () => {
                                                         <span className="font-medium text-slate-400 mr-2">Deliver to:</span>
                                                         {order.deliveryLocation}
                                                     </p>
-                                                    <p className="text-xs text-slate-400">
+                                                    <p className="text-xs text-slate-400 mt-1 flex items-center">
                                                         Pickup from: {order.pickupLocation}
+                                                        {order.fileUrl && (
+                                                            <a
+                                                                href={`http://localhost:5000${order.fileUrl}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="ml-3 text-brand-600 hover:text-brand-500 underline flex items-center"
+                                                            >
+                                                                <FileText className="h-3 w-3 mr-1" />
+                                                                View PDF
+                                                            </a>
+                                                        )}
                                                     </p>
                                                 </div>
                                                 <div className="text-sm font-semibold text-brand-600">

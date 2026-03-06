@@ -4,10 +4,22 @@ const User = require('../models/User');
 // Create a new order (Buyers only)
 exports.createOrder = async (req, res) => {
     try {
-        const newOrder = await Order.create({
+        let items = req.body.items;
+        if (typeof items === 'string') {
+            items = JSON.parse(items);
+        }
+
+        const orderData = {
             ...req.body,
-            buyerId: req.user._id // from protect middleware
-        });
+            items,
+            buyerId: req.user._id
+        };
+
+        if (req.file) {
+            orderData.fileUrl = `/uploads/${req.file.filename}`;
+        }
+
+        const newOrder = await Order.create(orderData);
 
         const io = req.app.get('io');
         if (io) {

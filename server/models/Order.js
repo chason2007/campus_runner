@@ -44,6 +44,9 @@ const orderSchema = new mongoose.Schema({
     deliveryLocation: {
         type: String,
         required: [true, 'Order must have a delivery location']
+    },
+    fileUrl: {
+        type: String
     }
 }, { timestamps: true });
 

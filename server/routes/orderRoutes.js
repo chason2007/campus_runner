@@ -1,13 +1,14 @@
 const express = require('express');
 const orderController = require('../controllers/orderController');
 const authMiddleware = require('../middleware/authMiddleware');
+const upload = require('../middleware/uploadMiddleware');
 
 const router = express.Router();
 
 // Protect all routes below
 router.use(authMiddleware.protect);
 
-router.post('/', orderController.createOrder);
+router.post('/', upload.single('file'), orderController.createOrder);
 router.get('/available', orderController.getAvailableOrders);
 
 router.patch('/:id/accept', orderController.acceptOrder);

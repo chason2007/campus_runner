@@ -11,8 +11,12 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: ["http://localhost:5173", "http://localhost:5174"],
+    credentials: true
+}));
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 // Routes Placeholder
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -29,7 +33,7 @@ const server = app.listen(PORT, () => console.log(`Server started on port ${PORT
 const { Server } = require("socket.io");
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173", // Vite default port
+        origin: ["http://localhost:5173", "http://localhost:5174"],
         methods: ["GET", "POST", "PATCH"]
     }
 });
