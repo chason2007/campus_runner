@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Bike, Home, ShoppingBag, User as UserIcon, Bell } from 'lucide-react';
+import { LogOut, Bike, Home, ShoppingBag, User as UserIcon } from 'lucide-react';
 import BuyerDashboard from './BuyerDashboard';
 import RunnerDashboard from './RunnerDashboard';
 
@@ -55,9 +55,6 @@ const Dashboard = () => {
                         </div>
 
                         <div className="flex items-center space-x-4 pl-6 border-l border-white/10">
-                            <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-brand-accent transition-colors">
-                                <Bell className="w-5 h-5" />
-                            </button>
                             <button
                                 onClick={handleLogout}
                                 className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all border border-transparent hover:border-rose-500/20"

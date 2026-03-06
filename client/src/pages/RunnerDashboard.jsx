@@ -30,14 +30,6 @@ const RunnerDashboard = () => {
         fetchMyDeliveries();
     }, []);
 
-    onEvent('new_order', (newOrder) => {
-        toast.success(`New Network Request: ${newOrder.category}`, {
-            icon: '⚡',
-            style: { background: '#161618', color: '#D1FF1A', border: '1px solid rgba(209, 255, 26, 0.2)' }
-        });
-        fetchAvailableOrders();
-    });
-
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
     const fetchAvailableOrders = async () => {

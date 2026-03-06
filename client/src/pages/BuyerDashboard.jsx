@@ -8,7 +8,6 @@ import {
     Plus,
     Search,
     MapPin,
-    Bell,
     ArrowRight,
     CheckCircle2,
     Circle,
