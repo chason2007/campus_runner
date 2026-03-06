@@ -58,9 +58,6 @@ const AuthPage = () => {
                     <h1 className="text-5xl font-black tracking-tighter uppercase mb-3">
                         Campus<span className="text-brand-accent italic">Runner</span>
                     </h1>
-                    <p className="text-slate-400 font-bold tracking-widest text-[10px] uppercase">
-                        {isLogin ? 'Mission Authorization Required' : ''}
-                    </p>
                 </motion.div>
 
                 <motion.div
