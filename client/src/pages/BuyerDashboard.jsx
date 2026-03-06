@@ -304,7 +304,7 @@ const BuyerDashboard = () => {
                                             accept=".pdf,.doc,.docx"
                                             onChange={(e) => setFile(e.target.files[0])}
                                             className="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-brand-accent file:text-brand-dark hover:file:bg-brand-accent/80 cursor-pointer"
-                                            required={!formData.item}
+                                            required
                                         />
                                         {file && <p className="mt-2 text-[10px] font-bold text-brand-accent">Locked: {file.name}</p>}
                                     </motion.div>
