@@ -59,16 +59,19 @@ const authLimiter = rateLimit({
 app.use(helmet());
 // FIX #4: CORS for Production and Localhost
 const allowedOrigins = [
-    process.env.CLIENT_URL,
     'https://campusrunner.vercel.app',
     'http://localhost:5173'
-].filter(Boolean) as string[];
+];
 
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Log origin for debugging on Render
+        if (origin) console.log(`[CORS]: Request from origin ${origin}`);
+
+        if (!origin || allowedOrigins.includes(origin) || (process.env.CLIENT_URL && origin === process.env.CLIENT_URL)) {
             callback(null, true);
         } else {
+            console.warn(`[CORS]: Blocked request from origin ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },

@@ -9,7 +9,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['logo.png', 'robots.txt', 'apple-touch-icon.png', 'manifest.webmanifest'],
+      includeAssets: ['logo.png', 'robots.txt', 'apple-touch-icon.png'],
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}']
       }
