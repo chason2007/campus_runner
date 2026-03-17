@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo.png'],
+      includeAssets: ['logo.png', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
         name: 'Campus Runner',
         short_name: 'Campus Runner',
@@ -16,18 +16,23 @@ export default defineConfig({
         theme_color: '#09090b',
         background_color: '#09090b',
         display: 'standalone',
+        scope: '/',
+        start_url: '/',
         icons: [
           {
-            src: '/logo.png',
+            src: 'logo.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: '/logo.png',
+            src: 'logo.png',
             sizes: '512x512',
             type: 'image/png'
           }
         ]
+      },
+      devOptions: {
+        enabled: true
       }
     })
   ],

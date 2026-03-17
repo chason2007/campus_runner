@@ -57,11 +57,24 @@ const authLimiter = rateLimit({
 
 // Middleware
 app.use(helmet());
-// FIX #4: CORS locked to CLIENT_URL only
+// FIX #4: CORS for Production and Localhost
+const allowedOrigins = [
+    process.env.CLIENT_URL,
+    'https://campusrunner.vercel.app',
+    'http://localhost:5173'
+].filter(Boolean) as string[];
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
 }));
+
 app.use(morgan('dev'));
 app.use(mongoSanitize()); // FIX #12: Prevent NoSQL injection via body fields
 app.use(globalLimiter);
