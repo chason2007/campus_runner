@@ -24,7 +24,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
 
         const rating = new Rating({
             order: orderId,
-            student: req.user.id,
+            student: req.user!.id,
             runner: order.runner,
             vendor: order.vendor,
             score,
@@ -47,7 +47,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
 });
 
 // Get Ratings for a Runner
-router.get('/runner/:runnerId', async (req, res) => {
+router.get('/runner/:runnerId', async (req: express.Request, res: express.Response) => {
     try {
         const ratings = await Rating.find({ runner: req.params.runnerId })
             .populate('student', 'name profileImage')
@@ -59,7 +59,7 @@ router.get('/runner/:runnerId', async (req, res) => {
 });
 
 // Get Ratings for a Vendor
-router.get('/vendor/:vendorId', async (req, res) => {
+router.get('/vendor/:vendorId', async (req: express.Request, res: express.Response) => {
     try {
         const ratings = await Rating.find({ vendor: req.params.vendorId })
             .populate('student', 'name profileImage')

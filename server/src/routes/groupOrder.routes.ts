@@ -69,7 +69,7 @@ router.post('/:id/join', authMiddleware, async (req: AuthRequest, res: Response)
             return res.status(400).json({ message: `Group is full (max ${MAX_PARTICIPANTS} participants)` });
         }
 
-        const isAlreadyIn = groupOrder.participants.some(p => p.user.toString() === req.user?.id);
+        const isAlreadyIn = groupOrder.participants.some((p: any) => p.user.toString() === req.user?.id);
         if (isAlreadyIn) return res.status(400).json({ message: 'You have already joined this group order' });
 
         groupOrder.participants.push({
@@ -111,7 +111,7 @@ router.post('/:id/items', authMiddleware, async (req: AuthRequest, res: Response
         if (!groupOrder) return res.status(404).json({ message: 'Group order not found' });
         if (groupOrder.status !== 'open') return res.status(400).json({ message: 'Order is locked and cannot be modified' });
 
-        const participantIndex = groupOrder.participants.findIndex(p => p.user.toString() === req.user?.id);
+        const participantIndex = groupOrder.participants.findIndex((p: any) => p.user.toString() === req.user?.id);
         if (participantIndex === -1) return res.status(403).json({ message: 'You are not a participant in this group order' });
 
         const itemsTotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
@@ -120,7 +120,7 @@ router.post('/:id/items', authMiddleware, async (req: AuthRequest, res: Response
         groupOrder.participants[participantIndex].totalAmount = itemsTotal;
 
         // Recalculate total from all participants
-        groupOrder.totalAmount = groupOrder.participants.reduce((sum, p) => sum + p.totalAmount, 0) + groupOrder.deliveryFee;
+        groupOrder.totalAmount = groupOrder.participants.reduce((sum: number, p: any) => sum + p.totalAmount, 0) + groupOrder.deliveryFee;
 
         await groupOrder.save();
         emitGroupUpdate(groupOrder);
@@ -138,7 +138,7 @@ router.post('/:id/lock', authMiddleware, async (req: AuthRequest, res: Response)
         if (!groupOrder) return res.status(404).json({ message: 'Group order not found' });
         if (groupOrder.host.toString() !== req.user?.id) return res.status(403).json({ message: 'Only the host can lock the order' });
 
-        const anyoneHasItems = groupOrder.participants.some(p => p.items.length > 0);
+        const anyoneHasItems = groupOrder.participants.some((p: any) => p.items.length > 0);
         if (!anyoneHasItems) {
             return res.status(400).json({ message: 'Cannot lock the order — no participants have added any items yet' });
         }

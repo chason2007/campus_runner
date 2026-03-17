@@ -1,5 +1,5 @@
 import { Server as HttpServer } from 'http';
-import { Server as SocketIOServer } from 'socket.io';
+import { Server as SocketIOServer, Socket } from 'socket.io';
 
 let io: SocketIOServer;
 
@@ -11,7 +11,7 @@ export const initSocket = (server: HttpServer) => {
         }
     });
 
-    io.on('connection', (socket) => {
+    io.on('connection', (socket: Socket) => {
         console.log('🔌[socket]: User connected', socket.id);
 
         socket.on('join', (room: string) => {

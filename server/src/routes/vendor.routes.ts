@@ -64,7 +64,7 @@ router.patch('/menu/availability', authMiddleware, roleMiddleware(['vendor']), a
         const vendor = await Vendor.findOne({ owner: req.user?.id });
         if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
 
-        const menuItem = vendor.menu.find(m => m.name === itemName);
+        const menuItem = vendor.menu.find((m: any) => m.name === itemName);
         if (!menuItem) return res.status(404).json({ message: 'Item not found' });
 
         menuItem.isAvailable = isAvailable;

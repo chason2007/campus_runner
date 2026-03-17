@@ -7,7 +7,6 @@ import { createServer } from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import mongoSanitize from 'express-mongo-sanitize';
 import { initSocket } from './socket';
@@ -23,8 +22,6 @@ import webhookRoutes from './routes/webhook.routes';
 import adminRoutes from './routes/admin.routes';
 import notificationRoutes from './routes/notification.routes';
 import groupOrderRoutes from './routes/groupOrder.routes';
-import { errorMiddleware } from './middleware/error.middleware';
-
 import { errorMiddleware } from './middleware/error.middleware';
 
 // FIX #10: Validate required environment variables at startup

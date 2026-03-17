@@ -1,0 +1,28 @@
+src/index.ts(2,8): error TS2300: Duplicate identifier 'dotenv'.
+src/index.ts(2,20): error TS2307: Cannot find module 'dotenv' or its corresponding type declarations.
+src/index.ts(7,18): error TS2307: Cannot find module 'cors' or its corresponding type declarations.
+src/index.ts(10,8): error TS2300: Duplicate identifier 'dotenv'.
+src/index.ts(10,20): error TS2307: Cannot find module 'dotenv' or its corresponding type declarations.
+src/index.ts(11,22): error TS2307: Cannot find module 'mongoose' or its corresponding type declarations.
+src/index.ts(26,10): error TS2300: Duplicate identifier 'errorMiddleware'.
+src/index.ts(28,10): error TS2300: Duplicate identifier 'errorMiddleware'.
+src/models/GroupOrder.ts(1,48): error TS2307: Cannot find module 'mongoose' or its corresponding type declarations.
+src/models/Notification.ts(1,48): error TS2307: Cannot find module 'mongoose' or its corresponding type declarations.
+src/models/Order.ts(1,48): error TS2307: Cannot find module 'mongoose' or its corresponding type declarations.
+src/models/Rating.ts(1,41): error TS2307: Cannot find module 'mongoose' or its corresponding type declarations.
+src/models/User.ts(1,41): error TS2307: Cannot find module 'mongoose' or its corresponding type declarations.
+src/models/User.ts(26,40): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/models/User.ts(27,10): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/models/User.ts(30,9): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/models/User.ts(30,43): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/models/Vendor.ts(1,48): error TS2307: Cannot find module 'mongoose' or its corresponding type declarations.
+src/routes/groupOrder.routes.ts(72,58): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/routes/groupOrder.routes.ts(114,68): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/routes/groupOrder.routes.ts(123,66): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/routes/groupOrder.routes.ts(123,71): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/routes/groupOrder.routes.ts(141,61): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/routes/order.routes.ts(6,20): error TS2307: Cannot find module 'dotenv' or its corresponding type declarations.
+src/routes/rating.routes.ts(27,22): error TS18048: 'req.user' is possibly 'undefined'.
+src/routes/vendor.routes.ts(67,43): error TS7006: Parameter 'm' implicitly has an 'any' type.
+src/socket.ts(2,42): error TS2307: Cannot find module 'socket.io' or its corresponding type declarations.
+src/socket.ts(14,26): error TS7006: Parameter 'socket' implicitly has an 'any' type.
