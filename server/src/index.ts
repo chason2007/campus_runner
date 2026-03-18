@@ -60,7 +60,9 @@ app.use(helmet());
 // FIX #4: CORS for Production and Localhost
 const allowedOrigins = [
     'https://campusrunner.vercel.app',
-    'http://localhost:5173'
+    'https://campus-runner-jj.vercel.app', // Adding common variation
+    'http://localhost:5173',
+    'http://localhost:3000'
 ];
 
 app.use(cors({
@@ -68,7 +70,13 @@ app.use(cors({
         // Log origin for debugging on Render
         if (origin) console.log(`[CORS]: Request from origin ${origin}`);
 
-        if (!origin || allowedOrigins.includes(origin) || (process.env.CLIENT_URL && origin === process.env.CLIENT_URL)) {
+        // Allow if no origin (like mobile apps) or if it's in the list
+        const isAllowed = !origin || 
+                         allowedOrigins.includes(origin) || 
+                         (process.env.CLIENT_URL && origin === process.env.CLIENT_URL) ||
+                         origin.endsWith('.vercel.app'); // Flexible for Vercel previews
+
+        if (isAllowed) {
             callback(null, true);
         } else {
             console.warn(`[CORS]: Blocked request from origin ${origin}`);
@@ -76,6 +84,9 @@ app.use(cors({
         }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    exposedHeaders: ['set-cookie']
 }));
 
 app.use(morgan('dev'));
