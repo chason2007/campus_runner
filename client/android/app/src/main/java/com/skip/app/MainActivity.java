@@ -1,4 +1,4 @@
-package com.campusrunner.app;
+package com.skip.app;
 
 import com.getcapacitor.BridgeActivity;
 
