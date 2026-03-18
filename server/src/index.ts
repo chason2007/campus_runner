@@ -59,7 +59,7 @@ const authLimiter = rateLimit({
 app.use(helmet());
 // FIX #4: CORS for Production and Localhost
 const allowedOrigins = [
-    'https://skip-app.vercel.app',
+    'https://campusrunner.vercel.app',
     'http://localhost:5173'
 ];
 
@@ -104,7 +104,7 @@ app.get('/api/health', (req: Request, res: Response) => {
     res.json({
         status: 'ok',
         database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-        message: 'Skip API is healthy',
+        message: 'Campus Runner API is healthy',
         timestamp: new Date().toISOString(),
     });
 });
@@ -122,7 +122,7 @@ const startServer = async () => {
         // Auto-seed Admin if not exists
         try {
             const { User } = await import('./models/User');
-            const adminEmail = 'admin@skip.app';
+            const adminEmail = 'admin@campusrunner.edu';
             const existingAdmin = await User.findOne({ email: adminEmail });
             if (!existingAdmin) {
                 // FIX #2: Admin password from env var — never hardcoded
@@ -146,7 +146,7 @@ const startServer = async () => {
 
         // Start Server
         server.listen(port, () => {
-            console.log(`\n⚡️[server]: Skip API is active!`);
+            console.log(`\n⚡️[server]: Campus Runner API is active!`);
             console.log(`📡[server]: Local URL:   http://localhost:${port}`);
             console.log(`🩺[server]: Health Check: http://localhost:${port}/api/health\n`);
         });

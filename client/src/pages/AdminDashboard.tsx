@@ -112,7 +112,7 @@ function AdminDashboard() {
         <div className="db-layout">
             <aside className="db-sidebar">
                 <div style={{ padding: '24px 20px', borderBottom: '1px solid var(--border)' }}>
-                    <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem', color: 'var(--accent)' }}>SKIP</div>
+                    <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem', color: 'var(--accent)' }}>CAMPUSRUNNER</div>
                     <div style={{ fontSize: '.65rem', color: 'var(--text3)', textTransform: 'uppercase' }}>Admin Control</div>
                 </div>
                 <nav style={{ flex: 1, padding: '16px 12px' }}>

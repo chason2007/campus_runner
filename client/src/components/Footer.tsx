@@ -3,8 +3,8 @@ export default function Footer() {
     <footer>
       <div className="ft-top">
         <div className="logo" style={{ fontSize: '1.15rem' }}>
-          <img src="/logo.png" alt="Skip Logo" style={{ width: 24, height: 24, objectFit: 'contain' }} />
-          Skip
+          <img src="/logo.png" alt="Campus Runner Logo" style={{ width: 24, height: 24, objectFit: 'contain' }} />
+          Campus Runner
         </div>
         <div className="ft-tagline">Delivered by students, for students.</div>
       </div>
@@ -12,7 +12,7 @@ export default function Footer() {
 
 
       <div className="ft-bot">
-        <div className="ft-copy">© 2025 Skip. All rights reserved.</div>
+        <div className="ft-copy">© 2025 Campus Runner. All rights reserved.</div>
       </div>
     </footer>
   );

@@ -1,7 +1,7 @@
 {
     "name": "campus-runner-server",
     "version": "1.0.0",
-    "description": "Backend server for Skip",
+    "description": "Backend server for Campus Runner",
     "main": "dist/index.js",
     "scripts": {
         "start": "node dist/index.js",

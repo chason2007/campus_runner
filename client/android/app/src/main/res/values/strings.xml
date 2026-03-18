@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Skip</string>
-    <string name="title_activity_main">Skip</string>
-    <string name="package_name">com.skip.app</string>
-    <string name="custom_url_scheme">com.skip.app</string>
+    <string name="app_name">Campus Runner</string>
+    <string name="title_activity_main">Campus Runner</string>
+    <string name="package_name">com.campusrunner.app</string>
+    <string name="custom_url_scheme">com.campusrunner.app</string>
 </resources>

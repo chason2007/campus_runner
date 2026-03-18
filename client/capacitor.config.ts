@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.skip.app',
-  appName: 'Skip',
+  appId: 'com.campusrunner.app',
+  appName: 'Campus Runner',
   webDir: 'dist'
 };
 
