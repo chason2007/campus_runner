@@ -36,6 +36,13 @@ body {
   cursor: none
 }
 
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
 ::-webkit-scrollbar {
   width: 3px
 }
@@ -139,6 +146,16 @@ body::before {
   z-index: 99999;
   transform: translate(-50%, -50%);
   transition: width 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), height 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.2s ease;
+}
+
+/* Disable custom cursor on touch */
+@media (hover: none) and (pointer: coarse) {
+  .cur, .cur-r {
+    display: none !important;
+  }
+  body {
+    cursor: auto !important;
+  }
 }
 
 .cur.h {
@@ -554,7 +571,8 @@ h1 .hl {
 .section {
   padding: 110px 52px;
   max-width: 1300px;
-  margin: 0 auto
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .stag {
@@ -582,7 +600,14 @@ h1 .hl {
   font-size: clamp(3.5rem, 7vw, 5.5rem);
   letter-spacing: .02em;
   line-height: 0.95;
-  margin-bottom: 18px
+  margin-bottom: 24px
+}
+
+@media (min-width: 1024px) {
+  .section, .prob-sec, .hiw-sec, .aud-sec {
+    padding-top: 160px;
+    padding-bottom: 160px;
+  }
 }
 
 .ssub {

@@ -50,92 +50,94 @@ export default function AudienceTabs() {
 
   return (
     <section id="vendors" className="aud-sec" ref={ref}>
-      <div className="aud-in">
-        <div className="stag">{t('aud.tag')}</div>
-        <div className="tabs">
-          <button className={`tbtn ${act === 'r' ? 'a' : ''}`} onClick={() => setAct('r')}>{t('aud.r.tab')}</button>
-          <button className={`tbtn ${act === 'v' ? 'a' : ''}`} onClick={() => setAct('v')}>{t('aud.v.tab')}</button>
-        </div>
+      <div className="container">
+        <div className="aud-in">
+          <div className="stag">{t('aud.tag')}</div>
+          <div className="tabs">
+            <button className={`tbtn ${act === 'r' ? 'a' : ''}`} onClick={() => setAct('r')}>{t('aud.r.tab')}</button>
+            <button className={`tbtn ${act === 'v' ? 'a' : ''}`} onClick={() => setAct('v')}>{t('aud.v.tab')}</button>
+          </div>
 
-        <div className={`tcont ${act === 'r' ? 'a' : ''}`}>
-          <motion.div
-            initial={{ opacity: 0, x: -20 }} animate={inV && act === 'r' ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="earn-viz">
-              <div className="ebig" style={{ fontSize: '3.5rem' }}>
-                <AnimatedNumber end={55} inV={inV} />
-                <span style={{ fontSize: '2rem', marginLeft: '6px' }}>AED</span>
-              </div>
-              <div className="eunit">{t('aud.avg')}</div>
-              <div className="ebar-wrap">
-                {RUNNER_BARS.map((b, i) => (
-                  <div className="ebar-row" key={i}>
-                    <div className="ebar-lbl">{b.label}</div>
-                    <div className="ebar-track">
-                      <div className={`ebar-fill ${inV ? 'an' : ''}`} style={{ '--w': b.w } as React.CSSProperties} />
+          <div className={`tcont ${act === 'r' ? 'a' : ''}`}>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }} animate={inV && act === 'r' ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="earn-viz">
+                <div className="ebig" style={{ fontSize: '3.5rem' }}>
+                  <AnimatedNumber end={55} inV={inV} />
+                  <span style={{ fontSize: '2rem', marginLeft: '6px' }}>AED</span>
+                </div>
+                <div className="eunit">{t('aud.avg')}</div>
+                <div className="ebar-wrap">
+                  {RUNNER_BARS.map((b, i) => (
+                    <div className="ebar-row" key={i}>
+                      <div className="ebar-lbl">{b.label}</div>
+                      <div className="ebar-track">
+                        <div className={`ebar-fill ${inV ? 'an' : ''}`} style={{ '--w': b.w } as React.CSSProperties} />
+                      </div>
+                      <div className="ebar-v">{b.val}</div>
                     </div>
-                    <div className="ebar-v">{b.val}</div>
+                  ))}
+                </div>
+              </div>
+              <div className="perk-grid">
+                <div className="pcard">
+                  <div className="pcard-ic">⏰</div>
+                  <div className="pcard-t">Flexible Schedule</div>
+                  <div className="pcard-d">Turn your free hour between classes into easy cash.</div>
+                </div>
+                <div className="pcard">
+                  <div className="pcard-ic">💸</div>
+                  <div className="pcard-t">Instant Payouts</div>
+                  <div className="pcard-d">Cash out immediately to the campus card or bank.</div>
+                </div>
+              </div>
+            </motion.div>
+            <div>
+              <div className="shead">Make your<br />downtime<br />count.</div>
+              <p className="ssub" style={{ marginTop: 20 }}>No car? No problem. Campus Runner is 100% walking and biking enabled. Work entirely within your own class schedule.</p>
+            </div>
+          </div>
+
+          <div className={`tcont ${act === 'v' ? 'a' : ''}`}>
+             <motion.div
+              initial={{ opacity: 0, x: -20 }} animate={inV && act === 'v' ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="shead">Unlock the<br />student<br />economy.</div>
+              <p className="ssub" style={{ marginTop: 20 }}>Partnering with Campus Runner gives you zero-friction access to the hardest demographic to reach.</p>
+              <div className="vbl" style={{ marginTop: 40 }}>
+                {VENDOR_BENEFITS.map((b, i) => (
+                  <div className="vb" key={i}>
+                    <div className="vbc">✓</div>
+                    <div>
+                      <div className="vbt">{b.title}</div>
+                      <div className="vbd">{b.desc}</div>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-            <div className="perk-grid">
-              <div className="pcard">
-                <div className="pcard-ic">⏰</div>
-                <div className="pcard-t">Flexible Schedule</div>
-                <div className="pcard-d">Turn your free hour between classes into easy cash.</div>
-              </div>
-              <div className="pcard">
-                <div className="pcard-ic">💸</div>
-                <div className="pcard-t">Instant Payouts</div>
-                <div className="pcard-d">Cash out immediately to the campus card or bank.</div>
-              </div>
-            </div>
-          </motion.div>
-          <div>
-            <div className="shead">Make your<br />downtime<br />count.</div>
-            <p className="ssub" style={{ marginTop: 20 }}>No car? No problem. Campus Runner is 100% walking and biking enabled. Work entirely within your own class schedule.</p>
-          </div>
-        </div>
-
-        <div className={`tcont ${act === 'v' ? 'a' : ''}`}>
-           <motion.div
-            initial={{ opacity: 0, x: -20 }} animate={inV && act === 'v' ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="shead">Unlock the<br />student<br />economy.</div>
-            <p className="ssub" style={{ marginTop: 20 }}>Partnering with Campus Runner gives you zero-friction access to the hardest demographic to reach.</p>
-            <div className="vbl" style={{ marginTop: 40 }}>
-              {VENDOR_BENEFITS.map((b, i) => (
-                <div className="vb" key={i}>
-                  <div className="vbc">✓</div>
-                  <div>
-                    <div className="vbt">{b.title}</div>
-                    <div className="vbd">{b.desc}</div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }} animate={inV && act === 'v' ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <div className="vstat-grid">
+                {VENDOR_STATS.map((s, i) => (
+                  <div className="vsc" key={i}>
+                    <div className="vsn">{s.n}</div>
+                    <div className="vsl">{s.l}</div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 20 }} animate={inV && act === 'v' ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <div className="vstat-grid">
-              {VENDOR_STATS.map((s, i) => (
-                <div className="vsc" key={i}>
-                  <div className="vsn">{s.n}</div>
-                  <div className="vsl">{s.l}</div>
-                </div>
-              ))}
-            </div>
-            <div className="pcard">
-              <div className="pcard-ic">🤝</div>
-              <div className="pcard-t">Merchant Portal</div>
-              <div className="pcard-d">Full analytics, menu management, and runner tracking in one seamless dashboard built for vendors.</div>
-            </div>
-          </motion.div>
+                ))}
+              </div>
+              <div className="pcard">
+                <div className="pcard-ic">🤝</div>
+                <div className="pcard-t">Merchant Portal</div>
+                <div className="pcard-d">Full analytics, menu management, and runner tracking in one seamless dashboard built for vendors.</div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>

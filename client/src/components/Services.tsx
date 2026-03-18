@@ -18,28 +18,30 @@ export default function Services() {
 
   return (
     <section id="services" className="srv-sec" ref={ref}>
-      <div className="srv-in">
-        <div className="srv-top">
-          <div>
-            <div className="stag">{t('srv.tag')}</div>
-            <h2 className="shead" style={{ marginBottom: 0 }}>{t('srv.head')}</h2>
+      <div className="container">
+        <div className="srv-in">
+          <div className="srv-top">
+            <div>
+              <div className="stag">{t('srv.tag')}</div>
+              <h2 className="shead" style={{ marginBottom: 0 }}>{t('srv.head')}</h2>
+            </div>
           </div>
-        </div>
-        <div className="bento">
-          {BOXES.map((b, i) => (
-            <motion.div
-              key={i}
-              className={b.cls}
-              initial={{ opacity: 0, scale: 0.95, y: 30 }}
-              animate={inView ? { opacity: 1, scale: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-            >
-              {b.b && <div className="bbadge">{b.b}</div>}
-              <span className="bico">{b.ic}</span>
-              <div className="btitle" dangerouslySetInnerHTML={{ __html: b.t }} />
-              <div className="bdesc">{b.d}</div>
-            </motion.div>
-          ))}
+          <div className="bento">
+            {BOXES.map((b, i) => (
+              <motion.div
+                key={i}
+                className={b.cls}
+                initial={{ opacity: 0, scale: 0.95, y: 30 }}
+                animate={inView ? { opacity: 1, scale: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              >
+                {b.b && <div className="bbadge">{b.b}</div>}
+                <span className="bico">{b.ic}</span>
+                <div className="btitle" dangerouslySetInnerHTML={{ __html: b.t }} />
+                <div className="bdesc">{b.d}</div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -41,22 +41,24 @@ export default function Stats() {
   return (
     <section className="stat-sec">
       <div className="stat-bg" />
-      <motion.div
-        className="stat-grid"
-        initial={{ opacity: 0, y: 28 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.1 }}
-        transition={{ duration: 0.65 }}
-      >
-        {STATS.map(s => (
-          <div className="scard" key={s.label}>
-            <div className="sbig">
-              <CountUp target={s.value} suffix={s.suffix} />
+      <div className="container">
+        <motion.div
+          className="stat-grid"
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.65 }}
+        >
+          {STATS.map(s => (
+            <div className="scard" key={s.label}>
+              <div className="sbig">
+                <CountUp target={s.value} suffix={s.suffix} />
+              </div>
+              <div className="sname">{s.label}</div>
             </div>
-            <div className="sname">{s.label}</div>
-          </div>
-        ))}
-      </motion.div>
+          ))}
+        </motion.div>
+      </div>
     </section>
   );
 }

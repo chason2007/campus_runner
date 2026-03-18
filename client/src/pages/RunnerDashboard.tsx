@@ -8,6 +8,7 @@ import { NotificationTray } from '../components/NotificationTray';
 import { Skeleton, SkeletonCircle } from '../components/Skeleton';
 import { MotionButton } from '../components/MotionButton';
 import { useToast } from '../context/ToastContext';
+import { DashboardMobileNav } from '../components/DashboardMobileNav';
 import './Dashboard.css';
 
 interface Order {
@@ -165,104 +166,114 @@ function RunnerDashboard() {
 
             {/* MAIN */}
             <main className="db-main">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="db-welcome-banner"
-                >
-                    <div style={{ fontSize: '1rem', fontFamily: 'Bebas Neue', color: 'rgba(0,212,255,.6)' }}>On Duty,</div>
-                    <div className="db-welcome-name">Runner {user?.name || ''}</div>
-                </motion.div>
+                <div className="db-content">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="db-welcome-banner"
+                    >
+                        <div style={{ fontSize: '1rem', fontFamily: 'Bebas Neue', color: 'rgba(0,212,255,.6)' }}>On Duty,</div>
+                        <div className="db-welcome-name">Runner {user?.name || ''}</div>
+                    </motion.div>
 
-                <div className="db-stats-grid">
-                    <motion.div whileHover={{ y: -5 }} className="db-stat-card">
-                        <div className="db-stat-value db-stat-accent">{availableOrders.length}</div>
-                        <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Available Tasks</div>
-                    </motion.div>
-                    <motion.div whileHover={{ y: -5 }} className="db-stat-card">
-                        <div className="db-stat-value">{stats.completedDeliveries}</div>
-                        <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Total Deliveries</div>
-                    </motion.div>
-                    <motion.div whileHover={{ y: -5 }} className="db-stat-card">
-                        <div className="db-stat-value">AED {stats.totalEarnings.toFixed(2)}</div>
-                        <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Total Earnings</div>
-                    </motion.div>
-                </div>
-
-                <div className="db-card" style={{ marginTop: '24px' }}>
-                    <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem', display: 'block', marginBottom: '16px' }}>Available Tasks</span>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
-                        <AnimatePresence mode="popLayout">
-                            {availableOrders.length > 0 ? availableOrders.map(order => (
-                                <motion.div
-                                    key={order._id}
-                                    layout
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.9 }}
-                                    className="db-subcard"
-                                >
-                                    <div style={{ fontWeight: 600, marginBottom: '4px' }}>{order.title}</div>
-                                    <div style={{ fontSize: '0.75rem', color: 'var(--text3)', marginBottom: '12px' }}>{order.vendor?.name || 'Pick up'} → {order.location}</div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ color: 'var(--accent)', fontWeight: 700 }}>AED {order.totalAmount}</div>
-                                        <MotionButton onClick={() => handleAcceptOrder(order._id)} style={{ padding: '6px 12px', fontSize: '0.7rem' }}>ACCEPT</MotionButton>
-                                    </div>
-                                </motion.div>
-                            )) : (
-                                <div style={{ textAlign: 'center', gridColumn: '1/-1', padding: '20px', color: 'var(--text3)' }}>No available orders right now.</div>
-                            )}
-                        </AnimatePresence>
+                    <div className="db-stats-grid">
+                        <motion.div whileHover={{ y: -5 }} className="db-stat-card">
+                            <div className="db-stat-value db-stat-accent">{availableOrders.length}</div>
+                            <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Available Tasks</div>
+                        </motion.div>
+                        <motion.div whileHover={{ y: -5 }} className="db-stat-card">
+                            <div className="db-stat-value">{stats.completedDeliveries}</div>
+                            <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Total Deliveries</div>
+                        </motion.div>
+                        <motion.div whileHover={{ y: -5 }} className="db-stat-card">
+                            <div className="db-stat-value">AED {stats.totalEarnings.toFixed(2)}</div>
+                            <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Total Earnings</div>
+                        </motion.div>
                     </div>
-                </div>
 
-                <div className="db-card" style={{ marginTop: '24px' }}>
-                    <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem', display: 'block', marginBottom: '16px' }}>My Active Deliveries</span>
-                    {myOrders.filter(o => o.status !== 'delivered').length > 0 ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div className="db-card" style={{ marginTop: '24px' }}>
+                        <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem', display: 'block', marginBottom: '16px' }}>Available Tasks</span>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
                             <AnimatePresence mode="popLayout">
-                                {myOrders.filter(o => o.status !== 'delivered').map(order => (
+                                {availableOrders.length > 0 ? availableOrders.map(order => (
                                     <motion.div
                                         key={order._id}
                                         layout
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 20 }}
-                                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg2)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)' }}
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        className="db-subcard"
                                     >
-                                        <div>
-                                            <div style={{ fontWeight: 600 }}>{order.title}</div>
-                                            <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>To: {order.student.name} ({order.location})</div>
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                            {order.status === 'accepted' && (
-                                                <MotionButton onClick={() => handleUpdateStatus(order._id, 'picked_up')} style={{ padding: '6px 12px', fontSize: '0.7rem' }}>
-                                                    PICKED UP
-                                                </MotionButton>
-                                            )}
-                                            {order.status === 'picked_up' && (
-                                                <MotionButton
-                                                    onClick={() => handleUpdateStatus(order._id, 'delivered')}
-                                                    style={{ padding: '6px 12px', fontSize: '0.7rem', background: 'var(--green)', color: '#fff' }}
-                                                >
-                                                    MARK DELIVERED
-                                                </MotionButton>
-                                            )}
-                                            <span className={`db-status-pill db-status-${order.status}`}>{order.status}</span>
+                                        <div style={{ fontWeight: 600, marginBottom: '4px' }}>{order.title}</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text3)', marginBottom: '12px' }}>{order.vendor?.name || 'Pick up'} → {order.location}</div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ color: 'var(--accent)', fontWeight: 700 }}>AED {order.totalAmount}</div>
+                                            <MotionButton onClick={() => handleAcceptOrder(order._id)} style={{ padding: '6px 12px', fontSize: '0.7rem' }}>ACCEPT</MotionButton>
                                         </div>
                                     </motion.div>
-                                ))}
+                                )) : (
+                                    <div style={{ textAlign: 'center', gridColumn: '1/-1', padding: '20px', color: 'var(--text3)' }}>No available orders right now.</div>
+                                )}
                             </AnimatePresence>
                         </div>
-                    ) : (
-                        <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text3)' }}>You don't have any active deliveries.</div>
-                    )}
-                </div>
+                    </div>
 
-                <div style={{ marginTop: '24px' }}>
-                    <Leaderboard />
+                    <div className="db-card" style={{ marginTop: '24px' }}>
+                        <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem', display: 'block', marginBottom: '16px' }}>My Active Deliveries</span>
+                        {myOrders.filter(o => o.status !== 'delivered').length > 0 ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <AnimatePresence mode="popLayout">
+                                    {myOrders.filter(o => o.status !== 'delivered').map(order => (
+                                        <motion.div
+                                            key={order._id}
+                                            layout
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: 20 }}
+                                            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg2)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)' }}
+                                        >
+                                            <div>
+                                                <div style={{ fontWeight: 600 }}>{order.title}</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>To: {order.student.name} ({order.location})</div>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                                {order.status === 'accepted' && (
+                                                    <MotionButton onClick={() => handleUpdateStatus(order._id, 'picked_up')} style={{ padding: '6px 12px', fontSize: '0.7rem' }}>
+                                                        PICKED UP
+                                                    </MotionButton>
+                                                )}
+                                                {order.status === 'picked_up' && (
+                                                    <MotionButton
+                                                        onClick={() => handleUpdateStatus(order._id, 'delivered')}
+                                                        style={{ padding: '6px 12px', fontSize: '0.7rem', background: 'var(--green)', color: '#fff' }}
+                                                    >
+                                                        MARK DELIVERED
+                                                    </MotionButton>
+                                                )}
+                                                <span className={`db-status-pill db-status-${order.status}`}>{order.status}</span>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text3)' }}>You don't have any active deliveries.</div>
+                        )}
+                    </div>
+
+                    <div style={{ marginTop: '24px' }}>
+                        <Leaderboard />
+                    </div>
                 </div>
             </main>
+
+            <DashboardMobileNav 
+                items={[
+                    { label: 'Dashboard', icon: '🏃', path: '/runner' },
+                    { label: 'Settings', icon: '⚙️', path: '/profile' },
+                    { label: 'Log Out', icon: '🚪', action: logout }
+                ]}
+            />
         </div>
     );
 }

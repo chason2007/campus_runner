@@ -38,34 +38,36 @@ export default function Navbar() {
   return (
     <>
       <nav id="nav" className={scrolled ? 'sc' : ''}>
-        <motion.a
-          whileHover={{ scale: 1.05 }}
-          href="#home"
-          className="logo"
-          style={{ cursor: 'none' }}
-        >
-          <img src="/logo.png" alt="Campus Runner" style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'cover' }} />
-          Campus Runner
-        </motion.a>
-        <div className="nav-pill">
-          {NAV_LINKS.map(l => (
-            <motion.a
-              key={l.href}
-              href={l.href}
-              whileHover={{ y: -2 }}
-              className={`nav-link ${activeId === l.href.slice(1) ? 'act' : ''}`}
-            >
-              {l.label}
-            </motion.a>
-          ))}
-          <MotionButton
-            variant="primary"
-            onClick={() => setModalOpen(true)}
-            style={{ padding: '8px 18px', fontSize: '0.8rem' }}
+        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: '100%' }}>
+          <motion.a
+            whileHover={{ scale: 1.05 }}
+            href="#home"
+            className="logo"
+            style={{ cursor: 'none' }}
           >
-            {t('nav.login')}
-          </MotionButton>
-          <LanguageSwitcher />
+            <img src="/logo.png" alt="Campus Runner" style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'cover' }} />
+            Campus Runner
+          </motion.a>
+          <div className="nav-pill">
+            {NAV_LINKS.map(l => (
+              <motion.a
+                key={l.href}
+                href={l.href}
+                whileHover={{ y: -2 }}
+                className={`nav-link ${activeId === l.href.slice(1) ? 'act' : ''}`}
+              >
+                {l.label}
+              </motion.a>
+            ))}
+            <MotionButton
+              variant="primary"
+              onClick={() => setModalOpen(true)}
+              style={{ padding: '8px 18px', fontSize: '0.8rem' }}
+            >
+              {t('nav.login')}
+            </MotionButton>
+            <LanguageSwitcher />
+          </div>
         </div>
       </nav>
       <LoginModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />

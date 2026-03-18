@@ -17,19 +17,21 @@ export default function Problem() {
 
   return (
     <section id="about" className="prob-sec" ref={ref}>
-      <div className="prob-in">
-        <h2 className="prob-q">
-          {t('prob.q1')} <span className="d">{t('prob.q2')}</span><br />
-          <span className="l">{t('prob.q3')}</span>
-        </h2>
-        <div className="prob-grid">
-          {CARDS.map((c, i) => (
-            <motion.div key={i} className="prob-card" style={{ y: c.y }}>
-              <div className="pico">{c.i}</div>
-              <div className="ptitle">{c.t}</div>
-              <div className="pdesc">{c.d}</div>
-            </motion.div>
-          ))}
+      <div className="container">
+        <div className="prob-in">
+          <h2 className="prob-q">
+            {t('prob.q1')} <span className="d">{t('prob.q2')}</span><br />
+            <span className="l">{t('prob.q3')}</span>
+          </h2>
+          <div className="prob-grid">
+            {CARDS.map((c, i) => (
+              <motion.div key={i} className="prob-card" style={{ y: c.y }}>
+                <div className="pico">{c.i}</div>
+                <div className="ptitle">{c.t}</div>
+                <div className="pdesc">{c.d}</div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
