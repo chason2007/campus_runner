@@ -66,6 +66,11 @@ router.post('/login', async (req: Request, res: Response) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
+        // New check: Is the account suspended?
+        if (user.isActive === false) {
+            return res.status(403).json({ message: 'Your account has been suspended. Please contact support.' });
+        }
+
         const token = jwt.sign(
             { id: user._id, role: user.role },
             JWT_SECRET!,

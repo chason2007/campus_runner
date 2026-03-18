@@ -207,7 +207,55 @@ export const api = {
                 headers: getHeaders(),
                 body: JSON.stringify({ adminResponse }),
             });
-            return response.json();
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to resolve dispute');
+            return data;
+        },
+        getUsers: async (filters?: any) => {
+            const params = new URLSearchParams(filters).toString();
+            const response = await fetch(`${API_BASE_URL}/admin/users?${params}`, {
+                headers: getHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to fetch users');
+            return data;
+        },
+        updateUserStatus: async (userId: string, isActive: boolean) => {
+            const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/status`, {
+                method: 'PATCH',
+                headers: getHeaders(),
+                body: JSON.stringify({ isActive }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to update user status');
+            return data;
+        },
+        deleteUser: async (userId: string) => {
+            const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: getHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to delete user');
+            return data;
+        },
+        getVendorsAdmin: async () => {
+            const response = await fetch(`${API_BASE_URL}/admin/vendors`, {
+                headers: getHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to fetch vendors');
+            return data;
+        },
+        updateVendor: async (vendorId: string, vendorData: any) => {
+            const response = await fetch(`${API_BASE_URL}/admin/vendors/${vendorId}`, {
+                method: 'PATCH',
+                headers: getHeaders(),
+                body: JSON.stringify(vendorData),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to update vendor');
+            return data;
         }
     },
     groupOrders: {

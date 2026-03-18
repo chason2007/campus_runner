@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { User } from '../models/User';
 
 // FIX #1: No fallback secret \u2014 if JWT_SECRET is missing, this will throw at module load
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -11,7 +12,7 @@ export interface AuthRequest extends Request {
     };
 }
 
-export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {
@@ -20,6 +21,13 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET) as { id: string; role: string };
+        
+        // Check if user is active
+        const user = await User.findById(decoded.id).select('isActive');
+        if (!user || user.isActive === false) {
+            return res.status(403).json({ message: 'Account is suspended or does not exist.' });
+        }
+
         req.user = decoded;
         next();
     } catch (err) {

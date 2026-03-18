@@ -35,6 +35,77 @@ router.get('/orders', async (req: AuthRequest, res: Response) => {
     }
 });
 
+// Get all users (students and runners)
+router.get('/users', async (req: AuthRequest, res: Response) => {
+    try {
+        const { role, search } = req.query;
+        let query: any = { role: { $in: ['student', 'runner'] } };
+
+        if (role) query.role = role;
+        if (search) {
+            query.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        const users = await User.find(query).select('-password').sort({ createdAt: -1 });
+        res.json(users);
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Update user status (active/banned)
+router.patch('/users/:id/status', async (req: AuthRequest, res: Response) => {
+    try {
+        const { isActive } = req.body;
+        const user = await User.findByIdAndUpdate(req.params.id, { isActive }, { new: true }).select('-password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.json(user);
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Delete a user
+router.delete('/users/:id', async (req: AuthRequest, res: Response) => {
+    try {
+        const user = await User.findByIdAndDelete(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        
+        // If user was a vendor, delete vendor profile too
+        if (user.role === 'vendor') {
+            await Vendor.findOneAndDelete({ owner: user._id });
+        }
+        
+        res.json({ message: 'User deleted successfully' });
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Get all vendors
+router.get('/vendors', async (req: AuthRequest, res: Response) => {
+    try {
+        const vendors = await Vendor.find().populate('owner', 'name email isActive');
+        res.json(vendors);
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Update vendor information
+router.patch('/vendors/:id', async (req: AuthRequest, res: Response) => {
+    try {
+        const vendor = await Vendor.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
+        res.json(vendor);
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Get system-wide stats
 router.get('/stats', async (req: AuthRequest, res: Response) => {
     try {

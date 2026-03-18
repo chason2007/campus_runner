@@ -8,6 +8,7 @@ export interface IUser extends Document {
     role: 'student' | 'runner' | 'vendor' | 'admin';
     profileImage?: string;
     campusId?: string;
+    isActive: boolean;
     createdAt: Date;
     comparePassword: (password: string) => Promise<boolean>;
 }
@@ -19,6 +20,7 @@ const userSchema = new Schema<IUser>({
     role: { type: String, enum: ['student', 'runner', 'vendor', 'admin'], required: true },
     profileImage: { type: String },
     campusId: { type: String },
+    isActive: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now },
 });
 
