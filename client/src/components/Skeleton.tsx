@@ -6,23 +6,24 @@ interface SkeletonProps {
     borderRadius?: string | number;
     className?: string;
     style?: React.CSSProperties;
+    glass?: boolean;
 }
 
 export const Skeleton: React.FC<SkeletonProps> = ({
     width = '100%',
     height = '20px',
-    borderRadius = '4px',
+    borderRadius = '12px',
     className = '',
-    style
+    style,
+    glass = true
 }) => {
     return (
         <div
-            className={`skeleton-shimmer ${className}`}
+            className={`skeleton-shimmer ${glass ? 'glass' : ''} ${className}`}
             style={{
                 width,
                 height,
                 borderRadius,
-                background: 'rgba(255, 255, 255, 0.05)',
                 position: 'relative',
                 overflow: 'hidden',
                 ...style

@@ -146,11 +146,23 @@ const startServer = async () => {
 
         // Start Server
         server.listen(port, () => {
-            console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+            console.log(`\n⚡️[server]: Campus Runner API is active!`);
+            console.log(`📡[server]: Local URL:   http://localhost:${port}`);
+            console.log(`🩺[server]: Health Check: http://localhost:${port}/api/health\n`);
         });
 
-    } catch (err) {
-        console.error('❌[database]: MongoDB connection error:', err);
+    } catch (err: any) {
+        console.error('\n❌[database]: FAILED to connect to MongoDB Atlas.');
+        console.error(`🛑[error]: ${err.message || 'Unknown error'}`);
+        
+        if (err.name === 'MongoNetworkError') {
+            console.error('\n💡 [HINT]: This is likely a network or IP whitelist issue.');
+            console.error('Ensure your IP is added to the "Network Access" tab in the MongoDB Atlas dashboard.\n');
+        } else if (err.message.includes('Authentication failed')) {
+            console.error('\n💡 [HINT]: Invalid database credentials.');
+            console.error('Check the MONGODB_URI in your .env file and ensure the username and password are correct.\n');
+        }
+        
         process.exit(1);
     }
 };

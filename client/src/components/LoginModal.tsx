@@ -15,16 +15,17 @@ type Mode = 'login' | 'signup';
 /* ─────────────────────────── helpers ─────────────────────────── */
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  padding: '13px 16px',
-  background: 'var(--surface)',
+  padding: '14px 18px',
+  background: 'rgba(255, 255, 255, 0.03)',
+  backdropFilter: 'blur(10px)',
   border: '1px solid var(--border2)',
-  borderRadius: '12px',
+  borderRadius: '16px',
   color: 'var(--text)',
-  fontSize: '0.88rem',
+  fontSize: '0.9rem',
   outline: 'none',
   fontFamily: "'Instrument Sans', sans-serif",
   boxSizing: 'border-box',
-  transition: 'border-color 0.2s, box-shadow 0.2s',
+  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
 };
 
 const lbl: React.CSSProperties = {
