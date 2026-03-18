@@ -47,7 +47,7 @@ function VendorDashboard() {
                 api.orders.getMine(),
                 api.vendors.getMe()
             ]);
-            setOrders(myOrders);
+            setOrders(Array.isArray(myOrders) ? myOrders : []);
             setVendor(myVendor);
         } catch (err) {
             console.error('Failed to fetch vendor data', err);

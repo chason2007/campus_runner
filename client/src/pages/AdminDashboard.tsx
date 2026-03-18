@@ -33,7 +33,7 @@ function AdminDashboard() {
                 api.admin.getOrders(),
                 api.admin.getStats()
             ]);
-            setOrders(allOrders);
+            setOrders(Array.isArray(allOrders) ? allOrders : []);
             setStats(systemStats);
         } catch (err) {
             console.error('Failed to fetch admin data', err);

@@ -48,7 +48,7 @@ function StudentDashboard() {
     const fetchData = useCallback(async () => {
         try {
             const myOrders = await api.orders.getMine();
-            setOrders(myOrders);
+            setOrders(Array.isArray(myOrders) ? myOrders : []);
         } catch (err) {
             console.error('Failed to fetch dashboard data', err);
             if ((err as Error).message.includes('Unauthorized') || (err as Error).message.includes('token')) {

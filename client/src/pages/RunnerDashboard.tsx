@@ -41,9 +41,11 @@ function RunnerDashboard() {
                 api.orders.getMine(),
                 api.runners.getStats()
             ]);
-            setAvailableOrders(available.filter((o: any) => o.paymentInfo?.status === 'paid' || o.type !== 'food'));
-            setMyOrders(mine);
-            setStats(s);
+            const ordersArray = Array.isArray(available) ? available : [];
+            const myOrdersArray = Array.isArray(mine) ? mine : [];
+            setAvailableOrders(ordersArray.filter((o: any) => o.paymentInfo?.status === 'paid' || o.type !== 'food'));
+            setMyOrders(myOrdersArray);
+            setStats(s || { completedDeliveries: 0, totalEarnings: 0 });
         } catch (err) {
             console.error('Failed to fetch runner data', err);
             if ((err as Error).message.includes('Unauthorized') || (err as Error).message.includes('token')) {

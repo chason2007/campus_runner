@@ -55,26 +55,34 @@ export const api = {
                 headers: getHeaders(),
                 body: JSON.stringify(orderData),
             });
-            return response.json();
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to create order');
+            return data;
         },
         createCheckoutSession: async (orderId: string) => {
             const response = await fetch(`${API_BASE_URL}/orders/${orderId}/create-checkout-session`, {
                 method: 'POST',
                 headers: getHeaders(),
             });
-            return response.json();
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to create checkout session');
+            return data;
         },
         getMine: async () => {
             const response = await fetch(`${API_BASE_URL}/orders/my`, {
                 headers: getHeaders(),
             });
-            return response.json();
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to fetch your orders');
+            return data;
         },
         getAvailable: async () => {
             const response = await fetch(`${API_BASE_URL}/orders/available`, {
                 headers: getHeaders(),
             });
-            return response.json();
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to fetch available orders');
+            return data;
         },
         updateStatus: async (orderId: string, status: string) => {
             const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
@@ -82,7 +90,9 @@ export const api = {
                 headers: getHeaders(),
                 body: JSON.stringify({ status }),
             });
-            return response.json();
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to update order status');
+            return data;
         },
         reportDispute: async (orderId: string, reason: string) => {
             const response = await fetch(`${API_BASE_URL}/orders/${orderId}/dispute`, {
@@ -132,13 +142,17 @@ export const api = {
             const response = await fetch(`${API_BASE_URL}/runners/leaderboard`, {
                 headers: getHeaders(),
             });
-            return response.json();
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to fetch leaderboard');
+            return data;
         },
         getStats: async () => {
             const response = await fetch(`${API_BASE_URL}/runners/stats`, {
                 headers: getHeaders(),
             });
-            return response.json();
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to fetch runner stats');
+            return data;
         }
     },
     ratings: {
@@ -169,7 +183,9 @@ export const api = {
             const response = await fetch(`${API_BASE_URL}/admin/orders?${params}`, {
                 headers: getHeaders(),
             });
-            return response.json();
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to fetch admin orders');
+            return data;
         },
         getStats: async () => {
             const response = await fetch(`${API_BASE_URL}/admin/stats`, {
