@@ -220,6 +220,15 @@ export const api = {
             if (!response.ok) throw new Error(data.message || 'Failed to fetch users');
             return data;
         },
+        approveUser: async (userId: string) => {
+            const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/approve`, {
+                method: 'PATCH',
+                headers: getHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Failed to approve user');
+            return data;
+        },
         updateUserStatus: async (userId: string, isActive: boolean) => {
             const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/status`, {
                 method: 'PATCH',

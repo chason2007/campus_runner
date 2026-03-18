@@ -94,6 +94,16 @@ function AdminDashboard() {
         }
     };
 
+    const handleApproveUser = async (userId: string) => {
+        try {
+            await api.admin.approveUser(userId);
+            showToast('User approved successfully', 'success');
+            fetchData();
+        } catch (err) {
+            showToast('Failed to approve user', 'error');
+        }
+    };
+
     const handleDeleteUser = async (userId: string) => {
         if (!window.confirm('PERMANENTLY delete this user? This cannot be undone.')) return;
         try {
@@ -117,14 +127,14 @@ function AdminDashboard() {
                     <Skeleton height="32px" borderRadius="8px" />
                 </div>
             </aside>
+            <header className="db-header">
+                <Skeleton width="120px" height="24px" />
+                <div className="db-header-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <SkeletonCircle width="24px" height="24px" />
+                    <SkeletonCircle width="36px" height="36px" />
+                </div>
+            </header>
             <main className="db-main">
-                <header className="db-header">
-                    <Skeleton width="120px" height="24px" />
-                    <div className="db-header-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <SkeletonCircle width="24px" height="24px" />
-                        <SkeletonCircle width="36px" height="36px" />
-                    </div>
-                </header>
                 <div style={{ padding: '24px' }}>
                     <div className="db-stats-grid" style={{ marginBottom: '24px' }}>
                         <Skeleton height="100px" borderRadius="16px" />
@@ -150,35 +160,37 @@ function AdminDashboard() {
                         whileHover={{ x: 4 }}
                         onClick={() => setActiveTab('stats')}
                         className={activeTab === 'stats' ? 'active' : ''}
-                        style={{ padding: '10px', cursor: 'pointer', color: activeTab === 'stats' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'stats' ? 600 : 400 }}
+                        style={{ padding: '10px', cursor: 'pointer', color: activeTab === 'stats' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'stats' ? 600 : 400, display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                        📊 Analytics
+                        <span>📊</span> <span className="db-sidebar-label">Analytics</span>
                     </motion.div>
                     <motion.div
                         whileHover={{ x: 4 }}
                         onClick={() => setActiveTab('orders')}
                         className={activeTab === 'orders' ? 'active' : ''}
-                        style={{ padding: '10px', cursor: 'pointer', color: activeTab === 'orders' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'orders' ? 600 : 400 }}
+                        style={{ padding: '10px', cursor: 'pointer', color: activeTab === 'orders' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'orders' ? 600 : 400, display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                        📦 All Orders
+                        <span>📦</span> <span className="db-sidebar-label">All Orders</span>
                     </motion.div>
                     <motion.div
                         whileHover={{ x: 4 }}
                         onClick={() => setActiveTab('users')}
                         className={activeTab === 'users' ? 'active' : ''}
-                        style={{ padding: '10px', cursor: 'pointer', color: activeTab === 'users' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'users' ? 600 : 400 }}
+                        style={{ padding: '10px', cursor: 'pointer', color: activeTab === 'users' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'users' ? 600 : 400, display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                        👥 Users
+                        <span>👥</span> <span className="db-sidebar-label">Users</span>
                     </motion.div>
                     <motion.div
                         whileHover={{ x: 4 }}
                         onClick={() => setActiveTab('vendors')}
                         className={activeTab === 'vendors' ? 'active' : ''}
-                        style={{ padding: '10px', cursor: 'pointer', color: activeTab === 'vendors' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'vendors' ? 600 : 400 }}
+                        style={{ padding: '10px', cursor: 'pointer', color: activeTab === 'vendors' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'vendors' ? 600 : 400, display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                        🏪 Vendors
+                        <span>🏪</span> <span className="db-sidebar-label">Vendors</span>
                     </motion.div>
-                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} style={{ padding: '10px', color: 'var(--text2)', cursor: 'pointer' }}>⚙️ Settings</motion.div>
+                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} style={{ padding: '10px', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span>⚙️</span> <span className="db-sidebar-label">Settings</span>
+                    </motion.div>
                 </nav>
                 <div style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
                     <button onClick={logout} style={{ background: 'none', border: 'none', color: '#ff6b6b', cursor: 'pointer', padding: '10px' }}>🚪 Log Out</button>
@@ -349,12 +361,24 @@ function AdminDashboard() {
                                                             <td><span style={{ textTransform: 'capitalize' }}>{u.role}</span></td>
                                                             <td>{new Date(u.createdAt).toLocaleDateString()}</td>
                                                             <td>
-                                                                <span className={`db-status-pill ${u.isActive ? 'db-status-delivered' : 'db-status-pending'}`}>
-                                                                    {u.isActive ? 'Active' : 'Suspended'}
-                                                                </span>
+                                                                {!u.isApproved ? (
+                                                                    <span className="db-status-pill db-status-progress">Pending</span>
+                                                                ) : (
+                                                                    <span className={`db-status-pill ${u.isActive ? 'db-status-delivered' : 'db-status-pending'}`}>
+                                                                        {u.isActive ? 'Active' : 'Suspended'}
+                                                                    </span>
+                                                                )}
                                                             </td>
                                                             <td>
                                                                 <div style={{ display: 'flex', gap: '8px' }}>
+                                                                    {!u.isApproved && (
+                                                                        <button 
+                                                                            onClick={() => handleApproveUser(u._id)}
+                                                                            style={{ padding: '4px 8px', fontSize: '0.65rem', background: 'var(--accent)', color: '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                                                                        >
+                                                                            APPROVE
+                                                                        </button>
+                                                                    )}
                                                                     <button 
                                                                         onClick={() => handleToggleUserStatus(u._id, u.isActive)}
                                                                         style={{ padding: '4px 8px', fontSize: '0.65rem', background: u.isActive ? '#ff6666' : '#22c55e', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}

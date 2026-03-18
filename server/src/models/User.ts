@@ -9,6 +9,8 @@ export interface IUser extends Document {
     profileImage?: string;
     campusId?: string;
     isActive: boolean;
+    isApproved: boolean;
+    approvedBy?: string;
     createdAt: Date;
     comparePassword: (password: string) => Promise<boolean>;
 }
@@ -21,6 +23,8 @@ const userSchema = new Schema<IUser>({
     profileImage: { type: String },
     campusId: { type: String },
     isActive: { type: Boolean, default: true },
+    isApproved: { type: Boolean, default: false },
+    approvedBy: { type: Schema.Types.ObjectId, ref: 'User' },
     createdAt: { type: Date, default: Date.now },
 });
 

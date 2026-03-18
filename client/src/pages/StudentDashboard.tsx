@@ -139,9 +139,15 @@ function StudentDashboard() {
                     <div style={{ fontSize: '.65rem', color: 'var(--text3)', textTransform: 'uppercase' }}>Student Portal</div>
                 </div>
                 <nav style={{ flex: 1, padding: '16px 12px' }}>
-                    <motion.div whileHover={{ x: 4 }} className="active" style={{ padding: '10px', color: 'var(--accent)', fontWeight: 600 }}>🏠 Dashboard</motion.div>
-                    <motion.div whileHover={{ x: 4 }} style={{ padding: '10px', color: 'var(--text2)', cursor: 'default' }}>🕒 History</motion.div>
-                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} style={{ padding: '10px', color: 'var(--text2)', cursor: 'pointer' }}>⚙️ Settings</motion.div>
+                    <motion.div whileHover={{ x: 4 }} className="active" style={{ padding: '10px', color: 'var(--accent)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span>🏠</span> <span className="db-sidebar-label">Dashboard</span>
+                    </motion.div>
+                    <motion.div whileHover={{ x: 4 }} style={{ padding: '10px', color: 'var(--text2)', cursor: 'default', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span>🕒</span> <span className="db-sidebar-label">History</span>
+                    </motion.div>
+                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} style={{ padding: '10px', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span>⚙️</span> <span className="db-sidebar-label">Settings</span>
+                    </motion.div>
                 </nav>
                 <div style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
                     <button onClick={logout} style={{ background: 'none', border: 'none', color: '#ff6b6b', cursor: 'pointer', padding: '10px' }}>🚪 Log Out</button>

@@ -35,11 +35,11 @@ router.get('/orders', async (req: AuthRequest, res: Response) => {
     }
 });
 
-// Get all users (students and runners)
+// Get all users (students, runners, and vendors)
 router.get('/users', async (req: AuthRequest, res: Response) => {
     try {
-        const { role, search } = req.query;
-        let query: any = { role: { $in: ['student', 'runner'] } };
+        const { role, search, isApproved } = req.query;
+        let query: any = {};
 
         if (role) query.role = role;
         if (search) {
@@ -48,9 +48,28 @@ router.get('/users', async (req: AuthRequest, res: Response) => {
                 { email: { $regex: search, $options: 'i' } }
             ];
         }
+        if (isApproved !== undefined) {
+            query.isApproved = isApproved === 'true';
+        }
 
         const users = await User.find(query).select('-password').sort({ createdAt: -1 });
         res.json(users);
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Approve a user
+router.patch('/users/:id/approve', async (req: AuthRequest, res: Response) => {
+    try {
+        const user = await User.findByIdAndUpdate(
+            req.params.id, 
+            { isApproved: true, approvedBy: req.user?.id }, 
+            { new: true }
+        ).select('-password');
+        
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.json(user);
     } catch (error: any) {
         res.status(500).json({ message: error.message });
     }

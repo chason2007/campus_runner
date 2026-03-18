@@ -34,6 +34,7 @@ function RunnerDashboard() {
     const [myOrders, setMyOrders] = useState<Order[]>([]);
     const [stats, setStats] = useState({ completedDeliveries: 0, totalEarnings: 0 });
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<'active' | 'leaderboard'>('active');
 
     const fetchData = useCallback(async () => {
         try {
@@ -143,10 +144,25 @@ function RunnerDashboard() {
                     <div style={{ fontSize: '.65rem', color: 'var(--text3)', textTransform: 'uppercase' }}>Runner Portal</div>
                 </div>
                 <nav style={{ flex: 1, padding: '16px 12px' }}>
-                    <motion.div whileHover={{ x: 4 }} className="active" style={{ padding: '10px', color: 'var(--accent)', fontWeight: 600 }}>🏃 Dashboard</motion.div>
-                    <motion.div whileHover={{ x: 4 }} style={{ padding: '10px', color: 'var(--text2)', cursor: 'default' }}>📦 Active Deliveries</motion.div>
-                    <motion.div whileHover={{ x: 4 }} style={{ padding: '10px', color: 'var(--text2)', cursor: 'default' }}>💰 Earnings</motion.div>
-                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} style={{ padding: '10px', color: 'var(--text2)', cursor: 'pointer' }}>⚙️ Settings</motion.div>
+                    <motion.div
+                        whileHover={{ x: 4 }}
+                        onClick={() => setActiveTab('active')}
+                        className={activeTab === 'active' ? 'active' : ''}
+                        style={{ padding: '10px', color: activeTab === 'active' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'active' ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}
+                    >
+                        <span>🏃</span> <span className="db-sidebar-label">Active Gigs</span>
+                    </motion.div>
+                    <motion.div
+                        whileHover={{ x: 4 }}
+                        onClick={() => setActiveTab('leaderboard')}
+                        className={activeTab === 'leaderboard' ? 'active' : ''}
+                        style={{ padding: '10px', color: activeTab === 'leaderboard' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'leaderboard' ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}
+                    >
+                        <span>🏆</span> <span className="db-sidebar-label">Leaderboard</span>
+                    </motion.div>
+                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} style={{ padding: '10px', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span>⚙️</span> <span className="db-sidebar-label">Settings</span>
+                    </motion.div>
                 </nav>
                 <div style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
                     <button onClick={logout} style={{ background: 'none', border: 'none', color: '#ff6b6b', cursor: 'pointer', padding: '10px' }}>🚪 Log Out</button>

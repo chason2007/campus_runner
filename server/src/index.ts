@@ -145,11 +145,16 @@ const startServer = async () => {
                         name: 'Super Admin',
                         email: adminEmail,
                         password: adminPassword,
-                        role: 'admin'
+                        role: 'admin',
+                        isApproved: true
                     });
                     await admin.save();
                     console.log('🚀[database]: Super Admin account created');
                 }
+            } else if (!existingAdmin.isApproved) {
+                existingAdmin.isApproved = true;
+                await existingAdmin.save();
+                console.log('🚀[database]: Existing Super Admin account approved automatically');
             }
         } catch (seedErr) {
             console.error('❌[database]: Error seeding admin:', seedErr);

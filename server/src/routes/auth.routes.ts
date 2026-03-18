@@ -71,6 +71,14 @@ router.post('/login', async (req: Request, res: Response) => {
             return res.status(403).json({ message: 'Your account has been suspended. Please contact support.' });
         }
 
+        // Approval Check
+        if (user.role !== 'admin' && user.isApproved === false) {
+            return res.status(403).json({ 
+                status: 'pending_approval', 
+                message: 'Your account is pending admin approval. You will be notified once you can access the platform.' 
+            });
+        }
+
         const token = jwt.sign(
             { id: user._id, role: user.role },
             JWT_SECRET!,

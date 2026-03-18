@@ -151,19 +151,21 @@ function VendorDashboard() {
                         whileHover={{ x: 4 }}
                         onClick={() => setActiveTab('orders')}
                         className={activeTab === 'orders' ? 'active' : ''}
-                        style={{ padding: '10px', color: activeTab === 'orders' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'orders' ? 600 : 400, cursor: 'pointer' }}
+                        style={{ padding: '10px', color: activeTab === 'orders' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'orders' ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                        🏪 Store Front
+                        <span>🏪</span> <span className="db-sidebar-label">Store Front</span>
                     </motion.div>
                     <motion.div
                         whileHover={{ x: 4 }}
                         onClick={() => setActiveTab('menu')}
                         className={activeTab === 'menu' ? 'active' : ''}
-                        style={{ padding: '10px', color: activeTab === 'menu' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'menu' ? 600 : 400, cursor: 'pointer' }}
+                        style={{ padding: '10px', color: activeTab === 'menu' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'menu' ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                        📋 Menu Management
+                        <span>📋</span> <span className="db-sidebar-label">Menu Management</span>
                     </motion.div>
-                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} style={{ padding: '10px', color: 'var(--text2)', cursor: 'pointer' }}>⚙️ Settings</motion.div>
+                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} style={{ padding: '10px', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span>⚙️</span> <span className="db-sidebar-label">Settings</span>
+                    </motion.div>
                 </nav>
                 <div style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
                     <button onClick={logout} style={{ background: 'none', border: 'none', color: '#ff6b6b', cursor: 'pointer', padding: '10px' }}>🚪 Log Out</button>
