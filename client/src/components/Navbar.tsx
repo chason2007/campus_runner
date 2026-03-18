@@ -37,7 +37,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav id="nav" className={scrolled ? 'sc' : ''}>
+      <nav id="nav" className={`lp-nav ${scrolled ? 'sc' : ''}`}>
         <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: '100%' }}>
           <motion.a
             whileHover={{ scale: 1.05 }}

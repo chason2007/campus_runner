@@ -437,16 +437,17 @@ function LoginForm({ tab }: { tab: Tab }) {
       authLogin(data.user, data.token);
       showToast(`Welcome back, ${data.user.name.split(' ')[0]}`, 'success');
 
-      // Redirect based on backend role using React Router navigate
-      if (data.user.role === 'admin') {
-        navigate('/admin');
-      } else if (data.user.role === 'student') {
-        navigate('/student');
-      } else if (data.user.role === 'runner') {
-        navigate('/runner');
-      } else if (data.user.role === 'vendor') {
-        navigate('/vendor');
-      }
+      // Mapping roles to their respective dashboard paths
+      const roleMap: Record<string, string> = {
+        'admin': '/admin',
+        'student': '/student',
+        'runner': '/runner',
+        'vendor': '/vendor'
+      };
+
+      const path = roleMap[data.user.role] || '/';
+      console.log(`[auth]: Redirecting ${data.user.role} to ${path}`);
+      navigate(path);
     } catch (err: any) {
       showToast(err.message || 'Login failed', 'error');
     } finally {

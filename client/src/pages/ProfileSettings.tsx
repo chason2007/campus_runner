@@ -45,10 +45,11 @@ function ProfileSettings() {
                 </nav>
             </aside>
 
+            <header className="db-header">
+                <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.4rem' }}>Profile Settings</span>
+            </header>
+
             <main className="db-main">
-                <header className="db-header">
-                    <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.4rem' }}>Profile Settings</span>
-                </header>
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

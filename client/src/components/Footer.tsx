@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer>
+    <footer className="lp-footer">
       <div className="container">
         <div className="ft-top">
           <div className="logo" style={{ fontSize: '1.15rem' }}>

@@ -185,18 +185,19 @@ function AdminDashboard() {
                 </div>
             </aside>
 
+            {/* HEADER */}
+            <header className="db-header">
+                <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.4rem' }}>{activeTab.toUpperCase()}</span>
+                <div className="db-header-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <NotificationTray />
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--accent2)', border: '1.5px solid var(--accent3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)' }}>
+                        {user?.name?.charAt(0) || 'A'}
+                    </div>
+                </div>
+            </header>
+
             <main className="db-main">
                 <div className="db-content">
-                    <header className="db-header">
-                        <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.4rem' }}>{activeTab.toUpperCase()}</span>
-                        <div className="db-header-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                            <NotificationTray />
-                            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--accent2)', border: '1.5px solid var(--accent3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)' }}>
-                                {user?.name?.charAt(0) || 'A'}
-                            </div>
-                        </div>
-                    </header>
-
                     <AnimatePresence mode="wait">
                         {activeTab === 'stats' && stats && (
                             <motion.div

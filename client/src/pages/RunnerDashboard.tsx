@@ -115,14 +115,14 @@ function RunnerDashboard() {
                     <Skeleton height="32px" borderRadius="8px" />
                 </div>
             </aside>
+            <header className="db-header">
+                <Skeleton width="150px" height="24px" />
+                <div className="db-header-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <SkeletonCircle width="24px" height="24px" />
+                    <SkeletonCircle width="36px" height="36px" />
+                </div>
+            </header>
             <main className="db-main">
-                <header className="db-header">
-                    <Skeleton width="150px" height="24px" />
-                    <div className="db-header-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <SkeletonCircle width="24px" height="24px" />
-                        <SkeletonCircle width="36px" height="36px" />
-                    </div>
-                </header>
                 <div style={{ padding: '24px' }}>
                     <div className="db-stats-grid" style={{ marginBottom: '24px' }}>
                         <Skeleton height="100px" borderRadius="16px" />

@@ -185,7 +185,7 @@ body::before {
 }
 
 /* NAV */
-nav {
+.lp-nav {
   position: fixed;
   top: 0;
   left: 0;
@@ -1773,7 +1773,7 @@ h1 .hl {
 }
 
 /* FOOTER */
-footer {
+.lp-footer {
   background: #0a0a0a;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
   padding: 60px 52px 40px;
@@ -1859,7 +1859,7 @@ footer {
 
 /* Tablet */
 @media(max-width:900px) {
-  nav {
+  .lp-nav {
     padding: 16px 22px
   }
 
