@@ -44,8 +44,8 @@ export default function Navbar() {
           className="logo"
           style={{ cursor: 'none' }}
         >
-          <img src="/logo.png" alt="Campus Runner" style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'cover' }} />
-          Campus Runner
+          <img src="/logo.png" alt="Skip" style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'cover' }} />
+          Skip
         </motion.a>
         <div className="nav-pill">
           {NAV_LINKS.map(l => (

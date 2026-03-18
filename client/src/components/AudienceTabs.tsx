@@ -95,7 +95,7 @@ export default function AudienceTabs() {
           </motion.div>
           <div>
             <div className="shead">Make your<br />downtime<br />count.</div>
-            <p className="ssub" style={{ marginTop: 20 }}>No car? No problem. Campus Runner is 100% walking and biking enabled. Work entirely within your own class schedule.</p>
+            <p className="ssub" style={{ marginTop: 20 }}>No car? No problem. Skip is 100% walking and biking enabled. Work entirely within your own class schedule.</p>
           </div>
         </div>
 
@@ -105,7 +105,7 @@ export default function AudienceTabs() {
             transition={{ duration: 0.5 }}
           >
             <div className="shead">Unlock the<br />student<br />economy.</div>
-            <p className="ssub" style={{ marginTop: 20 }}>Partnering with Campus Runner gives you zero-friction access to the hardest demographic to reach.</p>
+            <p className="ssub" style={{ marginTop: 20 }}>Partnering with Skip gives you zero-friction access to the hardest demographic to reach.</p>
             <div className="vbl" style={{ marginTop: 40 }}>
               {VENDOR_BENEFITS.map((b, i) => (
                 <div className="vb" key={i}>

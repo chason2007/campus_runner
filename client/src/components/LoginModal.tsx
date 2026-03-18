@@ -233,7 +233,7 @@ function StudentRunnerSignup({ isRunner, onSuccess }: { isRunner: boolean; onSuc
           campusId: studentId,
         });
         login(data.user, data.token);
-        showToast('Welcome to Campus Runner!', 'success');
+        showToast('Welcome to Skip!', 'success');
         onSuccess();
       } catch (err: any) {
         showToast(err.message || 'An error occurred during signup.', 'error');
