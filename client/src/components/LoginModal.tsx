@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -421,6 +422,7 @@ function LoginForm({ tab }: { tab: Tab }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
   const { login: authLogin } = useAuth();
@@ -435,15 +437,15 @@ function LoginForm({ tab }: { tab: Tab }) {
       authLogin(data.user, data.token);
       showToast(`Welcome back, ${data.user.name.split(' ')[0]}`, 'success');
 
-      // Redirect based on backend role
+      // Redirect based on backend role using React Router navigate
       if (data.user.role === 'admin') {
-        window.location.href = '/admin';
+        navigate('/admin');
       } else if (data.user.role === 'student') {
-        window.location.href = '/student';
+        navigate('/student');
       } else if (data.user.role === 'runner') {
-        window.location.href = '/runner';
+        navigate('/runner');
       } else if (data.user.role === 'vendor') {
-        window.location.href = '/vendor';
+        navigate('/vendor');
       }
     } catch (err: any) {
       showToast(err.message || 'Login failed', 'error');
