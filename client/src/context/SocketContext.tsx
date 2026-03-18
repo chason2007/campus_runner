@@ -18,7 +18,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     useEffect(() => {
         if (isAuthenticated && user) {
-            const newSocket = io('http://localhost:5000');
+            // Use the same base as the API, but remove /api if it exists
+            const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+            const newSocket = io(socketUrl);
 
             newSocket.on('connect', () => {
                 console.log('🔌[socket]: Connected to server');
