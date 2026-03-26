@@ -79,6 +79,13 @@ router.patch('/users/:id/approve', async (req: AuthRequest, res: Response) => {
 router.patch('/users/:id/status', async (req: AuthRequest, res: Response) => {
     try {
         const { isActive } = req.body;
+        
+        // Prevent super admin deactivation
+        const checkUser = await User.findById(req.params.id);
+        if (checkUser?.email === 'admin@campusrunner.com' && !isActive) {
+            return res.status(403).json({ message: 'Super admin cannot be deactivated' });
+        }
+        
         const user = await User.findByIdAndUpdate(req.params.id, { isActive }, { new: true }).select('-password');
         if (!user) return res.status(404).json({ message: 'User not found' });
         res.json(user);
@@ -90,11 +97,17 @@ router.patch('/users/:id/status', async (req: AuthRequest, res: Response) => {
 // Delete a user
 router.delete('/users/:id', async (req: AuthRequest, res: Response) => {
     try {
+        const checkUser = await User.findById(req.params.id);
+        if (!checkUser) return res.status(404).json({ message: 'User not found' });
+        
+        if (checkUser.email === 'admin@campusrunner.com') {
+            return res.status(403).json({ message: 'Super admin cannot be deleted' });
+        }
+
         const user = await User.findByIdAndDelete(req.params.id);
-        if (!user) return res.status(404).json({ message: 'User not found' });
         
         // If user was a vendor, delete vendor profile too
-        if (user.role === 'vendor') {
+        if (user && user.role === 'vendor') {
             await Vendor.findOneAndDelete({ owner: user._id });
         }
         
