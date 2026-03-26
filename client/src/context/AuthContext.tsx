@@ -35,6 +35,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const login = (userData: User, userToken: string) => {
+        // Clear any existing session first to avoid stale role data
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
         setUser(userData);
         setToken(userToken);
         localStorage.setItem('user', JSON.stringify(userData));

@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 import React from 'react';
+import { Capacitor } from '@capacitor/core';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 interface MotionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children: React.ReactNode;
@@ -28,6 +30,15 @@ export const MotionButton: React.FC<MotionButtonProps> = ({
         }
     };
 
+    const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (Capacitor.isNativePlatform()) {
+            try {
+                await Haptics.impact({ style: ImpactStyle.Light });
+            } catch (err) {}
+        }
+        if (props.onClick) props.onClick(e);
+    };
+
     return (
         <motion.button
             whileHover={{ scale: 1.02, y: -2, boxShadow: '0 8px 25px rgba(0,212,255,0.25)' }}
@@ -48,6 +59,7 @@ export const MotionButton: React.FC<MotionButtonProps> = ({
                 ...style
             }}
             {...props as any}
+            onClick={handleClick}
         >
             {children}
         </motion.button>

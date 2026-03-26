@@ -1,4 +1,8 @@
-import { Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { App as CapacitorApp } from '@capacitor/app';
 import { I18nProvider } from './i18n/I18nContext';
 import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
@@ -7,6 +11,7 @@ import StudentDashboard from './pages/StudentDashboard';
 import RunnerDashboard from './pages/RunnerDashboard';
 import VendorDashboard from './pages/VendorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminLogin from './pages/AdminLogin';
 import ProfileSettings from './pages/ProfileSettings';
 import GroupOrderView from './pages/GroupOrderView';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -15,6 +20,29 @@ import Cursor from './components/Cursor';
 import './campus-runner.css';
 
 function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      StatusBar.setStyle({ style: Style.Dark });
+      StatusBar.setBackgroundColor({ color: '#080808' }).catch(() => {});
+
+      CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+        if (canGoBack) {
+          navigate(-1);
+        } else {
+          CapacitorApp.exitApp();
+        }
+      });
+    }
+
+    return () => {
+      if (Capacitor.isNativePlatform()) {
+        CapacitorApp.removeAllListeners();
+      }
+    };
+  }, [navigate]);
+
   return (
     <AuthProvider>
       <SocketProvider>
@@ -47,6 +75,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/admin/login" element={<AdminLogin />} />
               <Route
                 path="/admin"
                 element={

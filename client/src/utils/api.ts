@@ -8,6 +8,18 @@ const getHeaders = () => {
     };
 };
 
+// Auto-logout if the server says the token is invalid (deleted/suspended account)
+export const handleResponse = async (response: Response) => {
+    const data = await response.json();
+    if (response.status === 403 && 
+        (data.message?.includes('does not exist') || data.message?.includes('suspended'))) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/admin/login';
+    }
+    return { ok: response.ok, data, status: response.status };
+};
+
 export const api = {
     auth: {
         register: async (userData: any) => {

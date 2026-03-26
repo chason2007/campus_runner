@@ -20,9 +20,9 @@ export function NotificationTray() {
     const fetchNotifications = async () => {
         try {
             const data = await api.notifications.getAll();
-            setNotifications(data);
+            setNotifications(Array.isArray(data) ? data : []);
         } catch (err) {
-            console.error('Failed to fetch notifications', err);
+            // Silently ignore — user may not be fully authenticated yet
         }
     };
 

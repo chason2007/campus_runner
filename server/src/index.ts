@@ -51,7 +51,7 @@ const globalLimiter = rateLimit({
 });
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 20,
+    max: process.env.NODE_ENV === 'production' ? 20 : 100,
     message: { message: 'Too many auth attempts, please wait before trying again.' }
 });
 
@@ -133,7 +133,7 @@ const startServer = async () => {
         // Auto-seed Admin if not exists
         try {
             const { User } = await import('./models/User');
-            const adminEmail = 'admin@campusrunner.edu';
+            const adminEmail = 'admin@campusrunner.com';
             const existingAdmin = await User.findOne({ email: adminEmail });
             if (!existingAdmin) {
                 // FIX #2: Admin password from env var — never hardcoded

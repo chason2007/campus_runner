@@ -28,8 +28,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
     }
 
     if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-        // Role not authorized, redirect to their own dashboard or landing
-        return <Navigate to={`/${user.role}`} replace />;
+        // Role not authorized — redirect to their correct dashboard
+        const roleMap: Record<string, string> = {
+            admin: '/admin',
+            student: '/student',
+            runner: '/runner',
+            vendor: '/vendor',
+        };
+        return <Navigate to={roleMap[user.role] || '/'} replace />;
     }
 
     return <>{children}</>;

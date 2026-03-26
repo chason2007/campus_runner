@@ -53,6 +53,9 @@ function AdminDashboard() {
 
     useEffect(() => {
         fetchData();
+        // Auto-refresh every 30 seconds to catch new signups
+        const interval = setInterval(fetchData, 30000);
+        return () => clearInterval(interval);
     }, [fetchData]);
 
     useEffect(() => {
@@ -337,6 +340,12 @@ function AdminDashboard() {
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
+                                    <button
+                                        onClick={() => fetchData()}
+                                        style={{ padding: '8px 16px', background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.3)', borderRadius: '8px', color: 'var(--accent)', fontSize: '0.8rem', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                                    >
+                                        🔄 Refresh
+                                    </button>
                                 </div>
                                 <div className="db-table-container">
                                     <table className="db-order-table">
