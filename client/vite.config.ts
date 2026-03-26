@@ -14,12 +14,5 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}']
       }
     })
-  ],
-  build: {
-    minify: 'esbuild'
-  },
-  esbuild: {
-    // @ts-expect-error - drop is valid in esbuild but missing from current type definitions
-    drop: ['console', 'debugger'],
-  },
+  ]
 })
