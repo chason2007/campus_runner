@@ -181,7 +181,7 @@ router.get('/available', authMiddleware, async (req: AuthRequest, res: Response)
 });
 
 // Helpers for Cognitive Complexity Reduction
-const handleRunnerClaim = async (orderId: string, userId: string) => {
+const handleRunnerClaim = async (orderId: string, userId: string): Promise<{ order?: any, error?: string, code?: number }> => {
     const claimedOrder = await Order.findOneAndUpdate(
         { _id: orderId, status: { $in: ['pending', 'preparing', 'accepted'] }, runner: { $exists: false } },
         { $set: { status: 'in-progress', runner: userId, updatedAt: new Date() } },
@@ -215,7 +215,7 @@ const validateStatusTransition = (order: any, role: string, status: string) => {
         'delivered': [],
         'cancelled': []
     };
-    if (role !== 'admin' && validNextStates[order.status] && !validNextStates[order.status].includes(status)) {
+    if (role !== 'admin' && validNextStates[order.status as string] && !validNextStates[order.status as string].includes(status)) {
         return { error: `Invalid status transition from "${order.status}" to "${status}"`, code: 400 };
     }
     return null;
@@ -238,10 +238,12 @@ router.patch('/:id/status', authMiddleware, async (req: AuthRequest, res: Respon
 
         // Loophole 2 Fix: Atomic claim for runners
         if (role === 'runner' && status === 'in-progress') {
-            const claim = await handleRunnerClaim(req.params.id, userId);
+            const claim = await handleRunnerClaim(req.params.id as string, userId);
             if (claim.error) return res.status(claim.code!).json({ message: claim.error });
-            emitOrderUpdate(claim.order);
-            return res.json(claim.order);
+            if (claim.order) {
+                emitOrderUpdate(claim.order);
+                return res.json(claim.order);
+            }
         }
 
         const order = await Order.findById(req.params.id);
@@ -253,7 +255,7 @@ router.patch('/:id/status', authMiddleware, async (req: AuthRequest, res: Respon
         const ownershipErr = validateOwnership(order, role, userId);
         if (ownershipErr) return res.status(ownershipErr.code).json({ message: ownershipErr.error });
 
-        order.status = status;
+        order.status = status as any;
         order.updatedAt = new Date();
         await order.save();
         

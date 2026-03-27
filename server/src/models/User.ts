@@ -25,8 +25,14 @@ const userSchema = new Schema<IUser>({
     isActive: { type: Boolean, default: true },
     isApproved: { type: Boolean, default: false },
     approvedBy: { type: Schema.Types.ObjectId, ref: 'User' },
-    createdAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now, index: true },
 });
+
+// Production Indices
+userSchema.index({ email: 1 });
+userSchema.index({ campusId: 1 }, { sparse: true });
+userSchema.index({ role: 1, isActive: 1 });
+
 
 // Hash password before saving
 userSchema.pre<IUser>('save', async function (next) {

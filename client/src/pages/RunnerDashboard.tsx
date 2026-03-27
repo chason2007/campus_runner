@@ -35,6 +35,8 @@ function RunnerDashboard() {
     const [stats, setStats] = useState({ completedDeliveries: 0, totalEarnings: 0 });
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'active' | 'leaderboard'>('active');
+    const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
+
 
     const fetchData = useCallback(async () => {
         try {
@@ -85,22 +87,39 @@ function RunnerDashboard() {
     }, [socket, fetchData, showToast]);
 
     const handleAcceptOrder = async (orderId: string) => {
+        if (processingIds.has(orderId)) return;
+        setProcessingIds(prev => new Set(prev).add(orderId));
         try {
             await api.orders.updateStatus(orderId, 'accepted');
             showToast('Order accepted!', 'success');
-            fetchData();
+            await fetchData();
         } catch (err) {
             showToast('Failed to accept order', 'error');
+        } finally {
+            setProcessingIds(prev => {
+                const next = new Set(prev);
+                next.delete(orderId);
+                return next;
+            });
         }
     };
 
     const handleUpdateStatus = async (orderId: string, status: string) => {
+        const actionKey = `${orderId}-${status}`;
+        if (processingIds.has(actionKey)) return;
+        setProcessingIds(prev => new Set(prev).add(actionKey));
         try {
             await api.orders.updateStatus(orderId, status);
             showToast(`Status updated to ${status}`, 'success');
-            fetchData();
+            await fetchData();
         } catch (err) {
             showToast('Failed to update status', 'error');
+        } finally {
+            setProcessingIds(prev => {
+                const next = new Set(prev);
+                next.delete(actionKey);
+                return next;
+            });
         }
     };
 
@@ -224,7 +243,13 @@ function RunnerDashboard() {
                                         <div style={{ fontSize: '0.75rem', color: 'var(--text3)', marginBottom: '12px' }}>{order.vendor?.name || 'Pick up'} → {order.location}</div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <div style={{ color: 'var(--accent)', fontWeight: 700 }}>AED {order.totalAmount}</div>
-                                            <MotionButton onClick={() => handleAcceptOrder(order._id)} style={{ padding: '6px 12px', fontSize: '0.7rem' }}>ACCEPT</MotionButton>
+                                            <MotionButton 
+                                                onClick={() => handleAcceptOrder(order._id)} 
+                                                disabled={processingIds.has(order._id)}
+                                                style={{ padding: '6px 12px', fontSize: '0.7rem' }}
+                                            >
+                                                {processingIds.has(order._id) ? 'ACCEPTING...' : 'ACCEPT'}
+                                            </MotionButton>
                                         </div>
                                     </motion.div>
                                 )) : (
@@ -254,16 +279,21 @@ function RunnerDashboard() {
                                             </div>
                                             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                                                 {order.status === 'accepted' && (
-                                                    <MotionButton onClick={() => handleUpdateStatus(order._id, 'picked_up')} style={{ padding: '6px 12px', fontSize: '0.7rem' }}>
-                                                        PICKED UP
+                                                    <MotionButton 
+                                                        onClick={() => handleUpdateStatus(order._id, 'picked_up')} 
+                                                        disabled={processingIds.has(`${order._id}-picked_up`)}
+                                                        style={{ padding: '6px 12px', fontSize: '0.7rem' }}
+                                                    >
+                                                        {processingIds.has(`${order._id}-picked_up`) ? 'PICKING UP...' : 'PICKED UP'}
                                                     </MotionButton>
                                                 )}
                                                 {order.status === 'picked_up' && (
                                                     <MotionButton
                                                         onClick={() => handleUpdateStatus(order._id, 'delivered')}
+                                                        disabled={processingIds.has(`${order._id}-delivered`)}
                                                         style={{ padding: '6px 12px', fontSize: '0.7rem', background: 'var(--green)', color: '#fff' }}
                                                     >
-                                                        MARK DELIVERED
+                                                        {processingIds.has(`${order._id}-delivered`) ? 'DELIVERING...' : 'MARK DELIVERED'}
                                                     </MotionButton>
                                                 )}
                                                 <span className={`db-status-pill db-status-${order.status}`}>{order.status}</span>
