@@ -7,10 +7,17 @@ const router = express.Router();
 // Create/Update Vendor Info (Requires Vendor Role)
 router.post('/', authMiddleware, roleMiddleware(['vendor']), async (req: AuthRequest, res: Response) => {
     try {
-        const vendorData = {
-            ...req.body,
-            owner: req.user?.id
-        };
+        // Loophole 4 Fix: Prevent Mass Assignment / Privilege Escalation
+        const { name, description, category, image, location, isOpen, menu } = req.body;
+        
+        const safeData: any = {};
+        if (name !== undefined) safeData.name = name;
+        if (description !== undefined) safeData.description = description;
+        if (category !== undefined) safeData.category = category;
+        if (image !== undefined) safeData.image = image;
+        if (location !== undefined) safeData.location = location;
+        if (isOpen !== undefined) safeData.isOpen = isOpen;
+        if (menu !== undefined) safeData.menu = menu;
 
         // Check if vendor already exists for this owner
         let vendor = await Vendor.findOne({ owner: req.user?.id });
@@ -19,11 +26,15 @@ router.post('/', authMiddleware, roleMiddleware(['vendor']), async (req: AuthReq
             // Update existing
             vendor = await Vendor.findOneAndUpdate(
                 { owner: req.user?.id },
-                { $set: req.body },
+                { $set: safeData },
                 { new: true }
             );
         } else {
             // Create new
+            const vendorData = {
+                ...safeData,
+                owner: req.user?.id
+            };
             vendor = new Vendor(vendorData);
             await vendor.save();
         }
