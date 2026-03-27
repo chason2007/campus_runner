@@ -182,21 +182,39 @@ router.get('/available', authMiddleware, async (req: AuthRequest, res: Response)
 
 // Update Order Status
 // FIX #1: Role-gated status transitions — enforce who can do what
-router.patch('/:id/status', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.patch('/:id/status', authMiddleware, async (req: AuthRequest, res: Response): Promise<any> => {
     try {
         const { status } = req.body;
-        const order = await Order.findById(req.params.id);
-
-        if (!order) return res.status(404).json({ message: 'Order not found' });
-
         const role = req.user?.role;
         const userId = req.user?.id;
 
+        // Loophole 2 Fix: Atomic claim for runners to prevent race conditions
+        if (role === 'runner' && status === 'in-progress') {
+            const claimedOrder = await Order.findOneAndUpdate(
+                { _id: req.params.id, status: { $in: ['pending', 'preparing', 'accepted'] }, runner: { $exists: false } },
+                { $set: { status: 'in-progress', runner: userId, updatedAt: new Date() } },
+                { new: true }
+            );
+
+            if (claimedOrder) {
+                emitOrderUpdate(claimedOrder);
+                return res.json(claimedOrder);
+            }
+            // If it failed, determine why
+            const checkOrder = await Order.findById(req.params.id);
+            if (!checkOrder) return res.status(404).json({ message: 'Order not found' });
+            if (checkOrder.runner) return res.status(400).json({ message: 'Order has already been claimed by another runner' });
+            return res.status(400).json({ message: `Order cannot be claimed at status ${checkOrder.status}` });
+        }
+
+        const order = await Order.findById(req.params.id);
+        if (!order) return res.status(404).json({ message: 'Order not found' });
+
         const allowedTransitions: Record<string, string[]> = {
-            vendor: ['preparing', 'rejected'],
-            runner: ['in-progress', 'delivered', 'cancelled'],
+            vendor: ['preparing', 'cancelled'],
+            runner: ['in-progress', 'picked_up', 'delivered', 'cancelled'],
             student: ['cancelled'],
-            admin: ['pending', 'preparing', 'in-progress', 'delivered', 'cancelled', 'rejected']
+            admin: ['pending', 'preparing', 'accepted', 'in-progress', 'picked_up', 'delivered', 'cancelled']
         };
 
         const allowed = allowedTransitions[role || ''] || [];
@@ -204,30 +222,36 @@ router.patch('/:id/status', authMiddleware, async (req: AuthRequest, res: Respon
             return res.status(403).json({ message: `Your role cannot set status to "${status}"` });
         }
 
-        // Runners can only pick up orders assigned to them or unclaimed ones
+        // Loophole 3 Fix: State Machine Validation (Prevent skipping statuses)
+        const validNextStates: Record<string, string[]> = {
+            'pending': ['preparing', 'accepted', 'in-progress', 'cancelled'],
+            'preparing': ['in-progress', 'cancelled'],
+            'accepted': ['preparing', 'in-progress', 'cancelled'],
+            'in-progress': ['picked_up', 'delivered', 'cancelled'],
+            'picked_up': ['delivered', 'cancelled'],
+            'delivered': [],
+            'cancelled': []
+        };
+
+        if (role !== 'admin' && validNextStates[order.status] && !validNextStates[order.status].includes(status)) {
+            return res.status(400).json({ message: `Invalid status transition from "${order.status}" to "${status}"` });
+        }
+
         if (role === 'runner' && order.runner && order.runner.toString() !== userId) {
             return res.status(403).json({ message: 'This order belongs to another runner' });
         }
-
-        // Vendors can only update their own orders
         if (role === 'vendor' && order.vendor && order.vendor.toString() !== userId) {
             return res.status(403).json({ message: 'Unauthorized' });
         }
-
-        // Students can only cancel their own orders
         if (role === 'student' && order.student.toString() !== userId) {
             return res.status(403).json({ message: 'Unauthorized' });
         }
 
         order.status = status;
-        if (status === 'in-progress' && !order.runner) {
-            order.runner = userId as any;
-        }
-
         order.updatedAt = new Date();
         await order.save();
+        
         emitOrderUpdate(order);
-
         res.json(order);
     } catch (error: any) {
         res.status(500).json({ message: error.message });
