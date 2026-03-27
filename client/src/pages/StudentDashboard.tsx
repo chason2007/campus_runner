@@ -12,6 +12,7 @@ import { Skeleton, SkeletonCircle } from '../components/Skeleton';
 import { MotionButton } from '../components/MotionButton';
 import { useToast } from '../context/ToastContext';
 import { DashboardMobileNav } from '../components/DashboardMobileNav';
+import { LiveMap } from '../components/LiveMap';
 import './Dashboard.css';
 
 interface Order {
@@ -206,6 +207,25 @@ function StudentDashboard() {
                             <div className="db-stat-value">{orders.filter(o => o.status === 'delivered').length}</div>
                             <div className="text-xs text-[var(--text3)]">Completed Tasks</div>
                         </motion.div>
+                    </div>
+
+                    <div className="db-card mt-6" style={{ padding: '0', overflow: 'hidden' }}>
+                         <div style={{ padding: '24px 24px 12px' }}>
+                            <span className="font-[Bebas_Neue] text-xl block">Order Tracking Radar</span>
+                            <p className="text-xs text-[var(--text3)]">Real-time visualization of your active deliveries</p>
+                        </div>
+                        <LiveMap 
+                            height="300px"
+                            locations={[
+                                ...orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').map(o => ({
+                                    lat: 25.123 + (Math.random() - 0.5) * 0.005,
+                                    lng: 55.223 + (Math.random() - 0.5) * 0.005,
+                                    label: o.title,
+                                    type: 'student' as const
+                                })),
+                                { lat: 25.1235, lng: 55.2235, label: 'Campus Hub', type: 'vendor' as const }
+                            ]} 
+                        />
                     </div>
 
                     <div className="db-card mt-6">

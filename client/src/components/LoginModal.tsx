@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { MotionButton } from './MotionButton';
+import { MagneticButton } from './MagneticButton';
 
 
 /* ─────────────────────────── types ─────────────────────────── */
@@ -277,13 +277,13 @@ function StudentRunnerSignup({ isRunner, onSuccess }: { isRunner: boolean; onSuc
           error={errors.idFile}
         />
       </div>
-      <MotionButton
+      <MagneticButton
         type="submit"
         disabled={loading}
-        style={{ width: '100%', padding: '16px', marginTop: '4px' }}
+        style={{ width: '100%', padding: '0', marginTop: '4px' }}
       >
         {loading ? 'Processing...' : isRunner ? 'Create Runner Account' : 'Create Student Account'}
-      </MotionButton>
+      </MagneticButton>
       {isRunner && (
         <p style={{ color: 'var(--text3)', fontSize: '0.74rem', textAlign: 'center', margin: '2px 0 0', lineHeight: 1.5 }}>
           Runner accounts are reviewed within 24 hours before activation.
@@ -403,13 +403,13 @@ function VendorSignup({ onSuccess }: { onSuccess: () => void }) {
           error={errors.staffFile}
         />
       </div>
-      <MotionButton
+      <MagneticButton
         type="submit"
         disabled={loading}
-        style={{ width: '100%', padding: '16px', marginTop: '4px' }}
+        style={{ width: '100%', padding: '0', marginTop: '4px' }}
       >
         {loading ? 'Processing...' : 'Create Vendor Account'}
-      </MotionButton>
+      </MagneticButton>
       <p style={{ color: 'var(--text3)', fontSize: '0.74rem', textAlign: 'center', margin: '2px 0 0', lineHeight: 1.5 }}>
         Vendor accounts are manually verified within 48 hours.<br />You will receive a confirmation email once approved.
       </p>
@@ -468,13 +468,13 @@ function LoginForm({ tab }: { tab: Tab }) {
           <a href="#" style={{ color: 'var(--text3)', fontSize: '0.75rem', textDecoration: 'none', transition: 'color 0.2s', cursor: 'none' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text3)'}>Forgot password?</a>
         </div>
       </div>
-      <MotionButton
+      <MagneticButton
         type="submit"
         disabled={loading}
-        style={{ width: '100%', padding: '16px' }}
+        style={{ width: '100%', padding: '0' }}
       >
         {loading ? 'Logging in...' : `Log In as ${tab}`}
-      </MotionButton>
+      </MagneticButton>
     </form>
   );
 }

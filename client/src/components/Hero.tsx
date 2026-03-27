@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { useTranslation } from '../i18n/I18nContext';
-import { MotionButton } from './MotionButton';
+import { MagneticButton } from './MagneticButton';
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -49,15 +49,15 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
           >
-            <MotionButton
+            <MagneticButton
               onClick={() => {
                 const el = document.getElementById('how-it-works');
                 el?.scrollIntoView({ behavior: 'smooth' });
               }}
-              style={{ padding: '16px 42px', fontSize: '1rem' }}
+              style={{ padding: '0' }} // Reset padding as MagneticButton handles it
             >
               {t('hero.btn1')}
-            </MotionButton>
+            </MagneticButton>
           </motion.div>
         </div>
       </div>

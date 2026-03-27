@@ -9,6 +9,7 @@ import { Skeleton, SkeletonCircle } from '../components/Skeleton';
 import { MotionButton } from '../components/MotionButton';
 import { useToast } from '../context/ToastContext';
 import { DashboardMobileNav } from '../components/DashboardMobileNav';
+import { LiveMap } from '../components/LiveMap';
 import './Dashboard.css';
 
 interface Order {
@@ -224,6 +225,25 @@ function RunnerDashboard() {
                             <div className="db-stat-value">AED {stats.totalEarnings.toFixed(2)}</div>
                             <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Total Earnings</div>
                         </motion.div>
+                    </div>
+
+                    <div className="db-card" style={{ marginTop: '24px', padding: '0', overflow: 'hidden' }}>
+                        <div style={{ padding: '24px 24px 12px' }}>
+                            <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem' }}>Live Delivery Radar</span>
+                            <p style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>Visualizing nearby active tasks on campus</p>
+                        </div>
+                        <LiveMap 
+                            height="300px"
+                            locations={[
+                                ...availableOrders.map(o => ({
+                                    lat: 25.123 + (Math.random() - 0.5) * 0.005, // Reduced jitter for better demo
+                                    lng: 55.223 + (Math.random() - 0.5) * 0.005,
+                                    label: o.title,
+                                    type: 'vendor' as const
+                                })),
+                                { lat: 25.1235, lng: 55.2235, label: 'Your Position', type: 'runner' as const }
+                            ]} 
+                        />
                     </div>
 
                     <div className="db-card" style={{ marginTop: '24px' }}>
