@@ -53,36 +53,55 @@ router.get('/code/:code', authMiddleware, async (req: AuthRequest, res: Response
 // Join Group Order
 // FIX #3: Require shareCode in body — ID alone is not sufficient
 // FIX #7: Max 10 participants per group
-router.post('/:id/join', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.post('/:id/join', authMiddleware, async (req: AuthRequest, res: Response): Promise<any> => {
     try {
         const { shareCode } = req.body;
         if (!shareCode) return res.status(400).json({ message: 'Share code is required to join a group order' });
 
-        const groupOrder = await GroupOrder.findById(req.params.id);
-        if (!groupOrder) return res.status(404).json({ message: 'Group order not found' });
-        if (groupOrder.shareCode !== (shareCode as string).toUpperCase()) {
-            return res.status(403).json({ message: 'Invalid share code' });
-        }
-        if (groupOrder.status !== 'open') return res.status(400).json({ message: 'Order is no longer accepting participants' });
-
         const MAX_PARTICIPANTS = 10;
-        if (groupOrder.participants.length >= MAX_PARTICIPANTS) {
+        const targetShareCode = (shareCode as string).toUpperCase();
+
+        // Loophole 5 Fix: Atomic Join to prevent size limits bypass race conditions
+        const updatedGroupOrder = await GroupOrder.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                shareCode: targetShareCode,
+                status: 'open',
+                'participants.user': { $ne: req.user?.id },
+                $expr: { $lt: [{ $size: "$participants" }, MAX_PARTICIPANTS] }
+            },
+            {
+                $push: {
+                    participants: {
+                        user: req.user?.id as any,
+                        items: [],
+                        paid: false,
+                        totalAmount: 0
+                    }
+                }
+            },
+            { new: true }
+        ).populate('host vendor participants.user');
+
+        if (updatedGroupOrder) {
+            emitGroupUpdate(updatedGroupOrder);
+            return res.json(updatedGroupOrder);
+        }
+
+        // If the atomic update failed, fetch and provide semantic error responses
+        const checkOrder = await GroupOrder.findById(req.params.id);
+        if (!checkOrder) return res.status(404).json({ message: 'Group order not found' });
+        if (checkOrder.shareCode !== targetShareCode) return res.status(403).json({ message: 'Invalid share code' });
+        if (checkOrder.status !== 'open') return res.status(400).json({ message: 'Order is no longer accepting participants' });
+        
+        const isAlreadyIn = checkOrder.participants.some((p: any) => p.user.toString() === req.user?.id);
+        if (isAlreadyIn) return res.status(400).json({ message: 'You have already joined this group order' });
+        
+        if (checkOrder.participants.length >= MAX_PARTICIPANTS) {
             return res.status(400).json({ message: `Group is full (max ${MAX_PARTICIPANTS} participants)` });
         }
 
-        const isAlreadyIn = groupOrder.participants.some((p: any) => p.user.toString() === req.user?.id);
-        if (isAlreadyIn) return res.status(400).json({ message: 'You have already joined this group order' });
-
-        groupOrder.participants.push({
-            user: req.user?.id as any,
-            items: [],
-            paid: false,
-            totalAmount: 0
-        });
-
-        await groupOrder.save();
-        emitGroupUpdate(groupOrder);
-        res.json(groupOrder);
+        return res.status(400).json({ message: 'Failed to join group order' });
     } catch (error: any) {
         res.status(500).json({ message: error.message });
     }
