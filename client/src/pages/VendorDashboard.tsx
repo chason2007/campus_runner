@@ -110,10 +110,10 @@ function VendorDashboard() {
         // ... (skeleton code same as before)
         <div className="db-layout">
             <aside className="db-sidebar">
-                <div style={{ padding: '24px 20px', borderBottom: '1px solid var(--border)' }}>
+                <div className="py-6 px-5 border-b border-[var(--border)]">
                     <Skeleton width="120px" height="24px" />
                 </div>
-                <div style={{ padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div className="py-4 px-3 flex flex-col gap-3">
                     <Skeleton height="32px" borderRadius="8px" />
                     <Skeleton height="32px" borderRadius="8px" />
                     <Skeleton height="32px" borderRadius="8px" />
@@ -121,14 +121,14 @@ function VendorDashboard() {
             </aside>
             <header className="db-header">
                 <Skeleton width="120px" height="24px" />
-                <div className="db-header-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div className="flex items-center gap-4">
                     <SkeletonCircle width="24px" height="24px" />
                     <SkeletonCircle width="36px" height="36px" />
                 </div>
             </header>
             <main className="db-main">
-                <div style={{ padding: '24px' }}>
-                    <div className="db-stats-grid" style={{ marginBottom: '24px' }}>
+                <div className="p-6">
+                    <div className="db-stats-grid mb-6">
                         <Skeleton height="100px" borderRadius="16px" />
                         <Skeleton height="100px" borderRadius="16px" />
                     </div>
@@ -142,42 +142,40 @@ function VendorDashboard() {
         <div className="db-layout">
             {/* SIDEBAR */}
             <aside className="db-sidebar">
-                <div style={{ padding: '24px 20px', borderBottom: '1px solid var(--border)' }}>
-                    <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem', color: 'var(--accent)' }}>CAMPUSRUNNER</div>
-                    <div style={{ fontSize: '.65rem', color: 'var(--text3)', textTransform: 'uppercase' }}>Vendor Portal</div>
+                <div className="py-6 px-5 border-b border-[var(--border)]">
+                    <div className="font-[Bebas_Neue] text-2xl text-[var(--accent)]">CAMPUSRUNNER</div>
+                    <div className="text-[0.65rem] text-[var(--text3)] uppercase">Vendor Portal</div>
                 </div>
-                <nav style={{ flex: 1, padding: '16px 12px' }}>
+                <nav className="flex-1 py-4 px-3">
                     <motion.div
                         whileHover={{ x: 4 }}
                         onClick={() => setActiveTab('orders')}
-                        className={activeTab === 'orders' ? 'active' : ''}
-                        style={{ padding: '10px', color: activeTab === 'orders' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'orders' ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}
+                        className={`p-2.5 cursor-pointer flex items-center gap-3 transition-colors ${activeTab === 'orders' ? 'active text-[var(--accent)] font-semibold' : 'text-[var(--text2)] font-normal'}`}
                     >
                         <span>🏪</span> <span className="db-sidebar-label">Store Front</span>
                     </motion.div>
                     <motion.div
                         whileHover={{ x: 4 }}
                         onClick={() => setActiveTab('menu')}
-                        className={activeTab === 'menu' ? 'active' : ''}
-                        style={{ padding: '10px', color: activeTab === 'menu' ? 'var(--accent)' : 'var(--text2)', fontWeight: activeTab === 'menu' ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}
+                        className={`p-2.5 cursor-pointer flex items-center gap-3 transition-colors ${activeTab === 'menu' ? 'active text-[var(--accent)] font-semibold' : 'text-[var(--text2)] font-normal'}`}
                     >
                         <span>📋</span> <span className="db-sidebar-label">Menu Management</span>
                     </motion.div>
-                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} style={{ padding: '10px', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} className="p-2.5 text-[var(--text2)] cursor-pointer flex items-center gap-3">
                         <span>⚙️</span> <span className="db-sidebar-label">Settings</span>
                     </motion.div>
                 </nav>
-                <div style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
-                    <button onClick={logout} style={{ background: 'none', border: 'none', color: '#ff6b6b', cursor: 'pointer', padding: '10px' }}>🚪 Log Out</button>
+                <div className="p-3 border-t border-[var(--border)]">
+                    <button onClick={logout} className="bg-transparent border-none text-[#ff6b6b] cursor-pointer p-2.5">🚪 Log Out</button>
                 </div>
             </aside>
 
             {/* HEADER */}
             <header className="db-header">
-                <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.4rem' }}>{vendor?.name || 'Vendor Admin'}</span>
-                <div className="db-header-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <span className="font-[Bebas_Neue] text-xl">{vendor?.name || 'Vendor Admin'}</span>
+                <div className="flex items-center gap-4">
                     <NotificationTray />
-                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--accent2)', border: '1.5px solid var(--accent3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)' }}>
+                    <div className="w-9 h-9 rounded-full bg-[var(--accent2)] border-[1.5px] border-[var(--accent3)] flex items-center justify-center text-[var(--accent)]">
                         {user?.name?.charAt(0) || 'V'}
                     </div>
                 </div>
@@ -191,7 +189,7 @@ function VendorDashboard() {
                         animate={{ opacity: 1, y: 0 }}
                         className="db-welcome-banner"
                     >
-                        <div style={{ fontSize: '1rem', fontFamily: 'Bebas Neue', color: 'rgba(0,212,255,.6)' }}>{activeTab === 'orders' ? 'Business Dashboard,' : 'Inventory Management,'}</div>
+                        <div className="text-base font-[Bebas_Neue] text-[rgba(0,212,255,.6)]">{activeTab === 'orders' ? 'Business Dashboard,' : 'Inventory Management,'}</div>
                         <div className="db-welcome-name">{user?.name || 'Vendor'}</div>
                     </motion.div>
 
@@ -200,19 +198,19 @@ function VendorDashboard() {
                             <div className="db-stats-grid">
                                 <motion.div whileHover={{ y: -5 }} className="db-stat-card">
                                     <div className="db-stat-value db-stat-accent">{orders.length}</div>
-                                    <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Total Orders</div>
+                                    <div className="text-xs text-[var(--text3)]">Total Orders</div>
                                 </motion.div>
                                 <motion.div whileHover={{ y: -5 }} className="db-stat-card">
                                     <div className="db-stat-value">AED {orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0).toFixed(2)}</div>
-                                    <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Total Revenue</div>
+                                    <div className="text-xs text-[var(--text3)]">Total Revenue</div>
                                 </motion.div>
                             </div>
 
-                            <div className="db-card" style={{ marginBottom: '24px' }}>
-                                <div style={{ marginBottom: '16px' }}>
-                                    <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem' }}>Revenue Overview</span>
+                            <div className="db-card mb-6">
+                                <div className="mb-4">
+                                    <span className="font-[Bebas_Neue] text-xl">Revenue Overview</span>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', height: '100px', padding: '0 10px' }}>
+                                <div className="flex items-end gap-2 h-[100px] px-2">
                                     {[...Array(7)].map((_, i) => {
                                         const date = new Date();
                                         date.setDate(date.getDate() - (6 - i));
@@ -227,14 +225,14 @@ function VendorDashboard() {
                                         const height = (dayRevenue / maxRevenue) * 100;
 
                                         return (
-                                            <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                            <div key={i} className="flex-1 flex flex-col items-center gap-1">
                                                 <motion.div
                                                     initial={{ height: 0 }}
                                                     animate={{ height: `${height}%` }}
                                                     transition={{ duration: 1, delay: i * 0.1 }}
-                                                    style={{ width: '100%', background: 'var(--accent)', borderRadius: '4px 4px 0 0', minHeight: '2px', opacity: i === 6 ? 1 : 0.6 }}
+                                                    className={`w-full bg-[var(--accent)] rounded-t min-h-[2px] ${i === 6 ? 'opacity-100' : 'opacity-60'}`}
                                                 />
-                                                <div style={{ fontSize: '0.6rem', color: 'var(--text3)', textTransform: 'uppercase' }}>{date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                                                <div className="text-[0.6rem] text-[var(--text3)] uppercase">{date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
                                             </div>
                                         );
                                     })}
@@ -242,8 +240,8 @@ function VendorDashboard() {
                             </div>
 
                             <div className="db-card">
-                                <div style={{ marginBottom: '20px' }}>
-                                    <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem' }}>Incoming Orders</span>
+                                <div className="mb-5">
+                                    <span className="font-[Bebas_Neue] text-xl">Incoming Orders</span>
                                 </div>
                                 <div className="db-table-container">
                                     <table className="db-order-table">
@@ -267,14 +265,14 @@ function VendorDashboard() {
                                                         exit={{ opacity: 0, scale: 0.95 }}
                                                     >
                                                         <td>
-                                                            <div style={{ fontWeight: 600 }}>{order.title}</div>
-                                                            <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{order.student?.name}</div>
+                                                            <div className="font-semibold">{order.title}</div>
+                                                            <div className="text-xs text-[var(--text3)]">{order.student?.name}</div>
                                                         </td>
                                                         <td>
                                                             {order.items?.map(i => (
-                                                                <div key={i.name} style={{ fontSize: '0.75rem', color: 'var(--text2)' }}>{i.quantity}x {i.name}</div>
+                                                                <div key={i.name} className="text-xs text-[var(--text2)]">{i.quantity}x {i.name}</div>
                                                             ))}
-                                                            {!order.items?.length && <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{order.description}</div>}
+                                                            {!order.items?.length && <div className="text-xs text-[var(--text3)]">{order.description}</div>}
                                                         </td>
                                                         <td>
                                                             <span className={`db-status-pill db-status-${order.status}`}>
@@ -282,10 +280,7 @@ function VendorDashboard() {
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <span style={{
-                                                                fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase',
-                                                                color: order.paymentInfo?.status === 'paid' ? 'var(--accent)' : '#ff6b6b'
-                                                            }}>
+                                                            <span className={`text-[0.7rem] font-bold uppercase ${order.paymentInfo?.status === 'paid' ? 'text-[var(--accent)]' : 'text-[#ff6b6b]'}`}>
                                                                 {order.paymentInfo?.status || 'pending'}
                                                             </span>
                                                         </td>
@@ -293,19 +288,19 @@ function VendorDashboard() {
                                                             {order.status === 'pending' && (
                                                                 <MotionButton
                                                                     onClick={() => handleUpdateStatus(order._id, 'preparing')}
-                                                                    style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+                                                                    className="px-3 py-1.5 text-xs"
                                                                 >
                                                                     Accept
                                                                 </MotionButton>
                                                             )}
                                                             {order.status === 'preparing' && (
-                                                                <span style={{ color: 'var(--text3)', fontSize: '0.8rem italic' }}>In Kitchen</span>
+                                                                <span className="text-[var(--text3)] text-xs italic">In Kitchen</span>
                                                             )}
                                                         </td>
                                                     </motion.tr>
                                                 )) : (
                                                     <tr>
-                                                        <td colSpan={5} style={{ textAlign: 'center', padding: '20px', color: 'var(--text3)' }}>No orders yet</td>
+                                                        <td colSpan={5} className="text-center p-5 text-[var(--text3)]">No orders yet</td>
                                                     </tr>
                                                 )}
                                             </AnimatePresence>
@@ -316,10 +311,10 @@ function VendorDashboard() {
                         </>
                     ) : (
                         <div className="db-card">
-                            <div style={{ marginBottom: '20px' }}>
-                                <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem' }}>Menu Items</span>
+                            <div className="mb-5">
+                                <span className="font-[Bebas_Neue] text-xl">Menu Items</span>
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                                 <AnimatePresence mode="popLayout">
                                     {vendor?.menu.map(item => (
                                         <motion.div
@@ -327,31 +322,26 @@ function VendorDashboard() {
                                             layout
                                             initial={{ opacity: 0, scale: 0.9 }}
                                             animate={{ opacity: 1, scale: 1 }}
-                                            style={{ padding: '16px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}
+                                            className="p-4 bg-[var(--surface)] border border-[var(--border)] rounded-2xl flex flex-col gap-2"
                                         >
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                                            <div className="flex justify-between items-start">
                                                 <div>
-                                                    <div style={{ fontWeight: 600 }}>{item.name}</div>
-                                                    <div style={{ fontSize: '0.8rem', color: 'var(--text3)' }}>AED {item.price}</div>
+                                                    <div className="font-semibold">{item.name}</div>
+                                                    <div className="text-sm text-[var(--text3)]">AED {item.price}</div>
                                                 </div>
-                                                <div
+                                                {/* FIX A11Y Loophole: Make this a button */}
+                                                <button
                                                     onClick={() => handleToggleAvailability(item.name, !item.isAvailable)}
-                                                    style={{
-                                                        width: '40px', height: '22px', borderRadius: '100px',
-                                                        background: item.isAvailable ? 'var(--accent)' : 'var(--bg3)',
-                                                        cursor: 'pointer', position: 'relative', transition: 'all 0.3s'
-                                                    }}
+                                                    className={`w-10 h-5.5 rounded-full cursor-pointer relative transition-all duration-300 ${item.isAvailable ? 'bg-[var(--accent)]' : 'bg-[var(--bg3)]'} border-none`}
+                                                    aria-label={`Toggle availability for ${item.name}`}
                                                 >
                                                     <motion.div
                                                         animate={{ left: item.isAvailable ? '20px' : '2px' }}
-                                                        style={{
-                                                            width: '18px', height: '18px', borderRadius: '50%', background: '#fff',
-                                                            position: 'absolute', top: '2px'
-                                                        }}
+                                                        className="w-4.5 h-4.5 rounded-full bg-white absolute top-0.5"
                                                     />
-                                                </div>
+                                                </button>
                                             </div>
-                                            <div style={{ fontSize: '0.75rem', color: item.isAvailable ? 'var(--accent)' : '#ff6b6b', fontWeight: 600 }}>
+                                            <div className={`text-xs font-semibold ${item.isAvailable ? 'text-[var(--accent)]' : 'text-[#ff6b6b]'}`}>
                                                 {item.isAvailable ? 'ACTIVE' : 'OUT OF STOCK'}
                                             </div>
                                         </motion.div>

@@ -102,10 +102,10 @@ function StudentDashboard() {
     if (loading) return (
         <div className="db-layout">
             <aside className="db-sidebar">
-                <div style={{ padding: '24px 20px', borderBottom: '1px solid var(--border)' }}>
+                <div className="py-6 px-5 border-b border-[var(--border)]">
                     <Skeleton width="120px" height="24px" />
                 </div>
-                <div style={{ padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div className="py-4 px-3 flex flex-col gap-3">
                     <Skeleton height="32px" borderRadius="8px" />
                     <Skeleton height="32px" borderRadius="8px" />
                     <Skeleton height="32px" borderRadius="8px" />
@@ -113,14 +113,14 @@ function StudentDashboard() {
             </aside>
             <header className="db-header">
                 <Skeleton width="120px" height="24px" />
-                <div className="db-header-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div className="flex items-center gap-4">
                     <SkeletonCircle width="24px" height="24px" />
                     <SkeletonCircle width="36px" height="36px" />
                 </div>
             </header>
             <main className="db-main">
-                <div style={{ padding: '24px' }}>
-                    <div className="db-stats-grid" style={{ marginBottom: '24px' }}>
+                <div className="p-6">
+                    <div className="db-stats-grid mb-6">
                         <Skeleton height="100px" borderRadius="16px" />
                         <Skeleton height="100px" borderRadius="16px" />
                     </div>
@@ -134,32 +134,32 @@ function StudentDashboard() {
         <div className="db-layout">
             {/* SIDEBAR */}
             <aside className="db-sidebar">
-                <div style={{ padding: '24px 20px', borderBottom: '1px solid var(--border)' }}>
-                    <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem', color: 'var(--accent)' }}>CAMPUSRUNNER</div>
-                    <div style={{ fontSize: '.65rem', color: 'var(--text3)', textTransform: 'uppercase' }}>Student Portal</div>
+                <div className="py-6 px-5 border-b border-[var(--border)]">
+                    <div className="font-[Bebas_Neue] text-2xl text-[var(--accent)]">CAMPUSRUNNER</div>
+                    <div className="text-[0.65rem] text-[var(--text3)] uppercase">Student Portal</div>
                 </div>
-                <nav style={{ flex: 1, padding: '16px 12px' }}>
-                    <motion.div whileHover={{ x: 4 }} className="active" style={{ padding: '10px', color: 'var(--accent)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <nav className="flex-1 py-4 px-3">
+                    <motion.div whileHover={{ x: 4 }} className="active p-2.5 text-[var(--accent)] font-semibold flex items-center gap-3">
                         <span>🏠</span> <span className="db-sidebar-label">Dashboard</span>
                     </motion.div>
-                    <motion.div whileHover={{ x: 4 }} style={{ padding: '10px', color: 'var(--text2)', cursor: 'default', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <motion.div whileHover={{ x: 4 }} className="p-2.5 text-[var(--text2)] cursor-default flex items-center gap-3">
                         <span>🕒</span> <span className="db-sidebar-label">History</span>
                     </motion.div>
-                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} style={{ padding: '10px', color: 'var(--text2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} className="p-2.5 text-[var(--text2)] cursor-pointer flex items-center gap-3">
                         <span>⚙️</span> <span className="db-sidebar-label">Settings</span>
                     </motion.div>
                 </nav>
-                <div style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
-                    <button onClick={logout} style={{ background: 'none', border: 'none', color: '#ff6b6b', cursor: 'pointer', padding: '10px' }}>🚪 Log Out</button>
+                <div className="p-3 border-t border-[var(--border)]">
+                    <button onClick={logout} className="bg-transparent border-none text-[#ff6b6b] cursor-pointer p-2.5">🚪 Log Out</button>
                 </div>
             </aside>
 
             {/* HEADER */}
             <header className="db-header">
-                <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.4rem' }}>Dashboard Home</span>
-                <div className="db-header-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <span className="font-[Bebas_Neue] text-xl">Dashboard Home</span>
+                <div className="flex items-center gap-4">
                     <NotificationTray />
-                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--accent2)', border: '1.5px solid var(--accent3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)' }}>
+                    <div className="w-9 h-9 rounded-full bg-[var(--accent2)] border-[1.5px] border-[var(--accent3)] flex items-center justify-center text-[var(--accent)]">
                         {user?.name?.charAt(0) || 'S'}
                     </div>
                 </div>
@@ -173,29 +173,29 @@ function StudentDashboard() {
                         animate={{ opacity: 1, y: 0 }}
                         className="db-welcome-banner"
                     >
-                        <div style={{ fontSize: '1rem', fontFamily: 'Bebas Neue', color: 'rgba(0,212,255,.6)' }}>Welcome back,</div>
-                        <div className="db-welcome-name" style={{ marginBottom: '16px' }}>{user?.name || 'Student'}</div>
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                            <MotionButton onClick={() => setIsJoinModalOpen(true)} variant="secondary" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>Join Group</MotionButton>
-                            <MotionButton onClick={() => setIsGroupModalOpen(true)} variant="secondary" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>Start Group</MotionButton>
-                            <MotionButton onClick={() => setIsModalOpen(true)} style={{ padding: '8px 16px', fontSize: '0.8rem' }}>+ New Order</MotionButton>
+                        <div className="text-base font-[Bebas_Neue] text-[rgba(0,212,255,.6)]">Welcome back,</div>
+                        <div className="db-welcome-name mb-4">{user?.name || 'Student'}</div>
+                        <div className="flex gap-2 flex-wrap">
+                            <MotionButton onClick={() => setIsJoinModalOpen(true)} variant="secondary" className="px-4 py-2 text-sm">Join Group</MotionButton>
+                            <MotionButton onClick={() => setIsGroupModalOpen(true)} variant="secondary" className="px-4 py-2 text-sm">Start Group</MotionButton>
+                            <MotionButton onClick={() => setIsModalOpen(true)} className="px-4 py-2 text-sm">+ New Order</MotionButton>
                         </div>
                     </motion.div>
 
                     <div className="db-stats-grid">
                         <motion.div whileHover={{ y: -5 }} className="db-stat-card">
                             <div className="db-stat-value db-stat-accent">{orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}</div>
-                            <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Active Orders</div>
+                            <div className="text-xs text-[var(--text3)]">Active Orders</div>
                         </motion.div>
                         <motion.div whileHover={{ y: -5 }} className="db-stat-card">
                             <div className="db-stat-value">{orders.filter(o => o.status === 'delivered').length}</div>
-                            <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Completed Tasks</div>
+                            <div className="text-xs text-[var(--text3)]">Completed Tasks</div>
                         </motion.div>
                     </div>
 
-                    <div className="db-card" style={{ marginTop: '24px' }}>
-                        <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem', display: 'block', marginBottom: '16px' }}>Live Tracking</span>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div className="db-card mt-6">
+                        <span className="font-[Bebas_Neue] text-xl block mb-4">Live Tracking</span>
+                        <div className="flex flex-col gap-3">
                             <AnimatePresence mode="popLayout">
                                 {orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').map(order => (
                                     <motion.div
@@ -206,17 +206,17 @@ function StudentDashboard() {
                                         exit={{ opacity: 0, x: 20 }}
                                         className="db-subcard"
                                     >
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div className="flex justify-between items-center">
                                             <div>
-                                                <div style={{ fontWeight: 600 }}>{order.title}</div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>Order ID: {order._id.slice(-6).toUpperCase()}</div>
+                                                <div className="font-semibold">{order.title}</div>
+                                                <div className="text-xs text-[var(--text3)]">Order ID: {order._id.slice(-6).toUpperCase()}</div>
                                             </div>
-                                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                            <div className="flex gap-3 items-center">
                                                 {order.paymentInfo?.status === 'pending' && (
-                                                    <MotionButton onClick={() => handlePayNow(order._id)} variant="primary" style={{ padding: '6px 12px', fontSize: '0.7rem' }}>PAY NOW</MotionButton>
+                                                    <MotionButton onClick={() => handlePayNow(order._id)} variant="primary" className="px-3 py-1.5 text-xs">PAY NOW</MotionButton>
                                                 )}
                                                 {order.status === 'delivered' && !order.dispute?.isDisputed && (
-                                                    <MotionButton onClick={() => handleReportIssue(order._id, 'Problem with delivery')} variant="ghost" style={{ padding: '6px 12px', fontSize: '0.7rem' }}>REPORT ISSUE</MotionButton>
+                                                    <MotionButton onClick={() => handleReportIssue(order._id, 'Problem with delivery')} variant="ghost" className="px-3 py-1.5 text-xs">REPORT ISSUE</MotionButton>
                                                 )}
                                                 <span className={`db-status-pill db-status-${order.status}`}>{order.status}</span>
                                             </div>
@@ -232,13 +232,13 @@ function StudentDashboard() {
                                 ))}
                             </AnimatePresence>
                             {orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length === 0 && (
-                                <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text3)' }}>No active orders. Time for a coffee?</div>
+                                <div className="text-center p-5 text-[var(--text3)]">No active orders. Time for a coffee?</div>
                             )}
                         </div>
                     </div>
 
-                    <div className="db-card" style={{ marginTop: '24px' }}>
-                        <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem', display: 'block', marginBottom: '16px' }}>Recent activity</span>
+                    <div className="db-card mt-6">
+                        <span className="font-[Bebas_Neue] text-xl block mb-4">Recent activity</span>
                         <div className="db-table-container">
                             <table className="db-order-table">
                                 <thead>
@@ -269,7 +269,7 @@ function StudentDashboard() {
                                                         <MotionButton
                                                             onClick={() => setRatingModal({ isOpen: true, orderId: order._id, orderTitle: order.title })}
                                                             variant="secondary"
-                                                            style={{ padding: '4px 10px', fontSize: '0.65rem' }}
+                                                            className="px-2.5 py-1 text-[0.65rem]"
                                                         >
                                                             RATE
                                                         </MotionButton>

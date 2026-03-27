@@ -13,6 +13,8 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+const removeToastById = (prev: Toast[], id: string) => prev.filter((t) => t.id !== id);
+
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -20,7 +22,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const id = Math.random().toString(36).substr(2, 9);
         setToasts((prev) => [...prev, { id, message, type }]);
         setTimeout(() => {
-            setToasts((prev) => prev.filter((t) => t.id !== id));
+            setToasts((prev) => removeToastById(prev, id));
         }, 4000);
     }, []);
 
