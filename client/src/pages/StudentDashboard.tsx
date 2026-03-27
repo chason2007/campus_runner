@@ -164,12 +164,12 @@ function StudentDashboard() {
                     <div className="font-[Bebas_Neue] text-2xl text-[var(--accent)]">CAMPUSRUNNER</div>
                     <div className="text-[0.65rem] text-[var(--text3)] uppercase">Student Portal</div>
                 </div>
-                <nav className="flex-1 py-4 px-3">
+                <nav className="flex-1 py-4 px-3 flex flex-col gap-2">
                     <motion.button 
                         type="button" 
                         whileHover={{ x: 4 }} 
                         onClick={() => setActiveTab('orders')}
-                        className={`w-full bg-transparent border-none p-2.5 flex items-center gap-3 cursor-pointer ${activeTab === 'orders' ? 'active text-[var(--accent)] font-semibold' : 'text-[var(--text2)]'}`}
+                        className={`db-sidebar-nav-item ${activeTab === 'orders' ? 'active' : ''}`}
                     >
                         <span>🏠</span> <span className="db-sidebar-label">Dashboard</span>
                     </motion.button>
@@ -177,14 +177,15 @@ function StudentDashboard() {
                         type="button" 
                         whileHover={{ x: 4 }} 
                         onClick={() => setActiveTab('vendors')}
-                        className={`w-full bg-transparent border-none p-2.5 flex items-center gap-3 cursor-pointer ${activeTab === 'vendors' ? 'active text-[var(--accent)] font-semibold' : 'text-[var(--text2)]'}`}
+                        className={`db-sidebar-nav-item ${activeTab === 'vendors' ? 'active' : ''}`}
                     >
                         <span>🏪</span> <span className="db-sidebar-label">Vendors</span>
                     </motion.button>
                     <motion.button 
                         type="button" 
                         whileHover={{ x: 4 }} 
-                        className="w-full bg-transparent border-none p-2.5 text-[var(--text2)] cursor-default flex items-center gap-3"
+                        className="db-sidebar-nav-item"
+                        style={{ cursor: 'default', opacity: 0.6 }}
                     >
                         <span>🕒</span> <span className="db-sidebar-label">History</span>
                     </motion.button>
@@ -192,7 +193,7 @@ function StudentDashboard() {
                         type="button" 
                         whileHover={{ x: 4 }} 
                         onClick={() => window.location.href = '/profile'} 
-                        className="w-full bg-transparent border-none p-2.5 text-[var(--text2)] cursor-pointer flex items-center gap-3"
+                        className="db-sidebar-nav-item"
                     >
                         <span>⚙️</span> <span className="db-sidebar-label">Settings</span>
                     </motion.button>
@@ -204,7 +205,9 @@ function StudentDashboard() {
 
             {/* HEADER */}
             <header className="db-header">
-                <span className="font-[Bebas_Neue] text-xl">Dashboard Home</span>
+                <span className="font-[Bebas_Neue] text-xl">
+                    {activeTab === 'orders' ? 'Dashboard Home' : 'Campus Vendors'}
+                </span>
                 <div className="flex items-center gap-4">
                     <NotificationTray />
                     <div className="w-9 h-9 rounded-full bg-[var(--accent2)] border-[1.5px] border-[var(--accent3)] flex items-center justify-center text-[var(--accent)]">
@@ -223,7 +226,7 @@ function StudentDashboard() {
                     >
                         <div className="text-base font-[Bebas_Neue] text-[rgba(0,212,255,.6)]">Welcome back,</div>
                         <div className="db-welcome-name mb-4">{user?.name || 'Student'}</div>
-                        <div className="flex gap-2 flex-wrap">
+                        <div className="flex gap-2 items-center flex-wrap">
                             <MotionButton onClick={() => setIsJoinModalOpen(true)} variant="secondary" className="px-4 py-2 text-sm">Join Group</MotionButton>
                             <MotionButton onClick={() => setIsGroupModalOpen(true)} variant="secondary" className="px-4 py-2 text-sm">Start Group</MotionButton>
                             <MotionButton onClick={() => setIsModalOpen(true)} className="px-4 py-2 text-sm">+ New Order</MotionButton>
@@ -234,12 +237,12 @@ function StudentDashboard() {
                             <>
                                 <div className="db-stats-grid">
                                     <motion.div whileHover={{ y: -5 }} className="db-stat-card">
-                                        <div className="db-stat-value db-stat-accent">{orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}</div>
-                                        <div className="text-xs text-[var(--text3)]">Active Orders</div>
+                                        <div className="db-stat-value db-stat-accent text-2xl">{orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}</div>
+                                        <div className="text-[0.7rem] text-[var(--text3)] uppercase font-semibold">Active Orders</div>
                                     </motion.div>
                                     <motion.div whileHover={{ y: -5 }} className="db-stat-card">
-                                        <div className="db-stat-value">{orders.filter(o => o.status === 'delivered').length}</div>
-                                        <div className="text-xs text-[var(--text3)]">Completed Tasks</div>
+                                        <div className="db-stat-value text-2xl">{orders.filter(o => o.status === 'delivered').length}</div>
+                                        <div className="text-[0.7rem] text-[var(--text3)] uppercase font-semibold">Completed</div>
                                     </motion.div>
                                 </div>
 
@@ -373,19 +376,18 @@ function StudentDashboard() {
                                 className="db-card mt-6"
                             >
                                 <span className="font-[Bebas_Neue] text-xl block mb-6">Campus Vendors</span>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                                <div className="db-stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
                                     {vendors.length > 0 ? vendors.map(v => (
                                         <motion.div
                                             key={v._id}
                                             whileHover={{ y: -5 }}
-                                            className="db-subcard"
-                                            style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+                                            className="db-subcard flex flex-col gap-3"
                                         >
                                             <div style={{ height: '140px', background: 'var(--bg3)', borderRadius: '12px', overflow: 'hidden', position: 'relative' }}>
                                                 {v.image ? (
                                                     <img src={v.image} alt={v.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                                 ) : (
-                                                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', fontSize: '2rem' }}>🏪</div>
+                                                    <div className="flex items-center justify-center h-full text-[var(--text3)] text-3xl">🏪</div>
                                                 )}
                                                 <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
                                                     <span className={`db-status-pill ${v.isOpen ? 'db-status-delivered' : 'db-status-pending'}`} style={{ fontSize: '0.6rem' }}>
@@ -395,13 +397,12 @@ function StudentDashboard() {
                                             </div>
                                             <div>
                                                 <div className="font-semibold text-lg">{v.name}</div>
-                                                <div className="text-xs text-[var(--accent)] uppercase font-bold mt-1">{v.category}</div>
-                                                <div className="text-xs text-[var(--text3)] mt-2 line-clamp-2">{v.description}</div>
+                                                <div className="text-[0.65rem] text-[var(--accent)] uppercase font-bold mt-1">{v.category}</div>
+                                                <div className="text-[0.75rem] text-[var(--text3)] mt-2 line-clamp-2">{v.description}</div>
                                             </div>
                                             <MotionButton 
                                                 onClick={() => {
                                                     setIsModalOpen(true);
-                                                    // Note: We could pre-select the vendor if CreateOrderModal supported it
                                                 }}
                                                 variant="secondary" 
                                                 className="w-full mt-2"
@@ -411,7 +412,7 @@ function StudentDashboard() {
                                         </motion.div>
                                     )) : (
                                         <div className="text-center p-10 col-span-full">
-                                            <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🏪</div>
+                                            <div className="text-3xl mb-2">🏪</div>
                                             <div className="text-[var(--text3)]">No vendors available right now.</div>
                                         </div>
                                     )}
