@@ -52,10 +52,16 @@ function StudentDashboard() {
         orderTitle: ''
     });
 
+    const [vendors, setVendors] = useState<any[]>([]);
+
     const fetchData = useCallback(async () => {
         try {
-            const myOrders = await api.orders.getMine();
+            const [myOrders, allVendors] = await Promise.all([
+                api.orders.getMine(),
+                api.vendors.getAll()
+            ]);
             setOrders(Array.isArray(myOrders) ? myOrders : []);
+            setVendors(Array.isArray(allVendors) ? allVendors : []);
         } catch (err) {
             console.error('Failed to fetch dashboard data', err);
             if (err instanceof Error && (err.message.includes('Unauthorized') || err.message.includes('token'))) {
@@ -159,13 +165,35 @@ function StudentDashboard() {
                     <div className="text-[0.65rem] text-[var(--text3)] uppercase">Student Portal</div>
                 </div>
                 <nav className="flex-1 py-4 px-3">
-                    <motion.button type="button" whileHover={{ x: 4 }} className="w-full bg-transparent border-none active p-2.5 text-[var(--accent)] font-semibold flex items-center gap-3">
+                    <motion.button 
+                        type="button" 
+                        whileHover={{ x: 4 }} 
+                        onClick={() => setActiveTab('orders')}
+                        className={`w-full bg-transparent border-none p-2.5 flex items-center gap-3 cursor-pointer ${activeTab === 'orders' ? 'active text-[var(--accent)] font-semibold' : 'text-[var(--text2)]'}`}
+                    >
                         <span>🏠</span> <span className="db-sidebar-label">Dashboard</span>
                     </motion.button>
-                    <motion.button type="button" whileHover={{ x: 4 }} className="w-full bg-transparent border-none p-2.5 text-[var(--text2)] cursor-default flex items-center gap-3">
+                    <motion.button 
+                        type="button" 
+                        whileHover={{ x: 4 }} 
+                        onClick={() => setActiveTab('vendors')}
+                        className={`w-full bg-transparent border-none p-2.5 flex items-center gap-3 cursor-pointer ${activeTab === 'vendors' ? 'active text-[var(--accent)] font-semibold' : 'text-[var(--text2)]'}`}
+                    >
+                        <span>🏪</span> <span className="db-sidebar-label">Vendors</span>
+                    </motion.button>
+                    <motion.button 
+                        type="button" 
+                        whileHover={{ x: 4 }} 
+                        className="w-full bg-transparent border-none p-2.5 text-[var(--text2)] cursor-default flex items-center gap-3"
+                    >
                         <span>🕒</span> <span className="db-sidebar-label">History</span>
                     </motion.button>
-                    <motion.button type="button" whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} className="w-full bg-transparent border-none p-2.5 text-[var(--text2)] cursor-pointer flex items-center gap-3">
+                    <motion.button 
+                        type="button" 
+                        whileHover={{ x: 4 }} 
+                        onClick={() => window.location.href = '/profile'} 
+                        className="w-full bg-transparent border-none p-2.5 text-[var(--text2)] cursor-pointer flex items-center gap-3"
+                    >
                         <span>⚙️</span> <span className="db-sidebar-label">Settings</span>
                     </motion.button>
                 </nav>
@@ -202,137 +230,194 @@ function StudentDashboard() {
                         </div>
                     </motion.div>
 
-                    <div className="db-stats-grid">
-                        <motion.div whileHover={{ y: -5 }} className="db-stat-card">
-                            <div className="db-stat-value db-stat-accent">{orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}</div>
-                            <div className="text-xs text-[var(--text3)]">Active Orders</div>
-                        </motion.div>
-                        <motion.div whileHover={{ y: -5 }} className="db-stat-card">
-                            <div className="db-stat-value">{orders.filter(o => o.status === 'delivered').length}</div>
-                            <div className="text-xs text-[var(--text3)]">Completed Tasks</div>
-                        </motion.div>
-                    </div>
-
-                    <div className="db-card mt-6" style={{ padding: '0', overflow: 'hidden' }}>
-                         <div style={{ padding: '24px 24px 12px' }}>
-                            <span className="font-[Bebas_Neue] text-xl block">Order Tracking Radar</span>
-                            <p className="text-xs text-[var(--text3)]">Real-time visualization of your active deliveries</p>
-                        </div>
-                        <LiveMap 
-                            height="300px"
-                            locations={[
-                                ...orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').map(o => ({
-                                    lat: 25.123 + (Math.random() - 0.5) * 0.005,
-                                    lng: 55.223 + (Math.random() - 0.5) * 0.005,
-                                    label: o.title,
-                                    type: 'student' as const
-                                })),
-                                { lat: 25.1235, lng: 55.2235, label: 'Campus Hub', type: 'vendor' as const }
-                            ]} 
-                        />
-                    </div>
-
-                    <div className="db-card mt-6">
-                        <span className="font-[Bebas_Neue] text-xl block mb-4">Live Tracking</span>
-                        <div className="flex flex-col gap-3">
-                            <AnimatePresence mode="popLayout">
-                                {orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').map(order => (
-                                    <motion.div
-                                        key={order._id}
-                                        layout
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 20 }}
-                                        className="db-subcard"
-                                    >
-                                        <div className="flex justify-between items-center">
-                                            <div>
-                                                <div className="font-semibold">{order.title}</div>
-                                                <div className="text-xs text-[var(--text3)]">Order ID: {order._id.slice(-6).toUpperCase()}</div>
-                                            </div>
-                                            <div className="flex gap-3 items-center">
-                                                {order.status !== 'delivered' && (
-                                                    <button 
-                                                        onClick={() => setActiveChatOrder(order)}
-                                                        style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '6px 12px', fontSize: '0.75rem', cursor: 'pointer', color: 'var(--text)' }}
-                                                    >
-                                                        💬 Chat
-                                                    </button>
-                                                )}
-                                                {order.paymentInfo?.status === 'pending' && (
-                                                    <MotionButton onClick={() => handlePayNow(order._id)} disabled={processingIds.has(order._id)} variant="primary" className="px-3 py-1.5 text-xs">
-                                                        {processingIds.has(order._id) ? 'REDIRECTING...' : 'PAY NOW'}
-                                                    </MotionButton>
-                                                )}
-                                                {order.status === 'delivered' && !order.dispute?.isDisputed && (
-                                                    <MotionButton onClick={() => handleReportIssue(order._id, 'Problem with delivery')} disabled={processingIds.has(`dispute-${order._id}`)} variant="ghost" className="px-3 py-1.5 text-xs">
-                                                        {processingIds.has(`dispute-${order._id}`) ? 'REPORTING...' : 'REPORT ISSUE'}
-                                                    </MotionButton>
-                                                )}
-                                                <span className={`db-status-pill db-status-${order.status}`}>{order.status}</span>
-                                            </div>
-                                        </div>
-                                        <div className="db-progress-track">
-                                            <motion.div
-                                                initial={{ width: 0 }}
-                                                animate={{ width: order.status === 'pending' ? '20%' : order.status === 'preparing' ? '40%' : order.status === 'accepted' ? '60%' : order.status === 'picked_up' ? '80%' : '100%' }}
-                                                className="db-progress-bar"
-                                            />
-                                        </div>
+                        {activeTab === 'orders' && (
+                            <>
+                                <div className="db-stats-grid">
+                                    <motion.div whileHover={{ y: -5 }} className="db-stat-card">
+                                        <div className="db-stat-value db-stat-accent">{orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}</div>
+                                        <div className="text-xs text-[var(--text3)]">Active Orders</div>
                                     </motion.div>
-                                ))}
-                            </AnimatePresence>
-                            {orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length === 0 && (
-                                <div className="text-center p-5 text-[var(--text3)]">No active orders. Time for a coffee?</div>
-                            )}
-                        </div>
-                    </div>
+                                    <motion.div whileHover={{ y: -5 }} className="db-stat-card">
+                                        <div className="db-stat-value">{orders.filter(o => o.status === 'delivered').length}</div>
+                                        <div className="text-xs text-[var(--text3)]">Completed Tasks</div>
+                                    </motion.div>
+                                </div>
 
-                    <div className="db-card mt-6">
-                        <span className="font-[Bebas_Neue] text-xl block mb-4">Recent activity</span>
-                        <div className="db-table-container">
-                            <table className="db-order-table">
-                                <thead>
-                                    <tr>
-                                        <th>Order</th>
-                                        <th>Vendor</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <AnimatePresence mode="popLayout">
-                                        {orders.map(order => (
-                                            <motion.tr
-                                                key={order._id}
-                                                layout
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                exit={{ opacity: 0 }}
-                                            >
-                                                <td>{order.title}</td>
-                                                <td>{order.vendor?.name || 'Manual'}</td>
-                                                <td>AED {order.totalAmount.toFixed(2)}</td>
-                                                <td><span className={`db-status-pill db-status-${order.status}`}>{order.status}</span></td>
-                                                <td>
-                                                    {order.status === 'delivered' && !order.isRated && (
-                                                        <MotionButton
-                                                            onClick={() => setRatingModal({ isOpen: true, orderId: order._id, orderTitle: order.title })}
-                                                            variant="secondary"
-                                                            className="px-2.5 py-1 text-[0.65rem]"
+                                <div className="db-card mt-6" style={{ padding: '0', overflow: 'hidden' }}>
+                                    <div style={{ padding: '24px 24px 12px' }}>
+                                        <span className="font-[Bebas_Neue] text-xl block">Order Tracking Radar</span>
+                                        <p className="text-xs text-[var(--text3)]">Real-time visualization of your active deliveries</p>
+                                    </div>
+                                    <LiveMap 
+                                        height="300px"
+                                        locations={[
+                                            ...orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').map(o => ({
+                                                lat: 25.123 + (Math.random() - 0.5) * 0.005,
+                                                lng: 55.223 + (Math.random() - 0.5) * 0.005,
+                                                label: o.title,
+                                                type: 'student' as const
+                                            })),
+                                            { lat: 25.1235, lng: 55.2235, label: 'Campus Hub', type: 'vendor' as const }
+                                        ]} 
+                                    />
+                                </div>
+
+                                <div className="db-card mt-6">
+                                    <span className="font-[Bebas_Neue] text-xl block mb-4">Live Tracking</span>
+                                    <div className="flex flex-col gap-3">
+                                        <AnimatePresence mode="popLayout">
+                                            {orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').map(order => (
+                                                <motion.div
+                                                    key={order._id}
+                                                    layout
+                                                    initial={{ opacity: 0, x: -20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    exit={{ opacity: 0, x: 20 }}
+                                                    className="db-subcard"
+                                                >
+                                                    <div className="flex justify-between items-center">
+                                                        <div>
+                                                            <div className="font-semibold">{order.title}</div>
+                                                            <div className="text-xs text-[var(--text3)]">Order ID: {order._id.slice(-6).toUpperCase()}</div>
+                                                        </div>
+                                                        <div className="flex gap-3 items-center">
+                                                            {order.status !== 'delivered' && (
+                                                                <button 
+                                                                    onClick={() => setActiveChatOrder(order)}
+                                                                    style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '6px 12px', fontSize: '0.75rem', cursor: 'pointer', color: 'var(--text)' }}
+                                                                >
+                                                                    💬 Chat
+                                                                </button>
+                                                            )}
+                                                            {order.paymentInfo?.status === 'pending' && (
+                                                                <MotionButton onClick={() => handlePayNow(order._id)} disabled={processingIds.has(order._id)} variant="primary" className="px-3 py-1.5 text-xs">
+                                                                    {processingIds.has(order._id) ? 'REDIRECTING...' : 'PAY NOW'}
+                                                                </MotionButton>
+                                                            )}
+                                                            {order.status === 'delivered' && !order.dispute?.isDisputed && (
+                                                                <MotionButton onClick={() => handleReportIssue(order._id, 'Problem with delivery')} disabled={processingIds.has(`dispute-${order._id}`)} variant="ghost" className="px-3 py-1.5 text-xs">
+                                                                    {processingIds.has(`dispute-${order._id}`) ? 'REPORTING...' : 'REPORT ISSUE'}
+                                                                </MotionButton>
+                                                            )}
+                                                            <span className={`db-status-pill db-status-${order.status}`}>{order.status}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="db-progress-track">
+                                                        <motion.div
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: order.status === 'pending' ? '20%' : order.status === 'preparing' ? '40%' : order.status === 'accepted' ? '60%' : order.status === 'picked_up' ? '80%' : '100%' }}
+                                                            className="db-progress-bar"
+                                                        />
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </AnimatePresence>
+                                        {orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length === 0 && (
+                                            <div className="text-center p-5 text-[var(--text3)]">No active orders. Time for a coffee?</div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="db-card mt-6">
+                                    <span className="font-[Bebas_Neue] text-xl block mb-4">Recent activity</span>
+                                    <div className="db-table-container">
+                                        <table className="db-order-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Order</th>
+                                                    <th>Vendor</th>
+                                                    <th>Amount</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <AnimatePresence mode="popLayout">
+                                                    {orders.map(order => (
+                                                        <motion.tr
+                                                            key={order._id}
+                                                            layout
+                                                            initial={{ opacity: 0 }}
+                                                            animate={{ opacity: 1 }}
+                                                            exit={{ opacity: 0 }}
                                                         >
-                                                            RATE
-                                                        </MotionButton>
-                                                    )}
-                                                </td>
-                                            </motion.tr>
-                                        ))}
-                                    </AnimatePresence>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                                            <td>{order.title}</td>
+                                                            <td>{order.vendor?.name || 'Manual'}</td>
+                                                            <td>AED {order.totalAmount.toFixed(2)}</td>
+                                                            <td><span className={`db-status-pill db-status-${order.status}`}>{order.status}</span></td>
+                                                            <td>
+                                                                {order.status === 'delivered' && !order.isRated && (
+                                                                    <MotionButton
+                                                                        onClick={() => setRatingModal({ isOpen: true, orderId: order._id, orderTitle: order.title })}
+                                                                        variant="secondary"
+                                                                        className="px-2.5 py-1 text-[0.65rem]"
+                                                                    >
+                                                                        RATE
+                                                                    </MotionButton>
+                                                                )}
+                                                            </td>
+                                                        </motion.tr>
+                                                    ))}
+                                                </AnimatePresence>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {activeTab === 'vendors' && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="db-card mt-6"
+                            >
+                                <span className="font-[Bebas_Neue] text-xl block mb-6">Campus Vendors</span>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                                    {vendors.length > 0 ? vendors.map(v => (
+                                        <motion.div
+                                            key={v._id}
+                                            whileHover={{ y: -5 }}
+                                            className="db-subcard"
+                                            style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+                                        >
+                                            <div style={{ height: '140px', background: 'var(--bg3)', borderRadius: '12px', overflow: 'hidden', position: 'relative' }}>
+                                                {v.image ? (
+                                                    <img src={v.image} alt={v.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                ) : (
+                                                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', fontSize: '2rem' }}>🏪</div>
+                                                )}
+                                                <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
+                                                    <span className={`db-status-pill ${v.isOpen ? 'db-status-delivered' : 'db-status-pending'}`} style={{ fontSize: '0.6rem' }}>
+                                                        {v.isOpen ? 'OPEN' : 'CLOSED'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="font-semibold text-lg">{v.name}</div>
+                                                <div className="text-xs text-[var(--accent)] uppercase font-bold mt-1">{v.category}</div>
+                                                <div className="text-xs text-[var(--text3)] mt-2 line-clamp-2">{v.description}</div>
+                                            </div>
+                                            <MotionButton 
+                                                onClick={() => {
+                                                    setIsModalOpen(true);
+                                                    // Note: We could pre-select the vendor if CreateOrderModal supported it
+                                                }}
+                                                variant="secondary" 
+                                                className="w-full mt-2"
+                                            >
+                                                Order Now
+                                            </MotionButton>
+                                        </motion.div>
+                                    )) : (
+                                        <div className="text-center p-10 col-span-full">
+                                            <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🏪</div>
+                                            <div className="text-[var(--text3)]">No vendors available right now.</div>
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        )}
 
                     <CreateOrderModal
                         isOpen={isModalOpen}
@@ -361,8 +446,11 @@ function StudentDashboard() {
             </main>
 
             <DashboardMobileNav 
+                activeTab={activeTab}
+                onTabChange={(tab) => setActiveTab(tab as any)}
                 items={[
-                    { label: 'Home', icon: '🏠', path: '/student' },
+                    { label: 'Home', icon: '🏠', tab: 'orders' },
+                    { label: 'Vendors', icon: '🏪', tab: 'vendors' },
                     { label: 'Settings', icon: '⚙️', path: '/profile' },
                     { label: 'Log Out', icon: '🚪', action: logout }
                 ]}
