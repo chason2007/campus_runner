@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+import { PageWrapper } from './components/PageWrapper';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { App as CapacitorApp } from '@capacitor/app';
@@ -21,6 +23,7 @@ import './campus-runner.css';
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -49,58 +52,60 @@ function App() {
         <ToastProvider>
           <I18nProvider>
             <Cursor />
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route
-                path="/student"
-                element={
-                  <ProtectedRoute allowedRoles={['student']}>
-                    <StudentDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/runner"
-                element={
-                  <ProtectedRoute allowedRoles={['runner']}>
-                    <RunnerDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/vendor"
-                element={
-                  <ProtectedRoute allowedRoles={['vendor']}>
-                    <VendorDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/group/:id"
-                element={
-                  <ProtectedRoute allowedRoles={['student']}>
-                    <GroupOrderView />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute allowedRoles={['student', 'runner', 'vendor', 'admin']}>
-                    <ProfileSettings />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
+            <AnimatePresence mode="wait">
+              <Routes location={location} key={location.pathname}>
+                <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
+                <Route
+                  path="/student"
+                  element={
+                    <ProtectedRoute allowedRoles={['student']}>
+                      <PageWrapper><StudentDashboard /></PageWrapper>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/runner"
+                  element={
+                    <ProtectedRoute allowedRoles={['runner']}>
+                      <PageWrapper><RunnerDashboard /></PageWrapper>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/vendor"
+                  element={
+                    <ProtectedRoute allowedRoles={['vendor']}>
+                      <PageWrapper><VendorDashboard /></PageWrapper>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <PageWrapper><AdminDashboard /></PageWrapper>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/group/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={['student']}>
+                      <PageWrapper><GroupOrderView /></PageWrapper>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute allowedRoles={['student', 'runner', 'vendor', 'admin']}>
+                      <PageWrapper><ProfileSettings /></PageWrapper>
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </AnimatePresence>
           </I18nProvider>
         </ToastProvider>
       </SocketProvider>

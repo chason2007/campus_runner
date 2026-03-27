@@ -67,6 +67,30 @@ function VendorDashboard() {
         }
     }, [user, fetchData]);
 
+    // Adaptive Branding Effect
+    useEffect(() => {
+        if (vendor) {
+            // For now, we'll derive a color from the vendor name if they don't have a 'brandColor' yet
+            // This ensures a "wow" effect even before database updates
+            const getBrandColor = (name: string) => {
+                let hash = 0;
+                for (let i = 0; i < name.length; i++) {
+                    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                const h = Math.abs(hash) % 360;
+                return `hsl(${h}, 70%, 55%)`; // Saturated but legible
+            };
+
+            const color = getBrandColor(vendor.name);
+            document.documentElement.style.setProperty('--accent-current', color);
+            
+            // Clean up: reset to default
+            return () => {
+                document.documentElement.style.setProperty('--accent-current', 'var(--accent)');
+            };
+        }
+    }, [vendor]);
+
     useEffect(() => {
         if (!socket) return;
 

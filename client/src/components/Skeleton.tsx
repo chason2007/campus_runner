@@ -19,7 +19,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 }) => {
     return (
         <div
-            className={`skeleton-shimmer ${glass ? 'glass' : ''} ${className}`}
+            className={`skeleton-shimmer skeleton-pulse ${glass ? 'glass' : ''} ${className}`}
             style={{
                 width,
                 height,

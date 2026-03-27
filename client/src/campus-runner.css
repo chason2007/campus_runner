@@ -735,6 +735,64 @@ h1 .hl {
   margin-bottom: 70px
 }
 
+/* PREMIUM GAMIFICATION STYLES */
+.shimmer-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(185, 242, 255, 0.1),
+    transparent
+  );
+  animation: shimmerEffect 3s infinite;
+}
+
+@keyframes shimmerEffect {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+.diamond-glow {
+  box-shadow: 0 0 20px rgba(185, 242, 255, 0.3);
+  border: 1px solid rgba(185, 242, 255, 0.6) !important;
+}
+
+/* ADAPTIVE BRANDING UTILS */
+:root {
+  --accent-current: var(--accent);
+}
+
+.accent-text { color: var(--accent-current); }
+.accent-bg { background: var(--accent-current); }
+.accent-border { border-color: var(--accent-current); }
+
+/* ENHANCED SKELETON */
+.skeleton-pulse {
+  background: linear-gradient(
+    90deg,
+    var(--bg3) 25%,
+    var(--surface) 50%,
+    var(--bg3) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.5s infinite linear;
+}
+
+@keyframes skeletonPulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 /* LEAFLET CUSTOM STYLING */
 .leaflet-container {
   background: var(--bg2) !important;

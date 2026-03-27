@@ -59,36 +59,62 @@ export default function Leaderboard() {
                 <LeaderboardSkeleton />
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {entries.length > 0 ? entries.map((entry, index) => (
-                        <div
-                            key={entry._id}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                padding: '12px 16px',
-                                background: index === 0 ? 'rgba(0,212,255,0.05)' : 'transparent',
-                                borderRadius: '12px',
-                                border: index === 0 ? '1px solid var(--accent)' : '1px solid transparent',
-                                transition: 'transform 0.2s',
-                                cursor: 'default'
-                            }}
-                        >
-                            <div style={{ width: '24px', fontWeight: 800, color: index < 3 ? 'var(--accent)' : 'var(--text3)', fontSize: '1rem' }}>
-                                #{index + 1}
+                    {entries.length > 0 ? entries.map((entry, index) => {
+                        const getRank = (count: number) => {
+                            if (count >= 100) return { name: 'Diamond', color: '#b9f2ff', glow: '0 0 15px #b9f2ff' };
+                            if (count >= 31) return { name: 'Gold', color: '#ffd700', glow: '0 0 10px #ffd700' };
+                            if (count >= 11) return { name: 'Silver', color: '#c0c0c0', glow: '0 0 8px #c0c0c0' };
+                            return { name: 'Bronze', color: '#cd7f32', glow: 'none' };
+                        };
+                        const rank = getRank(entry.completedDeliveries);
+
+                        return (
+                            <div
+                                key={entry._id}
+                                className={rank.name === 'Diamond' ? 'shimmer-card' : ''}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '12px 16px',
+                                    background: index === 0 ? 'rgba(0,212,255,0.05)' : 'transparent',
+                                    borderRadius: '12px',
+                                    border: index === 0 ? '1px solid var(--accent)' : '1px solid transparent',
+                                    transition: 'transform 0.2s',
+                                    cursor: 'default',
+                                    position: 'relative',
+                                    overflow: 'hidden'
+                                }}
+                            >
+                                <div style={{ width: '24px', fontWeight: 800, color: index < 3 ? 'var(--accent)' : 'var(--text3)', fontSize: '1rem' }}>
+                                    #{index + 1}
+                                </div>
+                                <div style={{ 
+                                    width: '40px', height: '40px', borderRadius: '50%', background: 'var(--bg2)', 
+                                    margin: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                                    border: `2px solid ${rank.color}`, boxShadow: rank.glow 
+                                }}>
+                                    {entry.avatar ? <img src={entry.avatar} alt={entry.name} style={{ width: '100%', height: '100%', borderRadius: '50%' }} /> : entry.name.charAt(0)}
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{entry.name}</div>
+                                        <span style={{ 
+                                            fontSize: '0.6rem', padding: '2px 6px', borderRadius: '4px', 
+                                            background: `${rank.color}20`, color: rank.color, border: `1px solid ${rank.color}40`,
+                                            fontWeight: 700, textTransform: 'uppercase'
+                                        }}>
+                                            {rank.name}
+                                        </span>
+                                    </div>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{entry.completedDeliveries} Deliveries</div>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontWeight: 700, color: 'var(--accent)' }}>AED {entry.totalEarnings}</div>
+                                    <div style={{ fontSize: '0.65rem', color: 'var(--text3)', textTransform: 'uppercase' }}>Earned</div>
+                                </div>
                             </div>
-                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--bg2)', margin: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)' }}>
-                                {entry.avatar ? <img src={entry.avatar} alt={entry.name} style={{ width: '100%', height: '100%', borderRadius: '50%' }} /> : entry.name.charAt(0)}
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{entry.name}</div>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{entry.completedDeliveries} Deliveries</div>
-                            </div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontWeight: 700, color: 'var(--accent)' }}>AED {entry.totalEarnings}</div>
-                                <div style={{ fontSize: '0.65rem', color: 'var(--text3)', textTransform: 'uppercase' }}>Earned</div>
-                            </div>
-                        </div>
-                    )) : (
+                        );
+                    }) : (
                         <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text3)' }}>No data available yet.</div>
                     )}
                 </div>

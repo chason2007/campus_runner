@@ -10,6 +10,7 @@ import { MotionButton } from '../components/MotionButton';
 import { useToast } from '../context/ToastContext';
 import { DashboardMobileNav } from '../components/DashboardMobileNav';
 import { LiveMap } from '../components/LiveMap';
+import { ChatDrawer } from '../components/ChatDrawer';
 import './Dashboard.css';
 
 interface Order {
@@ -35,6 +36,7 @@ function RunnerDashboard() {
     const [myOrders, setMyOrders] = useState<Order[]>([]);
     const [stats, setStats] = useState({ completedDeliveries: 0, totalEarnings: 0 });
     const [loading, setLoading] = useState(true);
+    const [activeChatOrder, setActiveChatOrder] = useState<Order | null>(null);
     const [activeTab, setActiveTab] = useState<'active' | 'leaderboard'>('active');
     const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
@@ -298,6 +300,14 @@ function RunnerDashboard() {
                                                 <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>To: {order.student.name} ({order.location})</div>
                                             </div>
                                             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                                {(order.status === 'accepted' || order.status === 'picked_up') && (
+                                                    <button 
+                                                        onClick={() => setActiveChatOrder(order)}
+                                                        style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '6px 12px', fontSize: '0.75rem', cursor: 'pointer', color: 'var(--text)' }}
+                                                    >
+                                                        💬 Chat
+                                                    </button>
+                                                )}
                                                 {order.status === 'accepted' && (
                                                     <MotionButton 
                                                         onClick={() => handleUpdateStatus(order._id, 'picked_up')} 
@@ -340,6 +350,15 @@ function RunnerDashboard() {
                     { label: 'Log Out', icon: '🚪', action: logout }
                 ]}
             />
+
+            {activeChatOrder && (
+                <ChatDrawer
+                    isOpen={!!activeChatOrder}
+                    onClose={() => setActiveChatOrder(null)}
+                    orderId={activeChatOrder._id}
+                    recipientName={activeChatOrder.student?.name || 'Student'}
+                />
+            )}
         </div>
     );
 }

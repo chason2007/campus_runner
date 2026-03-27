@@ -13,12 +13,14 @@ import { MotionButton } from '../components/MotionButton';
 import { useToast } from '../context/ToastContext';
 import { DashboardMobileNav } from '../components/DashboardMobileNav';
 import { LiveMap } from '../components/LiveMap';
+import { ChatDrawer } from '../components/ChatDrawer';
 import './Dashboard.css';
 
 interface Order {
     _id: string;
     vendor?: { name: string };
     student: { name: string };
+    runner?: { id: string; name: string };
     status: 'pending' | 'preparing' | 'accepted' | 'picked_up' | 'delivered' | 'cancelled';
     paymentInfo?: { status: 'pending' | 'paid' | 'refunded' | 'failed' };
     createdAt: string;
@@ -36,6 +38,8 @@ function StudentDashboard() {
     const { showToast } = useToast();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<'orders' | 'vendors' | 'groups'>('orders');
+    const [activeChatOrder, setActiveChatOrder] = useState<Order | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
     const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
@@ -247,6 +251,14 @@ function StudentDashboard() {
                                                 <div className="text-xs text-[var(--text3)]">Order ID: {order._id.slice(-6).toUpperCase()}</div>
                                             </div>
                                             <div className="flex gap-3 items-center">
+                                                {order.status !== 'delivered' && (
+                                                    <button 
+                                                        onClick={() => setActiveChatOrder(order)}
+                                                        style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '8px', padding: '6px 12px', fontSize: '0.75rem', cursor: 'pointer', color: 'var(--text)' }}
+                                                    >
+                                                        💬 Chat
+                                                    </button>
+                                                )}
                                                 {order.paymentInfo?.status === 'pending' && (
                                                     <MotionButton onClick={() => handlePayNow(order._id)} disabled={processingIds.has(order._id)} variant="primary" className="px-3 py-1.5 text-xs">
                                                         {processingIds.has(order._id) ? 'REDIRECTING...' : 'PAY NOW'}
@@ -355,6 +367,31 @@ function StudentDashboard() {
                     { label: 'Log Out', icon: '🚪', action: logout }
                 ]}
             />
+
+            <CreateOrderModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                onOrderCreated={fetchData} 
+            />
+            <CreateGroupOrderModal 
+                isOpen={isGroupModalOpen} 
+                onClose={() => setIsGroupModalOpen(false)} 
+                onOrderCreated={fetchData} 
+            />
+            <JoinGroupModal 
+                isOpen={isJoinModalOpen} 
+                onClose={() => setIsJoinModalOpen(false)} 
+                onOrderJoined={fetchData} 
+            />
+
+            {activeChatOrder && (
+                <ChatDrawer
+                    isOpen={!!activeChatOrder}
+                    onClose={() => setActiveChatOrder(null)}
+                    orderId={activeChatOrder._id}
+                    recipientName={activeChatOrder.runner?.name || 'Runner'}
+                />
+            )}
         </div>
     );
 }

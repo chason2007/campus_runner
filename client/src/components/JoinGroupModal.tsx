@@ -8,9 +8,10 @@ import { useNavigate } from 'react-router-dom';
 interface JoinGroupModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onOrderJoined?: () => void;
 }
 
-export default function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
+export default function JoinGroupModal({ isOpen, onClose, onOrderJoined }: JoinGroupModalProps) {
     const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
     const { showToast } = useToast();
@@ -24,6 +25,7 @@ export default function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps)
             if (group.error || group.message) throw new Error(group.message || 'Group not found');
             await api.groupOrders.join(group._id, code);
             showToast('Successfully joined group!', 'success');
+            if (onOrderJoined) onOrderJoined();
             navigate(`/group/${group._id}`);
             onClose();
         } catch (err: any) {

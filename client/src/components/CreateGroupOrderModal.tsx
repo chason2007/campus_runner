@@ -13,9 +13,10 @@ interface Vendor {
 interface CreateGroupOrderModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onOrderCreated?: () => void;
 }
 
-export default function CreateGroupOrderModal({ isOpen, onClose }: CreateGroupOrderModalProps) {
+export default function CreateGroupOrderModal({ isOpen, onClose, onOrderCreated }: CreateGroupOrderModalProps) {
     const [vendors, setVendors] = useState<Vendor[]>([]);
     const [vendorId, setVendorId] = useState('');
     const [loading, setLoading] = useState(false);
@@ -41,6 +42,7 @@ export default function CreateGroupOrderModal({ isOpen, onClose }: CreateGroupOr
         try {
             const group = await api.groupOrders.create(vendorId, 10); // Fixed 10 AED delivery fee for now
             showToast('Group order started!', 'success');
+            if (onOrderCreated) onOrderCreated();
             navigate(`/group/${group._id}`);
             onClose();
         } catch (err: any) {

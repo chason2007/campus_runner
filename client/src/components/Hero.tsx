@@ -13,7 +13,13 @@ export default function Hero() {
     <section id="home" className="hero" ref={ref}>
       <div className="hglow" />
       <motion.div className="hgrid" style={{ y: gridY }} />
-      <div className="container">
+      <div style={{ position: 'absolute', top: 0, right: 0, width: '50%', height: '100%', opacity: 0.6, zIndex: 0, pointerEvents: 'none' }}>
+        <div dangerouslySetInnerHTML={{ __html: `
+          <script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.93/build/spline-viewer.js"></script>
+          <spline-viewer url="https://prod.spline.design/N7c8L9p-Wj8kR8vP/scene.splinecode"></spline-viewer>
+        `}} />
+      </div>
+      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
         <div className="hcontent">
           <motion.div
             className="heyebrow"
