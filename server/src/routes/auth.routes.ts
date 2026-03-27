@@ -31,7 +31,10 @@ router.post('/register', registerValidation, async (req: Request, res: Response)
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        const user = new User({ name, email, password, role, campusId });
+        // Loophole 6 Fix: Automatically approve students during registration
+        const isApprovedStatus = role === 'student' ? true : false;
+
+        const user = new User({ name, email, password, role, campusId, isApproved: isApprovedStatus });
         await user.save();
 
         const token = jwt.sign(
@@ -72,7 +75,8 @@ router.post('/login', async (req: Request, res: Response) => {
         }
 
         // Approval Check
-        if (user.role !== 'admin' && user.isApproved === false) {
+        // Loophole 6 Fix: Bypass server-side approval lockdown for the Student role specifically
+        if (user.role !== 'admin' && user.role !== 'student' && user.isApproved === false) {
             return res.status(403).json({ 
                 status: 'pending_approval', 
                 message: 'Your account is pending admin approval. You will be notified once you can access the platform.' 
