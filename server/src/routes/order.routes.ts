@@ -1,5 +1,6 @@
 import express, { Response } from 'express';
 import { Order } from '../models/Order';
+import { Vendor } from '../models/Vendor';
 import { authMiddleware, AuthRequest } from '../middleware/auth.middleware';
 import { emitOrderUpdate } from '../socket';
 import Stripe from 'stripe';
@@ -17,17 +18,46 @@ const router = express.Router();
 // Create Order (Requires Auth)
 router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
-        const { title, description, type, vendor, items, price, deliveryFee, totalAmount, location } = req.body;
+        const { title, description, type, vendor, items, deliveryFee, location } = req.body;
+
+        // Loophole 1 Fix: Verify item prices against the database
+        let validatedItems = items;
+        let calculatedPrice = Number(req.body.price || 0);
+
+        if (type === 'food' && vendor && items && items.length > 0) {
+            const vendorDoc = await Vendor.findById(vendor);
+            if (!vendorDoc) return res.status(404).json({ message: 'Vendor not found' });
+
+            calculatedPrice = 0;
+            validatedItems = [];
+            for (const clientItem of items) {
+                const menuItem = vendorDoc.menu.find((m: any) => m.name === clientItem.name);
+                if (!menuItem) return res.status(400).json({ message: `Menu item not found: ${clientItem.name}` });
+                if (!Number.isInteger(clientItem.quantity) || clientItem.quantity < 1) {
+                    return res.status(400).json({ message: `Invalid quantity for ${clientItem.name}` });
+                }
+                
+                calculatedPrice += menuItem.price * clientItem.quantity;
+                validatedItems.push({
+                    name: clientItem.name,
+                    quantity: clientItem.quantity,
+                    price: menuItem.price // Store the correct server-side price
+                });
+            }
+        }
+
+        const calculatedDeliveryFee = Number(deliveryFee || 0);
+        const calculatedTotalAmount = calculatedPrice + calculatedDeliveryFee;
 
         const orderData = {
             title,
             description,
             type,
             vendor,
-            items,
-            price,
-            deliveryFee,
-            totalAmount,
+            items: validatedItems,
+            price: calculatedPrice,
+            deliveryFee: calculatedDeliveryFee,
+            totalAmount: calculatedTotalAmount,
             location,
             student: req.user?.id,
             status: 'pending',

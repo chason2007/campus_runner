@@ -1,5 +1,6 @@
 import express, { Response } from 'express';
 import { GroupOrder } from '../models/GroupOrder';
+import { Vendor } from '../models/Vendor';
 import { authMiddleware, AuthRequest } from '../middleware/auth.middleware';
 import { emitGroupUpdate } from '../socket';
 import crypto from 'crypto';
@@ -94,19 +95,6 @@ router.post('/:id/items', authMiddleware, async (req: AuthRequest, res: Response
         const { items } = req.body;
         if (!Array.isArray(items)) return res.status(400).json({ message: 'Items must be an array' });
 
-        // Validate each item
-        for (const item of items) {
-            if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
-                return res.status(400).json({ message: 'Each item must have a valid name' });
-            }
-            if (typeof item.price !== 'number' || item.price <= 0) {
-                return res.status(400).json({ message: `Item "${item.name}" has an invalid price. Price must be > 0.` });
-            }
-            if (!Number.isInteger(item.quantity) || item.quantity < 1) {
-                return res.status(400).json({ message: `Item "${item.name}" has an invalid quantity. Must be a whole number >= 1.` });
-            }
-        }
-
         const groupOrder = await GroupOrder.findById(req.params.id);
         if (!groupOrder) return res.status(404).json({ message: 'Group order not found' });
         if (groupOrder.status !== 'open') return res.status(400).json({ message: 'Order is locked and cannot be modified' });
@@ -114,9 +102,39 @@ router.post('/:id/items', authMiddleware, async (req: AuthRequest, res: Response
         const participantIndex = groupOrder.participants.findIndex((p: any) => p.user.toString() === req.user?.id);
         if (participantIndex === -1) return res.status(403).json({ message: 'You are not a participant in this group order' });
 
-        const itemsTotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+        // Loophole 1 Fix: Verify item prices against the Vendor's database menu
+        const vendorDoc = await Vendor.findById(groupOrder.vendor);
+        if (!vendorDoc) return res.status(404).json({ message: 'Vendor for this group order not found' });
 
-        groupOrder.participants[participantIndex].items = items;
+        let itemsTotal = 0;
+        const verifiedItems = [];
+
+        // Validate each item
+        for (const item of items) {
+            if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
+                return res.status(400).json({ message: 'Each item must have a valid name' });
+            }
+            if (!Number.isInteger(item.quantity) || item.quantity < 1) {
+                return res.status(400).json({ message: `Item "${item.name}" has an invalid quantity. Must be a whole number >= 1.` });
+            }
+
+            const menuItem = vendorDoc.menu.find((m: any) => m.name === item.name);
+            if (!menuItem) {
+                return res.status(400).json({ message: `Menu item not found: ${item.name}` });
+            }
+            if (!menuItem.isAvailable) {
+                return res.status(400).json({ message: `Menu item "${item.name}" is currently unavailable` });
+            }
+
+            itemsTotal += menuItem.price * item.quantity;
+            verifiedItems.push({
+                name: item.name,
+                quantity: item.quantity,
+                price: menuItem.price // Use correct server-side price
+            });
+        }
+
+        groupOrder.participants[participantIndex].items = verifiedItems;
         groupOrder.participants[participantIndex].totalAmount = itemsTotal;
 
         // Recalculate total from all participants
