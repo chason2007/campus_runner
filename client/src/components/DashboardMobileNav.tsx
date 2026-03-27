@@ -25,9 +25,10 @@ export function DashboardMobileNav({ items, activeTab, onTabChange }: Props) {
                 const isActive = item.tab ? activeTab === item.tab : location.pathname === item.path;
                 
                 return (
-                    <div 
+                    <button 
                         key={i}
-                        className={`db-nav-item ${isActive ? 'active' : ''}`}
+                        type="button"
+                        className={`db-nav-item bg-transparent border-none ${isActive ? 'active' : ''}`}
                         onClick={() => {
                             if (item.action) item.action();
                             else if (item.tab && onTabChange) onTabChange(item.tab);
@@ -36,7 +37,7 @@ export function DashboardMobileNav({ items, activeTab, onTabChange }: Props) {
                     >
                         <span className="db-nav-icon">{item.icon}</span>
                         <span>{item.label}</span>
-                    </div>
+                    </button>
                 );
             })}
         </div>

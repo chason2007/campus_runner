@@ -3,6 +3,27 @@ import { useState, useEffect } from 'react';
 import { api } from '../utils/api';
 import { useToast } from '../context/ToastContext';
 import { MotionButton } from './MotionButton';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const orderSchema = z.object({
+    type: z.enum(['food', 'printout', 'favour']),
+    title: z.string().min(4, "Title must be at least 4 chars (e.g., 'Starbucks Latte')"),
+    description: z.string().min(5, "Instructions must be at least 5 chars"),
+    location: z.string().min(2, "Building/Room is required for delivery"),
+    vendorId: z.string().optional(),
+    price: z.number().optional()
+}).refine(data => {
+    if (data.type === 'food' && !data.vendorId) return false;
+    return true;
+}, { message: "Please select a restaurant to proceed", path: ['vendorId'] })
+  .refine(data => {
+    if (data.type !== 'food' && (!data.price || data.price < 5)) return false;
+    return true;
+}, { message: "Minimum task budget is AED 5", path: ['price'] });
+
+type OrderFormData = z.infer<typeof orderSchema>;
 
 interface MenuItem {
     name: string;
@@ -52,38 +73,52 @@ const lbl: React.CSSProperties = {
 export default function CreateOrderModal({ isOpen, onClose, onOrderCreated }: CreateOrderModalProps) {
     const [vendors, setVendors] = useState<Vendor[]>([]);
     const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [type, setType] = useState<'food' | 'printout' | 'favour'>('food');
-    const [vendorId, setVendorId] = useState('');
-    const [location, setLocation] = useState('');
-    const [price, setPrice] = useState('');
     const [selectedItems, setSelectedItems] = useState<{ name: string; quantity: number; price: number }[]>([]);
     const [loading, setLoading] = useState(false);
     const { showToast } = useToast();
 
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        reset,
+        formState: { errors }
+    } = useForm<OrderFormData>({
+        resolver: zodResolver(orderSchema),
+        defaultValues: { type: 'food' }
+    });
+
+    const currentType = watch('type');
+    const vendorIdWatch = watch('vendorId');
+    const priceWatch = watch('price');
+
     useEffect(() => {
         if (isOpen) {
             fetchVendors();
+        } else {
+            reset();
+            setSelectedVendor(null);
+            setSelectedItems([]);
         }
-    }, [isOpen]);
+    }, [isOpen, reset]);
 
     const fetchVendors = async () => {
         try {
             const data = await api.vendors.getAll();
-            setVendors(data);
+            setVendors(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('Failed to fetch vendors', err);
         }
     };
 
     const handleVendorChange = (id: string) => {
-        setVendorId(id);
+        setValue('vendorId', id, { shouldValidate: true });
         const vendor = vendors.find(v => v._id === id) || null;
         setSelectedVendor(vendor);
         setSelectedItems([]);
         if (vendor) {
-            setTitle(`Order from ${vendor.name}`);
+            setValue('title', `Order from ${vendor.name}`, { shouldValidate: true });
         }
     };
 
@@ -103,33 +138,30 @@ export default function CreateOrderModal({ isOpen, onClose, onOrderCreated }: Cr
     };
 
     const calculateTotal = () => {
-        if (type === 'food') {
+        if (currentType === 'food') {
             return selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         }
-        return parseFloat(price) || 0;
+        return Number(priceWatch) || 0;
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (data: OrderFormData) => {
         setLoading(true);
-
         const orderPrice = calculateTotal();
         const deliveryFee = 5;
 
         try {
             const order = await api.orders.create({
-                title,
-                description,
-                type,
-                vendor: type === 'food' ? vendorId : undefined,
-                items: type === 'food' ? selectedItems : [],
-                location,
+                title: data.title,
+                description: data.description,
+                type: data.type,
+                vendor: data.type === 'food' ? data.vendorId : undefined,
+                items: data.type === 'food' ? selectedItems : [],
+                location: data.location,
                 price: orderPrice,
                 deliveryFee,
                 totalAmount: orderPrice + deliveryFee
             });
 
-            // Trigger Stripe Checkout
             const { url } = await api.orders.createCheckoutSession(order._id);
             if (url) {
                 window.location.href = url;
@@ -139,14 +171,11 @@ export default function CreateOrderModal({ isOpen, onClose, onOrderCreated }: Cr
                 onClose();
             }
 
-            // Reset form
-            setTitle('');
-            setDescription('');
-            setLocation('');
-            setPrice('');
+            reset();
             setSelectedItems([]);
-        } catch (err: any) {
-            showToast(err.message || 'Failed to create order', 'error');
+            setSelectedVendor(null);
+        } catch (err) {
+            showToast(err instanceof Error ? err.message : 'Failed to create order', 'error');
         } finally {
             setLoading(false);
         }
@@ -160,7 +189,7 @@ export default function CreateOrderModal({ isOpen, onClose, onOrderCreated }: Cr
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        onClick={onClose}
+                        onClick={loading ? undefined : onClose}
                         style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)' }}
                     />
 
@@ -182,7 +211,7 @@ export default function CreateOrderModal({ isOpen, onClose, onOrderCreated }: Cr
                     >
                         <h2 style={{ fontFamily: 'Bebas Neue', fontSize: '2rem', color: 'var(--text)', margin: '0 0 24px' }}>Create New Order</h2>
 
-                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div>
                                 <label style={lbl}>Order Type</label>
                                 <div style={{ display: 'flex', gap: '8px' }}>
@@ -190,11 +219,11 @@ export default function CreateOrderModal({ isOpen, onClose, onOrderCreated }: Cr
                                         <button
                                             key={t}
                                             type="button"
-                                            onClick={() => setType(t)}
+                                            onClick={() => setValue('type', t)}
                                             style={{
                                                 flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid var(--border2)',
-                                                background: type === t ? 'var(--accent)' : 'var(--surface)',
-                                                color: type === t ? '#000' : 'var(--text2)',
+                                                background: currentType === t ? 'var(--accent)' : 'var(--surface)',
+                                                color: currentType === t ? '#000' : 'var(--text2)',
                                                 fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer', transition: 'all 0.2s'
                                             }}
                                         >
@@ -206,24 +235,25 @@ export default function CreateOrderModal({ isOpen, onClose, onOrderCreated }: Cr
 
                             <div>
                                 <label style={lbl}>Title</label>
-                                <input style={inputStyle} value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Starbucks Latte, 5 Page Printout" required />
+                                <input style={{ ...inputStyle, borderColor: errors.title ? '#ff6b6b' : 'var(--border2)' }} {...register('title')} placeholder="e.g. Starbucks Latte, 5 Page Printout" />
+                                {errors.title && <span style={{ color: '#ff6b6b', fontSize: '0.7rem', marginTop: '4px', display: 'block' }}>{errors.title.message}</span>}
                             </div>
 
-                            {type === 'food' && (
+                            {currentType === 'food' && (
                                 <>
                                     <div>
                                         <label style={lbl}>Vendor</label>
                                         <select
-                                            style={inputStyle}
-                                            value={vendorId}
+                                            style={{ ...inputStyle, borderColor: errors.vendorId ? '#ff6b6b' : 'var(--border2)' }}
+                                            value={vendorIdWatch || ''}
                                             onChange={e => handleVendorChange(e.target.value)}
-                                            required
                                         >
                                             <option value="">Select a Vendor</option>
                                             {vendors.map(v => (
                                                 <option key={v._id} value={v._id}>{v.name}</option>
                                             ))}
                                         </select>
+                                        {errors.vendorId && <span style={{ color: '#ff6b6b', fontSize: '0.7rem', marginTop: '4px', display: 'block' }}>{errors.vendorId.message}</span>}
                                     </div>
 
                                     {selectedVendor && (
@@ -271,36 +301,36 @@ export default function CreateOrderModal({ isOpen, onClose, onOrderCreated }: Cr
                             <div>
                                 <label style={lbl}>Description / Special Instructions</label>
                                 <textarea
-                                    style={{ ...inputStyle, minHeight: '80px', resize: 'none' }}
-                                    value={description}
-                                    onChange={e => setDescription(e.target.value)}
+                                    style={{ ...inputStyle, minHeight: '80px', resize: 'none', borderColor: errors.description ? '#ff6b6b' : 'var(--border2)' }}
+                                    {...register('description')}
                                     placeholder="Add details about your order..."
-                                    required
                                 />
+                                {errors.description && <span style={{ color: '#ff6b6b', fontSize: '0.7rem', marginTop: '4px', display: 'block' }}>{errors.description.message}</span>}
                             </div>
 
                             <div style={{ display: 'flex', gap: '16px' }}>
                                 <div style={{ flex: 1 }}>
                                     <label style={lbl}>Delivery Location</label>
-                                    <input style={inputStyle} value={location} onChange={e => setLocation(e.target.value)} placeholder="Building/Room" required />
+                                    <input style={{ ...inputStyle, borderColor: errors.location ? '#ff6b6b' : 'var(--border2)' }} {...register('location')} placeholder="Building/Room" />
+                                    {errors.location && <span style={{ color: '#ff6b6b', fontSize: '0.7rem', marginTop: '4px', display: 'block' }}>{errors.location.message}</span>}
                                 </div>
                                 <div style={{ width: '120px' }}>
-                                    <label style={lbl}>{type === 'food' ? 'Total (AED)' : 'Budget (AED)'}</label>
+                                    <label style={lbl}>{currentType === 'food' ? 'Total (AED)' : 'Budget (AED)'}</label>
                                     <input
-                                        style={{ ...inputStyle, cursor: type === 'food' ? 'not-allowed' : 'text' }}
+                                        style={{ ...inputStyle, cursor: currentType === 'food' ? 'not-allowed' : 'text', borderColor: errors.price ? '#ff6b6b' : 'var(--border2)' }}
                                         type="number"
-                                        value={type === 'food' ? calculateTotal() : price}
-                                        onChange={e => setPrice(e.target.value)}
-                                        disabled={type === 'food'}
+                                        step="0.01"
+                                        {...register('price', { valueAsNumber: true })}
+                                        disabled={currentType === 'food'}
                                         placeholder="0.00"
-                                        required
                                     />
+                                    {errors.price && <span style={{ color: '#ff6b6b', fontSize: '0.7rem', marginTop: '4px', display: 'block' }}>{errors.price.message}</span>}
                                 </div>
                             </div>
 
                             <MotionButton
                                 type="submit"
-                                disabled={loading || (type === 'food' && selectedItems.length === 0)}
+                                disabled={loading || (currentType === 'food' && selectedItems.length === 0)}
                                 style={{
                                     width: '100%', padding: '16px', marginTop: '12px'
                                 }}

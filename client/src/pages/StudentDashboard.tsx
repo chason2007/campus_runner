@@ -38,6 +38,7 @@ function StudentDashboard() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
     const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+    const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
     // Rating Modal State
     const [ratingModal, setRatingModal] = useState({
@@ -52,7 +53,7 @@ function StudentDashboard() {
             setOrders(Array.isArray(myOrders) ? myOrders : []);
         } catch (err) {
             console.error('Failed to fetch dashboard data', err);
-            if ((err as Error).message.includes('Unauthorized') || (err as Error).message.includes('token')) {
+            if (err instanceof Error && (err.message.includes('Unauthorized') || err.message.includes('token'))) {
                 logout();
             }
         } finally {
@@ -69,7 +70,7 @@ function StudentDashboard() {
     useEffect(() => {
         if (!socket) return;
 
-        socket.on('orderUpdate', (updatedOrder: any) => {
+        socket.on('orderUpdate', (updatedOrder: Order) => {
             console.log('⚡️[socket]: Order updated', updatedOrder);
             fetchData();
         });
@@ -81,21 +82,35 @@ function StudentDashboard() {
 
     const handlePayNow = async (orderId: string) => {
         try {
+            setProcessingIds(prev => new Set(prev).add(orderId));
             const { url } = await api.orders.createCheckoutSession(orderId);
             if (url) window.location.href = url;
             else showToast('Failed to initiate payment', 'error');
         } catch (err) {
-            showToast('Error initiating payment', 'error');
+            showToast(err instanceof Error ? err.message : 'Error initiating payment', 'error');
+        } finally {
+            setProcessingIds(prev => {
+                const next = new Set(prev);
+                next.delete(orderId);
+                return next;
+            });
         }
     };
 
     const handleReportIssue = async (orderId: string, reason: string) => {
         try {
+            setProcessingIds(prev => new Set(prev).add(`dispute-${orderId}`));
             await api.orders.reportDispute(orderId, reason);
             showToast('Issue reported successfully. Support will investigate.', 'success');
             fetchData();
         } catch (err) {
-            showToast('Failed to report issue', 'error');
+            showToast(err instanceof Error ? err.message : 'Failed to report issue', 'error');
+        } finally {
+            setProcessingIds(prev => {
+                const next = new Set(prev);
+                next.delete(`dispute-${orderId}`);
+                return next;
+            });
         }
     };
 
@@ -139,15 +154,15 @@ function StudentDashboard() {
                     <div className="text-[0.65rem] text-[var(--text3)] uppercase">Student Portal</div>
                 </div>
                 <nav className="flex-1 py-4 px-3">
-                    <motion.div whileHover={{ x: 4 }} className="active p-2.5 text-[var(--accent)] font-semibold flex items-center gap-3">
+                    <motion.button type="button" whileHover={{ x: 4 }} className="w-full bg-transparent border-none active p-2.5 text-[var(--accent)] font-semibold flex items-center gap-3">
                         <span>🏠</span> <span className="db-sidebar-label">Dashboard</span>
-                    </motion.div>
-                    <motion.div whileHover={{ x: 4 }} className="p-2.5 text-[var(--text2)] cursor-default flex items-center gap-3">
+                    </motion.button>
+                    <motion.button type="button" whileHover={{ x: 4 }} className="w-full bg-transparent border-none p-2.5 text-[var(--text2)] cursor-default flex items-center gap-3">
                         <span>🕒</span> <span className="db-sidebar-label">History</span>
-                    </motion.div>
-                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} className="p-2.5 text-[var(--text2)] cursor-pointer flex items-center gap-3">
+                    </motion.button>
+                    <motion.button type="button" whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} className="w-full bg-transparent border-none p-2.5 text-[var(--text2)] cursor-pointer flex items-center gap-3">
                         <span>⚙️</span> <span className="db-sidebar-label">Settings</span>
-                    </motion.div>
+                    </motion.button>
                 </nav>
                 <div className="p-3 border-t border-[var(--border)]">
                     <button onClick={logout} className="bg-transparent border-none text-[#ff6b6b] cursor-pointer p-2.5">🚪 Log Out</button>
@@ -213,10 +228,14 @@ function StudentDashboard() {
                                             </div>
                                             <div className="flex gap-3 items-center">
                                                 {order.paymentInfo?.status === 'pending' && (
-                                                    <MotionButton onClick={() => handlePayNow(order._id)} variant="primary" className="px-3 py-1.5 text-xs">PAY NOW</MotionButton>
+                                                    <MotionButton onClick={() => handlePayNow(order._id)} disabled={processingIds.has(order._id)} variant="primary" className="px-3 py-1.5 text-xs">
+                                                        {processingIds.has(order._id) ? 'REDIRECTING...' : 'PAY NOW'}
+                                                    </MotionButton>
                                                 )}
                                                 {order.status === 'delivered' && !order.dispute?.isDisputed && (
-                                                    <MotionButton onClick={() => handleReportIssue(order._id, 'Problem with delivery')} variant="ghost" className="px-3 py-1.5 text-xs">REPORT ISSUE</MotionButton>
+                                                    <MotionButton onClick={() => handleReportIssue(order._id, 'Problem with delivery')} disabled={processingIds.has(`dispute-${order._id}`)} variant="ghost" className="px-3 py-1.5 text-xs">
+                                                        {processingIds.has(`dispute-${order._id}`) ? 'REPORTING...' : 'REPORT ISSUE'}
+                                                    </MotionButton>
                                                 )}
                                                 <span className={`db-status-pill db-status-${order.status}`}>{order.status}</span>
                                             </div>

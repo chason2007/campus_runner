@@ -41,6 +41,7 @@ function VendorDashboard() {
     const [vendor, setVendor] = useState<Vendor | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'orders' | 'menu'>('orders');
+    const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
     const fetchData = useCallback(async () => {
         try {
@@ -52,7 +53,7 @@ function VendorDashboard() {
             setVendor(myVendor);
         } catch (err) {
             console.error('Failed to fetch vendor data', err);
-            if ((err as Error).message.includes('Unauthorized') || (err as Error).message.includes('token')) {
+            if (err instanceof Error && (err.message.includes('Unauthorized') || err.message.includes('token'))) {
                 logout();
             }
         } finally {
@@ -69,12 +70,12 @@ function VendorDashboard() {
     useEffect(() => {
         if (!socket) return;
 
-        socket.on('orderUpdate', (updatedOrder: any) => {
+        socket.on('orderUpdate', (updatedOrder: Order) => {
             console.log('⚡️[socket]: Order updated', updatedOrder);
             fetchData();
         });
 
-        socket.on('newOrder', (newOrder: any) => {
+        socket.on('newOrder', (newOrder: Order) => {
             console.log('⚡️[socket]: New order for vendor', newOrder);
             showToast('New incoming order!', 'info');
             fetchData();
@@ -88,21 +89,35 @@ function VendorDashboard() {
 
     const handleUpdateStatus = async (orderId: string, status: string) => {
         try {
+            setProcessingIds(prev => new Set(prev).add(orderId));
             await api.orders.updateStatus(orderId, status);
             showToast(`Order status: ${status}`, 'success');
             fetchData();
         } catch (err) {
-            showToast('Failed to update status', 'error');
+            showToast(err instanceof Error ? err.message : 'Failed to update status', 'error');
+        } finally {
+            setProcessingIds(prev => {
+                const next = new Set(prev);
+                next.delete(orderId);
+                return next;
+            });
         }
     };
 
     const handleToggleAvailability = async (itemName: string, isAvailable: boolean) => {
         try {
+            setProcessingIds(prev => new Set(prev).add(itemName));
             await api.vendors.updateMenuAvailability(itemName, isAvailable);
             showToast(`${itemName} is now ${isAvailable ? 'available' : 'out of stock'}`, 'info');
             fetchData();
         } catch (err) {
-            showToast('Failed to update availability', 'error');
+            showToast(err instanceof Error ? err.message : 'Failed to update availability', 'error');
+        } finally {
+            setProcessingIds(prev => {
+                const next = new Set(prev);
+                next.delete(itemName);
+                return next;
+            });
         }
     };
 
@@ -147,23 +162,25 @@ function VendorDashboard() {
                     <div className="text-[0.65rem] text-[var(--text3)] uppercase">Vendor Portal</div>
                 </div>
                 <nav className="flex-1 py-4 px-3">
-                    <motion.div
+                    <motion.button
+                        type="button"
                         whileHover={{ x: 4 }}
                         onClick={() => setActiveTab('orders')}
-                        className={`p-2.5 cursor-pointer flex items-center gap-3 transition-colors ${activeTab === 'orders' ? 'active text-[var(--accent)] font-semibold' : 'text-[var(--text2)] font-normal'}`}
+                        className={`w-full bg-transparent border-none p-2.5 cursor-pointer flex items-center gap-3 transition-colors ${activeTab === 'orders' ? 'active text-[var(--accent)] font-semibold' : 'text-[var(--text2)] font-normal'}`}
                     >
                         <span>🏪</span> <span className="db-sidebar-label">Store Front</span>
-                    </motion.div>
-                    <motion.div
+                    </motion.button>
+                    <motion.button
+                        type="button"
                         whileHover={{ x: 4 }}
                         onClick={() => setActiveTab('menu')}
-                        className={`p-2.5 cursor-pointer flex items-center gap-3 transition-colors ${activeTab === 'menu' ? 'active text-[var(--accent)] font-semibold' : 'text-[var(--text2)] font-normal'}`}
+                        className={`w-full bg-transparent border-none p-2.5 cursor-pointer flex items-center gap-3 transition-colors ${activeTab === 'menu' ? 'active text-[var(--accent)] font-semibold' : 'text-[var(--text2)] font-normal'}`}
                     >
                         <span>📋</span> <span className="db-sidebar-label">Menu Management</span>
-                    </motion.div>
-                    <motion.div whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} className="p-2.5 text-[var(--text2)] cursor-pointer flex items-center gap-3">
+                    </motion.button>
+                    <motion.button type="button" whileHover={{ x: 4 }} onClick={() => window.location.href = '/profile'} className="w-full bg-transparent border-none p-2.5 text-[var(--text2)] cursor-pointer flex items-center gap-3">
                         <span>⚙️</span> <span className="db-sidebar-label">Settings</span>
-                    </motion.div>
+                    </motion.button>
                 </nav>
                 <div className="p-3 border-t border-[var(--border)]">
                     <button onClick={logout} className="bg-transparent border-none text-[#ff6b6b] cursor-pointer p-2.5">🚪 Log Out</button>
@@ -288,9 +305,10 @@ function VendorDashboard() {
                                                             {order.status === 'pending' && (
                                                                 <MotionButton
                                                                     onClick={() => handleUpdateStatus(order._id, 'preparing')}
+                                                                    disabled={processingIds.has(order._id)}
                                                                     className="px-3 py-1.5 text-xs"
                                                                 >
-                                                                    Accept
+                                                                    {processingIds.has(order._id) ? 'Accepting...' : 'Accept'}
                                                                 </MotionButton>
                                                             )}
                                                             {order.status === 'preparing' && (
@@ -332,7 +350,8 @@ function VendorDashboard() {
                                                 {/* FIX A11Y Loophole: Make this a button */}
                                                 <button
                                                     onClick={() => handleToggleAvailability(item.name, !item.isAvailable)}
-                                                    className={`w-10 h-5.5 rounded-full cursor-pointer relative transition-all duration-300 ${item.isAvailable ? 'bg-[var(--accent)]' : 'bg-[var(--bg3)]'} border-none`}
+                                                    disabled={processingIds.has(item.name)}
+                                                    className={`w-10 h-5.5 rounded-full relative transition-all duration-300 ${processingIds.has(item.name) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${item.isAvailable ? 'bg-[var(--accent)]' : 'bg-[var(--bg3)]'} border-none`}
                                                     aria-label={`Toggle availability for ${item.name}`}
                                                 >
                                                     <motion.div
