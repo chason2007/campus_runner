@@ -19,8 +19,8 @@ export default function Hero() {
           <spline-viewer url="https://prod.spline.design/N7c8L9p-Wj8kR8vP/scene.splinecode"></spline-viewer>
         `}} />
       </div>
-      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-        <div className="hcontent">
+      <div className="container" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className="hcontent" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
           <motion.div
             className="heyebrow"
             initial={{ opacity: 0, y: -14 }}

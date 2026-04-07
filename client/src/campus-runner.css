@@ -52,9 +52,13 @@ img, a {
 
 .container {
   max-width: 1280px;
+  width: 100%;
   margin: 0 auto;
   position: relative;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 ::-webkit-scrollbar {
@@ -172,18 +176,7 @@ body::before {
   }
 }
 
-.cur.h {
-  width: 6px;
-  height: 6px;
-  background: #fff;
-}
-
-.cur-r.h {
-  width: 54px;
-  height: 54px;
-  border-color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.05);
-}
+/* Hover classes handled by Cursor.tsx motion */
 
 /* GLOW ORB that follows cursor */
 .glow-orb {
@@ -279,7 +272,6 @@ nav.sc {
   border-radius: 100px;
   transition: color .2s, background .2s;
   white-space: nowrap;
-  cursor: none
 }
 
 .nav-pill a:hover,
@@ -437,7 +429,6 @@ h1 .hl {
   font-size: .88rem;
   font-weight: 600;
   border: none;
-  cursor: none;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -474,7 +465,6 @@ h1 .hl {
   font-size: .88rem;
   font-weight: 500;
   border: 1px solid var(--border2);
-  cursor: none;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -587,6 +577,10 @@ h1 .hl {
   max-width: 1300px;
   margin: 0 auto;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .stag {
@@ -628,7 +622,9 @@ h1 .hl {
   font-size: 1.05rem;
   color: var(--text2);
   line-height: 1.7;
-  max-width: 500px
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* PROBLEM */
@@ -636,12 +632,19 @@ h1 .hl {
   background: var(--bg2);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  padding: 110px 52px
+  padding: 110px 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .prob-in {
   max-width: 1300px;
-  margin: 0 auto
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .prob-q {
@@ -720,12 +723,20 @@ h1 .hl {
 
 /* HOW IT WORKS */
 .hiw-sec {
-  padding: 110px 52px
+  padding: 110px 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .hiw-in {
   max-width: 1300px;
-  margin: 0 auto
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .hiw-top {
@@ -1498,7 +1509,11 @@ h1 .hl {
 .aud-sec {
   background: var(--bg2);
   border-top: 1px solid var(--border);
-  padding: 110px 52px
+  padding: 110px 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .aud-in {
@@ -1521,7 +1536,7 @@ h1 .hl {
   border-radius: 100px;
   font-size: .82rem;
   font-weight: 500;
-  cursor: none;
+  cursor: pointer;
   border: none;
   background: transparent;
   color: var(--text3);
@@ -1743,7 +1758,11 @@ h1 .hl {
 .stat-sec {
   padding: 90px 52px;
   position: relative;
-  overflow: hidden
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .stat-bg {
@@ -1798,7 +1817,11 @@ h1 .hl {
 .wl-sec {
   padding: 130px 52px;
   position: relative;
-  overflow: hidden
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .wl-glow {
@@ -1860,7 +1883,7 @@ h1 .hl {
   border-radius: 100px;
   font-size: .8rem;
   font-weight: 500;
-  cursor: none;
+  cursor: pointer;
   border: 1px solid var(--border2);
   background: transparent;
   color: var(--text2);
@@ -1915,6 +1938,8 @@ h1 .hl {
   padding-bottom: calc(40px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .ft-top {
@@ -1955,7 +1980,7 @@ h1 .hl {
   align-items: center;
   justify-content: center;
   transition: all 0.25s;
-  cursor: none;
+  cursor: pointer;
 }
 
 .ft-socials a:hover {

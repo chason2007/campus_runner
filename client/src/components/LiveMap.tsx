@@ -1,5 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { useSocket } from '../context/SocketContext';
 import 'leaflet/dist/leaflet.css';
 
 // Fix for default marker icons not appearing in production
@@ -27,9 +29,35 @@ interface LiveMapProps {
     className?: string;
 }
 
-export const LiveMap = ({ locations, height = '400px', className }: LiveMapProps) => {
+export const LiveMap = ({ locations: initialLocations, height = '400px', className }: LiveMapProps) => {
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstance = useRef<L.Map | null>(null);
+    const { socket } = useSocket();
+    const [locations, setLocations] = useState<MapLocation[]>(initialLocations);
+
+    useEffect(() => {
+        setLocations(initialLocations);
+    }, [initialLocations]);
+
+    useEffect(() => {
+        if (!socket) return;
+        socket.on('runner:location_updated', (data: { orderId: string, lat: number, lng: number }) => {
+            setLocations(prev => {
+                const newLocations = [...prev];
+                const runnerIndex = newLocations.findIndex(l => l.type === 'runner');
+                if (runnerIndex !== -1) {
+                    newLocations[runnerIndex] = { ...newLocations[runnerIndex], lat: data.lat, lng: data.lng };
+                } else {
+                    newLocations.push({ lat: data.lat, lng: data.lng, label: 'Runner', type: 'runner' });
+                }
+                return newLocations;
+            });
+        });
+
+        return () => {
+            socket.off('runner:location_updated');
+        };
+    }, [socket]);
 
     useEffect(() => {
         if (!mapRef.current) return;

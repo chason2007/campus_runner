@@ -19,6 +19,7 @@ import GroupOrderView from './pages/GroupOrderView';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ToastProvider } from './context/ToastContext';
 import Cursor from './components/Cursor';
+import ErrorBoundary from './components/ErrorBoundary';
 import './campus-runner.css';
 
 function App() {
@@ -47,69 +48,71 @@ function App() {
   }, [navigate]);
 
   return (
-    <AuthProvider>
-      <SocketProvider>
-        <ToastProvider>
-          <I18nProvider>
-            <Cursor />
-            <AnimatePresence mode="wait">
-              <Routes location={location} key={location.pathname}>
-                <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
-                <Route
-                  path="/student"
-                  element={
-                    <ProtectedRoute allowedRoles={['student']}>
-                      <PageWrapper><StudentDashboard /></PageWrapper>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/runner"
-                  element={
-                    <ProtectedRoute allowedRoles={['runner']}>
-                      <PageWrapper><RunnerDashboard /></PageWrapper>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/vendor"
-                  element={
-                    <ProtectedRoute allowedRoles={['vendor']}>
-                      <PageWrapper><VendorDashboard /></PageWrapper>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <PageWrapper><AdminDashboard /></PageWrapper>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/group/:id"
-                  element={
-                    <ProtectedRoute allowedRoles={['student']}>
-                      <PageWrapper><GroupOrderView /></PageWrapper>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute allowedRoles={['student', 'runner', 'vendor', 'admin']}>
-                      <PageWrapper><ProfileSettings /></PageWrapper>
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </AnimatePresence>
-          </I18nProvider>
-        </ToastProvider>
-      </SocketProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <SocketProvider>
+          <ToastProvider>
+            <I18nProvider>
+              <Cursor />
+              <AnimatePresence mode="wait">
+                <Routes location={location} key={location.pathname}>
+                  <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
+                  <Route
+                    path="/student"
+                    element={
+                      <ProtectedRoute allowedRoles={['student']}>
+                        <PageWrapper><StudentDashboard /></PageWrapper>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/runner"
+                    element={
+                      <ProtectedRoute allowedRoles={['runner']}>
+                        <PageWrapper><RunnerDashboard /></PageWrapper>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/vendor"
+                    element={
+                      <ProtectedRoute allowedRoles={['vendor']}>
+                        <PageWrapper><VendorDashboard /></PageWrapper>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <PageWrapper><AdminDashboard /></PageWrapper>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/group/:id"
+                    element={
+                      <ProtectedRoute allowedRoles={['student']}>
+                        <PageWrapper><GroupOrderView /></PageWrapper>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute allowedRoles={['student', 'runner', 'vendor', 'admin']}>
+                        <PageWrapper><ProfileSettings /></PageWrapper>
+                      </ProtectedRoute>
+                    }
+                  />
+                </Routes>
+              </AnimatePresence>
+            </I18nProvider>
+          </ToastProvider>
+        </SocketProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

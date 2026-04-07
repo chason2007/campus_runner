@@ -13,6 +13,16 @@ import { LiveMap } from '../components/LiveMap';
 import { ChatDrawer } from '../components/ChatDrawer';
 import './Dashboard.css';
 
+const containerVariants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.1 } }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, scale: 0.95, y: 30 },
+    show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring' as const, stiffness: 280, damping: 20 } }
+};
+
 interface Order {
     _id: string;
     vendor?: { name: string };
@@ -159,6 +169,12 @@ function RunnerDashboard() {
 
     return (
         <div className="db-layout">
+            {/* AMBIENT MESH LAYER */}
+            <div className="db-ambient-layer">
+                <div className="ambient-orb cyan"></div>
+                <div className="ambient-orb magenta"></div>
+            </div>
+
             {/* SIDEBAR */}
             <aside className="db-sidebar">
                 <div style={{ padding: '24px 20px', borderBottom: '1px solid var(--border)' }}>
@@ -204,7 +220,13 @@ function RunnerDashboard() {
 
             {/* MAIN */}
             <main className="db-main">
-                <div className="db-content">
+                <motion.div 
+                    className="db-content"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="show"
+                    key={activeTab}
+                >
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -215,21 +237,21 @@ function RunnerDashboard() {
                     </motion.div>
 
                     <div className="db-stats-grid">
-                        <motion.div whileHover={{ y: -5 }} className="db-stat-card">
+                        <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="db-stat-card">
                             <div className="db-stat-value db-stat-accent">{availableOrders.length}</div>
                             <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Available Tasks</div>
                         </motion.div>
-                        <motion.div whileHover={{ y: -5 }} className="db-stat-card">
+                        <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="db-stat-card">
                             <div className="db-stat-value">{stats.completedDeliveries}</div>
                             <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Total Deliveries</div>
                         </motion.div>
-                        <motion.div whileHover={{ y: -5 }} className="db-stat-card">
+                        <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="db-stat-card">
                             <div className="db-stat-value">AED {stats.totalEarnings.toFixed(2)}</div>
                             <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Total Earnings</div>
                         </motion.div>
                     </div>
 
-                    <div className="db-card" style={{ marginTop: '24px', padding: '0', overflow: 'hidden' }}>
+                    <motion.div variants={itemVariants} className="db-card" style={{ marginTop: '24px', padding: '0', overflow: 'hidden' }}>
                         <div style={{ padding: '24px 24px 12px' }}>
                             <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem' }}>Live Delivery Radar</span>
                             <p style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>Visualizing nearby active tasks on campus</p>
@@ -246,9 +268,9 @@ function RunnerDashboard() {
                                 { lat: 25.1235, lng: 55.2235, label: 'Your Position', type: 'runner' as const }
                             ]} 
                         />
-                    </div>
+                    </motion.div>
 
-                    <div className="db-card" style={{ marginTop: '24px' }}>
+                    <motion.div variants={itemVariants} className="db-card" style={{ marginTop: '24px' }}>
                         <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem', display: 'block', marginBottom: '16px' }}>Available Tasks</span>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
                             <AnimatePresence mode="popLayout">
@@ -279,9 +301,9 @@ function RunnerDashboard() {
                                 )}
                             </AnimatePresence>
                         </div>
-                    </div>
+                    </motion.div>
 
-                    <div className="db-card" style={{ marginTop: '24px' }}>
+                    <motion.div variants={itemVariants} className="db-card" style={{ marginTop: '24px' }}>
                         <span style={{ fontFamily: 'Bebas Neue', fontSize: '1.25rem', display: 'block', marginBottom: '16px' }}>My Active Deliveries</span>
                         {myOrders.filter(o => o.status !== 'delivered').length > 0 ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -335,12 +357,12 @@ function RunnerDashboard() {
                         ) : (
                             <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text3)' }}>You don't have any active deliveries.</div>
                         )}
-                    </div>
+                    </motion.div>
 
-                    <div style={{ marginTop: '24px' }}>
+                    <motion.div variants={itemVariants} style={{ marginTop: '24px' }}>
                         <Leaderboard />
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
             </main>
 
             <DashboardMobileNav 

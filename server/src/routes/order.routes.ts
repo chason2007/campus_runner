@@ -47,6 +47,10 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
         }
 
         const calculatedDeliveryFee = Number(deliveryFee || 0);
+        if (calculatedDeliveryFee < 0 || isNaN(calculatedDeliveryFee)) {
+            return res.status(400).json({ message: 'Invalid delivery fee provided.' });
+        }
+        
         const calculatedTotalAmount = calculatedPrice + calculatedDeliveryFee;
 
         const orderData = {
@@ -82,6 +86,10 @@ router.post('/:id/create-checkout-session', authMiddleware, async (req: AuthRequ
         const order = await Order.findById(req.params.id);
         if (!order) return res.status(404).json({ message: 'Order not found' });
         if (order.student.toString() !== req.user?.id) return res.status(403).json({ message: 'Unauthorized' });
+
+        if (order.paymentInfo?.status === 'paid') {
+            return res.status(400).json({ message: 'Order has already been paid for.' });
+        }
 
         // Recalculate server-side to prevent price manipulation
         const itemsTotal = (order.items || []).reduce(

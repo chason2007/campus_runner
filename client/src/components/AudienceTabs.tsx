@@ -27,6 +27,17 @@ export default function AudienceTabs() {
   const inV = useInView(ref, { once: true, margin: '-10%' });
   const { t } = useTranslation();
 
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash;
+      if (hash === '#vendors') setAct('v');
+      else if (hash === '#students') setAct('r');
+    };
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
   const RUNNER_BARS = [
     { label: t('aud.r1'), w: '70%', val: '20 AED' },
     { label: t('aud.r2'), w: '30%', val: '+10 AED' },
@@ -49,7 +60,8 @@ export default function AudienceTabs() {
   ];
 
   return (
-    <section id="vendors" className="aud-sec" ref={ref}>
+    <section id="students" className="aud-sec" ref={ref}>
+      <div id="vendors" style={{ position: 'absolute', transform: 'translateY(-100px)' }} />
       <div className="container">
         <div className="aud-in">
           <div className="stag">{t('aud.tag')}</div>

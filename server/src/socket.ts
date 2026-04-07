@@ -24,6 +24,15 @@ export const initSocket = (server: HttpServer) => {
             console.log(`🔌[socket]: User ${socket.id} joined group room group_${groupId}`);
         });
 
+        socket.on('joinOrder', (orderId: string) => {
+            socket.join(`order_${orderId}`);
+            console.log(`🔌[socket]: User ${socket.id} joined order room order_${orderId}`);
+        });
+
+        socket.on('runner:update_location', (data: { orderId: string, lat: number, lng: number }) => {
+            io.to(`order_${data.orderId}`).emit('runner:location_updated', data);
+        });
+
         socket.on('disconnect', () => {
             console.log('🔌[socket]: User disconnected', socket.id);
         });

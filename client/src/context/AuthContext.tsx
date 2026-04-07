@@ -24,31 +24,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const logout = () => {
+        setUser(null);
+        setToken(null);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+    };
+
     useEffect(() => {
         const savedUser = localStorage.getItem('user');
         const savedToken = localStorage.getItem('token');
-        if (savedUser && savedToken) {
-            setUser(JSON.parse(savedUser));
-            setToken(savedToken);
-        }
-        setLoading(false);
+        
+        const verifyUser = async () => {
+            if (savedToken) {
+                try {
+                    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${savedToken}` }
+                    });
+                    const data = await response.json();
+                    
+                    if (response.ok && data.role) {
+                        setUser(data);
+                        setToken(savedToken);
+                        localStorage.setItem('user', JSON.stringify(data));
+                    } else {
+                        logout();
+                    }
+                } catch (err) {
+                    if (savedUser) {
+                        setUser(JSON.parse(savedUser));
+                        setToken(savedToken);
+                    }
+                }
+            }
+            setLoading(false);
+        };
+        verifyUser();
     }, []);
 
     const login = (userData: User, userToken: string) => {
-        // Clear any existing session first to avoid stale role data
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         setUser(userData);
         setToken(userToken);
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('token', userToken);
-    };
-
-    const logout = () => {
-        setUser(null);
-        setToken(null);
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
     };
 
     return (

@@ -20,15 +20,13 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
     }
 
     try {
-        const decoded = jwt.verify(token, JWT_SECRET) as { id: string; role: string };
+        const decoded = jwt.verify(token, JWT_SECRET) as { id: string; role: string; isActive: boolean; isApproved: boolean };
         
-        // Check if user is active and approved
-        const user = await User.findById(decoded.id).select('isActive isApproved role');
-        if (!user || user.isActive === false) {
+        if (decoded.isActive === false) {
             return res.status(403).json({ message: 'Account is suspended or does not exist.' });
         }
 
-        if (user.role !== 'admin' && user.isApproved === false) {
+        if (decoded.role !== 'admin' && decoded.isApproved === false) {
             return res.status(403).json({ message: 'Account is pending admin approval.' });
         }
 

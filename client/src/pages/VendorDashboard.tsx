@@ -10,6 +10,16 @@ import { useToast } from '../context/ToastContext';
 import { DashboardMobileNav } from '../components/DashboardMobileNav';
 import './Dashboard.css';
 
+const containerVariants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.1 } }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, scale: 0.95, y: 30 },
+    show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring' as const, stiffness: 280, damping: 20 } }
+};
+
 interface Order {
     _id: string;
     student: { name: string; email: string };
@@ -179,6 +189,12 @@ function VendorDashboard() {
 
     return (
         <div className="db-layout">
+            {/* AMBIENT MESH LAYER */}
+            <div className="db-ambient-layer">
+                <div className="ambient-orb cyan"></div>
+                <div className="ambient-orb magenta"></div>
+            </div>
+
             {/* SIDEBAR */}
             <aside className="db-sidebar">
                 <div className="py-6 px-5 border-b border-[var(--border)]">
@@ -224,7 +240,13 @@ function VendorDashboard() {
 
             {/* MAIN */}
             <main className="db-main">
-                <div className="db-content">
+                <motion.div 
+                    className="db-content"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="show"
+                    key={activeTab}
+                >
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -237,17 +259,17 @@ function VendorDashboard() {
                     {activeTab === 'orders' ? (
                         <>
                             <div className="db-stats-grid">
-                                <motion.div whileHover={{ y: -5 }} className="db-stat-card">
+                                <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="db-stat-card">
                                     <div className="db-stat-value db-stat-accent">{orders.length}</div>
                                     <div className="text-xs text-[var(--text3)]">Total Orders</div>
                                 </motion.div>
-                                <motion.div whileHover={{ y: -5 }} className="db-stat-card">
+                                <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="db-stat-card">
                                     <div className="db-stat-value">AED {orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0).toFixed(2)}</div>
                                     <div className="text-xs text-[var(--text3)]">Total Revenue</div>
                                 </motion.div>
                             </div>
 
-                            <div className="db-card mb-6">
+                            <motion.div variants={itemVariants} className="db-card mb-6">
                                 <div className="mb-4">
                                     <span className="font-[Bebas_Neue] text-xl">Revenue Overview</span>
                                 </div>
@@ -278,9 +300,9 @@ function VendorDashboard() {
                                         );
                                     })}
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            <div className="db-card">
+                            <motion.div variants={itemVariants} className="db-card">
                                 <div className="mb-5">
                                     <span className="font-[Bebas_Neue] text-xl">Incoming Orders</span>
                                 </div>
@@ -349,10 +371,10 @@ function VendorDashboard() {
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
+                            </motion.div>
                         </>
                     ) : (
-                        <div className="db-card">
+                        <motion.div variants={itemVariants} className="db-card">
                             <div className="mb-5">
                                 <span className="font-[Bebas_Neue] text-xl">Menu Items</span>
                             </div>
@@ -391,9 +413,9 @@ function VendorDashboard() {
                                     ))}
                                 </AnimatePresence>
                             </div>
-                        </div>
+                        </motion.div>
                     )}
-                </div>
+                </motion.div>
             </main>
 
             <DashboardMobileNav 

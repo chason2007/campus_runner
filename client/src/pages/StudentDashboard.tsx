@@ -16,6 +16,19 @@ import { LiveMap } from '../components/LiveMap';
 import { ChatDrawer } from '../components/ChatDrawer';
 import './Dashboard.css';
 
+const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: { staggerChildren: 0.12, delayChildren: 0.1 }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, scale: 0.95, y: 30 },
+    show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring' as const, stiffness: 280, damping: 20 } }
+};
+
 interface Order {
     _id: string;
     vendor?: { name: string };
@@ -158,9 +171,15 @@ function StudentDashboard() {
 
     return (
         <div className="db-layout">
+            {/* AMBIENT MESH LAYER */}
+            <div className="db-ambient-layer">
+                <div className="ambient-orb cyan"></div>
+                <div className="ambient-orb magenta"></div>
+            </div>
+
             {/* SIDEBAR */}
             <aside className="db-sidebar">
-                <div className="py-6 px-5 border-b border-[var(--border)]">
+                <div className="db-sidebar-header">
                     <div className="font-[Bebas_Neue] text-2xl text-[var(--accent)]">CAMPUSRUNNER</div>
                     <div className="text-[0.65rem] text-[var(--text3)] uppercase">Student Portal</div>
                 </div>
@@ -185,7 +204,7 @@ function StudentDashboard() {
                         type="button" 
                         whileHover={{ x: 4 }} 
                         className="db-sidebar-nav-item"
-                        style={{ cursor: 'default', opacity: 0.6 }}
+                        style={{ cursor: 'not-allowed', opacity: 0.5 }}
                     >
                         <span>🕒</span> <span className="db-sidebar-label">History</span>
                     </motion.button>
@@ -205,27 +224,35 @@ function StudentDashboard() {
 
             {/* HEADER */}
             <header className="db-header">
-                <span className="font-[Bebas_Neue] text-xl">
-                    {activeTab === 'orders' ? 'Dashboard Home' : 'Campus Vendors'}
-                </span>
-                <div className="flex items-center gap-4">
-                    <NotificationTray />
-                    <div className="w-9 h-9 rounded-full bg-[var(--accent2)] border-[1.5px] border-[var(--accent3)] flex items-center justify-center text-[var(--accent)]">
-                        {user?.name?.charAt(0) || 'S'}
+                <div className="db-header-container">
+                    <span className="font-[Bebas_Neue] text-xl">
+                        {activeTab === 'orders' ? 'Dashboard Home' : 'Campus Vendors'}
+                    </span>
+                    <div className="flex items-center gap-4">
+                        <NotificationTray />
+                        <div className="w-9 h-9 rounded-full bg-[var(--accent2)] border-[1.5px] border-[var(--accent3)] flex items-center justify-center text-[var(--accent)]">
+                            {user?.name?.charAt(0) || 'S'}
+                        </div>
                     </div>
                 </div>
             </header>
 
             {/* MAIN CONTENT */}
             <main className="db-main">
-                <div className="db-content">
+                <motion.div 
+                    className="db-container"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="show"
+                    key={activeTab} // Retriggers animation when tab changes
+                >
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="db-welcome-banner"
                     >
                         <div className="text-base font-[Bebas_Neue] text-[rgba(0,212,255,.6)]">Welcome back,</div>
-                        <div className="db-welcome-name mb-4">{user?.name || 'Student'}</div>
+                        <div className="db-welcome-name mb-4 text-primary">{user?.name || 'Student'}</div>
                         <div className="flex gap-2 items-center flex-wrap">
                             <MotionButton onClick={() => setIsJoinModalOpen(true)} variant="secondary" className="px-4 py-2 text-sm">Join Group</MotionButton>
                             <MotionButton onClick={() => setIsGroupModalOpen(true)} variant="secondary" className="px-4 py-2 text-sm">Start Group</MotionButton>
@@ -236,17 +263,17 @@ function StudentDashboard() {
                         {activeTab === 'orders' && (
                             <>
                                 <div className="db-stats-grid">
-                                    <motion.div whileHover={{ y: -5 }} className="db-stat-card">
+                                    <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="db-stat-card">
                                         <div className="db-stat-value db-stat-accent text-2xl">{orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}</div>
                                         <div className="text-[0.7rem] text-[var(--text3)] uppercase font-semibold">Active Orders</div>
                                     </motion.div>
-                                    <motion.div whileHover={{ y: -5 }} className="db-stat-card">
+                                    <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="db-stat-card">
                                         <div className="db-stat-value text-2xl">{orders.filter(o => o.status === 'delivered').length}</div>
                                         <div className="text-[0.7rem] text-[var(--text3)] uppercase font-semibold">Completed</div>
                                     </motion.div>
                                 </div>
 
-                                <div className="db-card mt-6" style={{ padding: '0', overflow: 'hidden' }}>
+                                <motion.div variants={itemVariants} className="db-card mt-6" style={{ padding: '0', overflow: 'hidden' }}>
                                     <div style={{ padding: '24px 24px 12px' }}>
                                         <span className="font-[Bebas_Neue] text-xl block">Order Tracking Radar</span>
                                         <p className="text-xs text-[var(--text3)]">Real-time visualization of your active deliveries</p>
@@ -263,9 +290,9 @@ function StudentDashboard() {
                                             { lat: 25.1235, lng: 55.2235, label: 'Campus Hub', type: 'vendor' as const }
                                         ]} 
                                     />
-                                </div>
+                                </motion.div>
 
-                                <div className="db-card mt-6">
+                                <motion.div variants={itemVariants} className="db-card mt-6">
                                     <span className="font-[Bebas_Neue] text-xl block mb-4">Live Tracking</span>
                                     <div className="flex flex-col gap-3">
                                         <AnimatePresence mode="popLayout">
@@ -319,9 +346,9 @@ function StudentDashboard() {
                                             <div className="text-center p-5 text-[var(--text3)]">No active orders. Time for a coffee?</div>
                                         )}
                                     </div>
-                                </div>
+                                </motion.div>
 
-                                <div className="db-card mt-6">
+                                <motion.div variants={itemVariants} className="db-card mt-6">
                                     <span className="font-[Bebas_Neue] text-xl block mb-4">Recent activity</span>
                                     <div className="db-table-container">
                                         <table className="db-order-table">
@@ -365,7 +392,7 @@ function StudentDashboard() {
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
+                                </motion.div>
                             </>
                         )}
 
@@ -443,7 +470,7 @@ function StudentDashboard() {
                         orderTitle={ratingModal.orderTitle}
                         onRated={fetchData}
                     />
-                </div>
+                </motion.div>
             </main>
 
             <DashboardMobileNav 

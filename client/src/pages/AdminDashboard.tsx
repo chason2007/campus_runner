@@ -10,6 +10,16 @@ import { useToast } from '../context/ToastContext';
 import { DashboardMobileNav } from '../components/DashboardMobileNav';
 import './Dashboard.css';
 
+const containerVariants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.1 } }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, scale: 0.95, y: 30 },
+    show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring' as const, stiffness: 280, damping: 20 } }
+};
+
 interface AdminStats {
     totalOrders: number;
     totalUsers: number;
@@ -153,6 +163,12 @@ function AdminDashboard() {
 
     return (
         <div className="db-layout">
+            {/* AMBIENT MESH LAYER */}
+            <div className="db-ambient-layer">
+                <div className="ambient-orb cyan"></div>
+                <div className="ambient-orb magenta"></div>
+            </div>
+
             <aside className="db-sidebar">
                 <div style={{ padding: '24px 20px', borderBottom: '1px solid var(--border)' }}>
                     <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem', color: 'var(--accent)' }}>CAMPUSRUNNER</div>
@@ -217,24 +233,25 @@ function AdminDashboard() {
                         {activeTab === 'stats' && stats && (
                             <motion.div
                                 key="stats"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="show"
                                 exit={{ opacity: 0, y: -10 }}
                                 className="db-stats-grid"
                             >
-                                <motion.div whileHover={{ y: -5 }} className="db-stat-card glass-card">
+                                <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="db-stat-card glass-card">
                                     <div className="db-stat-value db-stat-accent">AED {stats.totalRevenue.toFixed(2)}</div>
                                     <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Total Platform Revenue</div>
                                 </motion.div>
-                                <motion.div whileHover={{ y: -5 }} className="db-stat-card glass-card">
+                                <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="db-stat-card glass-card">
                                     <div className="db-stat-value">{stats.totalOrders}</div>
                                     <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Total Orders</div>
                                 </motion.div>
-                                <motion.div whileHover={{ y: -5 }} className="db-stat-card glass-card">
+                                <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="db-stat-card glass-card">
                                     <div className="db-stat-value">{stats.totalUsers}</div>
                                     <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Registered Users</div>
                                 </motion.div>
-                                <motion.div whileHover={{ y: -5 }} className="db-stat-card glass-card">
+                                <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="db-stat-card glass-card">
                                     <div className="db-stat-value" style={{ color: '#ff6b6b' }}>{stats.pendingDisputes}</div>
                                     <div style={{ fontSize: '.75rem', color: 'var(--text3)' }}>Unresolved Disputes</div>
                                 </motion.div>
@@ -244,12 +261,13 @@ function AdminDashboard() {
                         {activeTab === 'orders' && (
                             <motion.div
                                 key="orders"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="show"
                                 exit={{ opacity: 0, y: -10 }}
                                 className="db-card"
                             >
-                                <div style={{ marginBottom: '16px', display: 'flex', gap: '12px' }}>
+                                <motion.div variants={itemVariants} style={{ marginBottom: '16px', display: 'flex', gap: '12px' }}>
                                     <input 
                                         type="text" 
                                         placeholder="Search orders..." 
@@ -258,8 +276,8 @@ function AdminDashboard() {
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
-                                </div>
-                                <div className="db-table-container">
+                                </motion.div>
+                                <motion.div variants={itemVariants} className="db-table-container">
                                     <table className="db-order-table">
                                         <thead>
                                             <tr>
@@ -319,19 +337,20 @@ function AdminDashboard() {
                                             </AnimatePresence>
                                         </tbody>
                                     </table>
-                                </div>
+                                </motion.div>
                             </motion.div>
                         )}
 
                         {activeTab === 'users' && (
                             <motion.div
                                 key="users"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="show"
                                 exit={{ opacity: 0, y: -10 }}
                                 className="db-card"
                             >
-                                <div style={{ marginBottom: '16px', display: 'flex', gap: '12px' }}>
+                                <motion.div variants={itemVariants} style={{ marginBottom: '16px', display: 'flex', gap: '12px' }}>
                                     <input 
                                         type="text" 
                                         placeholder="Search users..." 
@@ -346,8 +365,8 @@ function AdminDashboard() {
                                     >
                                         🔄 Refresh
                                     </button>
-                                </div>
-                                <div className="db-table-container">
+                                </motion.div>
+                                <motion.div variants={itemVariants} className="db-table-container">
                                     <table className="db-order-table">
                                         <thead>
                                             <tr>
@@ -407,19 +426,20 @@ function AdminDashboard() {
                                             </AnimatePresence>
                                         </tbody>
                                     </table>
-                                </div>
+                                </motion.div>
                             </motion.div>
                         )}
 
                         {activeTab === 'vendors' && (
                             <motion.div
                                 key="vendors"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="show"
                                 exit={{ opacity: 0, y: -10 }}
                                 className="db-card"
                             >
-                                <div className="db-table-container">
+                                <motion.div variants={itemVariants} className="db-table-container">
                                     <table className="db-order-table">
                                         <thead>
                                             <tr>
@@ -463,7 +483,7 @@ function AdminDashboard() {
                                             </AnimatePresence>
                                         </tbody>
                                     </table>
-                                </div>
+                                </motion.div>
                             </motion.div>
                         )}
                     </AnimatePresence>

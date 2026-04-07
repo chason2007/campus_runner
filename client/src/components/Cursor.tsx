@@ -40,7 +40,11 @@ const Cursor: React.FC = () => {
   return (
     <>
       <motion.div
-        className={`cur ${isHovering ? 'h' : ''}`}
+        className="cur"
+        animate={{
+          scale: isHovering ? 2.5 : 1,
+          opacity: isHovering ? 0.5 : 1
+        }}
         style={{
           x: mouseX,
           y: mouseY,
@@ -49,7 +53,11 @@ const Cursor: React.FC = () => {
         }}
       />
       <motion.div
-        className={`cur-r ${isHovering ? 'h' : ''}`}
+        className="cur-r"
+        animate={{
+          scale: isHovering ? 1.5 : 1,
+          borderColor: isHovering ? 'rgba(255,255,255,0.8)' : 'rgba(0, 212, 255, 0.4)'
+        }}
         style={{
           x: followerX,
           y: followerY,
@@ -59,11 +67,13 @@ const Cursor: React.FC = () => {
       />
       <motion.div
         className="glow-orb"
-        animate={{
-          left: mouseX.get(),
-          top: mouseY.get()
+        style={{
+          x: mouseX,
+          y: mouseY,
+          left: 0,
+          top: 0,
+          transform: 'translate(-50%, -50%)' // Ensure it's centered on the point
         }}
-        transition={{ type: 'tween', ease: 'linear', duration: 0.1 }}
       />
     </>
   );

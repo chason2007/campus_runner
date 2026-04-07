@@ -44,6 +44,14 @@ export const api = {
             if (data.token) localStorage.setItem('token', data.token);
             return data;
         },
+        me: async () => {
+            const response = await fetch(`${API_BASE_URL}/auth/me`, {
+                headers: getHeaders(),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Unauthorized');
+            return data;
+        },
         updateProfile: async (data: any) => {
             const response = await fetch(`${API_BASE_URL}/auth/profile`, {
                 method: 'PATCH',

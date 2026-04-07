@@ -38,7 +38,7 @@ router.post('/register', registerValidation, async (req: Request, res: Response)
         await user.save();
 
         const token = jwt.sign(
-            { id: user._id, role: user.role },
+            { id: user._id, role: user.role, isActive: user.isActive, isApproved: user.isApproved },
             JWT_SECRET!,
             { expiresIn: '24h' }
         );
@@ -84,7 +84,7 @@ router.post('/login', async (req: Request, res: Response) => {
         }
 
         const token = jwt.sign(
-            { id: user._id, role: user.role },
+            { id: user._id, role: user.role, isActive: user.isActive, isApproved: user.isApproved },
             JWT_SECRET!,
             { expiresIn: '24h' }
         );
@@ -125,6 +125,20 @@ router.patch('/profile', authMiddleware, async (req: AuthRequest, res: Response)
         });
     } catch (error: any) {
         res.status(500).json({ message: error.message });
+    }
+});
+
+// Verify Current User (Fix #2: Client-side role spoofing mitigation)
+router.get('/me', authMiddleware, async (req: AuthRequest, res: Response) => {
+    try {
+        const user = await User.findById(req.user?.id).select('-password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        
+        res.json({
+            id: user._id, name: user.name, email: user.email, role: user.role, campusId: user.campusId
+        });
+    } catch (err: any) {
+        res.status(500).json({ message: 'Server error' });
     }
 });
 

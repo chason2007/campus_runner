@@ -21,6 +21,10 @@ export interface IOrder extends Document {
     deliveryFee: number;
     totalAmount: number;
     location: string;
+    locationCoordinates?: {
+        type: 'Point';
+        coordinates: [number, number];
+    };
     isRated: boolean;
     dispute?: {
         isDisputed: boolean;
@@ -54,6 +58,10 @@ const orderSchema = new Schema<IOrder>({
     deliveryFee: { type: Number, default: 0 },
     totalAmount: { type: Number, required: true },
     location: { type: String, required: true },
+    locationCoordinates: {
+        type: { type: String, enum: ['Point'] },
+        coordinates: { type: [Number] }
+    },
     isRated: { type: Boolean, default: false },
     dispute: {
         isDisputed: { type: Boolean, default: false },
@@ -72,6 +80,6 @@ orderSchema.index({ runner: 1, status: 1 });
 orderSchema.index({ vendor: 1, status: 1 });
 orderSchema.index({ status: 1 });
 orderSchema.index({ 'paymentInfo.status': 1 });
-
+orderSchema.index({ locationCoordinates: '2dsphere' });
 
 export const Order = model<IOrder>('Order', orderSchema);

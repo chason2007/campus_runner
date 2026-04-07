@@ -9,6 +9,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
 import mongoSanitize from 'express-mongo-sanitize';
+import compression from 'compression';
 import { initSocket } from './socket';
 import rateLimit from 'express-rate-limit';
 
@@ -57,6 +58,7 @@ const authLimiter = rateLimit({
 
 // Middleware
 app.use(helmet());
+app.use(compression());
 // FIX #4: CORS for Production and Localhost
 const allowedOrigins = [
     'https://campusrunner.vercel.app',

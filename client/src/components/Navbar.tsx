@@ -21,7 +21,7 @@ export default function Navbar() {
   ];
 
   useEffect(() => {
-    const IDS = ['home', 'about', 'how-it-works', 'services', 'app', 'students', 'waitlist'];
+    const IDS = ['home', 'about', 'how-it-works', 'services', 'app', 'students', 'vendors'];
     const onScroll = () => {
       setScrolled(window.scrollY > 60);
       let cur = '';
@@ -43,7 +43,6 @@ export default function Navbar() {
             whileHover={{ scale: 1.05 }}
             href="#home"
             className="logo"
-            style={{ cursor: 'none' }}
           >
             <img src="/logo.png" alt="Campus Runner" style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'cover' }} />
             Campus Runner
